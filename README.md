@@ -2,6 +2,11 @@
 
 This project aims to be a useful tool for calculating info about steel reinforcment in concrete slabs.
 
+# Current Aim
+
+- Create UI in wxFB
+  - Add widgets to allow entering size specs for circular shaped steel
+  
 # Planned Features (Subject to Change)
 
 1. Bar quantity calculator
