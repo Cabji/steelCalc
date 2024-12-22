@@ -4,6 +4,7 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 
 # Current Aim
 
+- Create CMakeLists.txt file
 - Create UI in wxFB
   - Add widgets to allow entering size specs for circular shaped steel
   
