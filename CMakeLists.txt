@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 set(projectName "SteelCalc")
 set(SOURCES 
-    SteelCalcBase.cpp 
+      MyApp.cpp
+      SteelCalcBase.cpp 
+      SteelCalcMain.cpp
    )
 
 project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
