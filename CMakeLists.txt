@@ -37,25 +37,25 @@ target_link_libraries(${projectName} ${wxWidgets_LIBRARIES})
 
 # Handle project resources...
 # Define the source and destination resource directories
-set(RESOURCE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
-set(RESOURCE_DEST_DIR "${CMAKE_BINARY_DIR}/resources")
-# Create a custom target to copy the resources recursively
-add_custom_target(copy_resources ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_SOURCE_DIR} ${RESOURCE_DEST_DIR}
-    COMMENT "Copying resource files recursively to the build directory..."
-)
+# set(RESOURCE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
+# set(RESOURCE_DEST_DIR "${CMAKE_BINARY_DIR}/resources")
+# # Create a custom target to copy the resources recursively
+# add_custom_target(copy_resources ALL
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_SOURCE_DIR} ${RESOURCE_DEST_DIR}
+#     COMMENT "Copying resource files recursively to the build directory..."
+# )
 
-# Create a custom command to clean the destination directory
-add_custom_command(TARGET copy_resources PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${RESOURCE_DEST_DIR}
-    COMMENT "Removing outdated resource files from the build directory..."
-)
+# # Create a custom command to clean the destination directory
+# add_custom_command(TARGET copy_resources PRE_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E remove_directory ${RESOURCE_DEST_DIR}
+#     COMMENT "Removing outdated resource files from the build directory..."
+# )
 
-# Add a custom command to copy the resources recursively
-add_custom_command(TARGET copy_resources POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_SOURCE_DIR} ${RESOURCE_DEST_DIR}
-    COMMENT "Copying resource files recursively to the build directory..."
-)
+# # Add a custom command to copy the resources recursively
+# add_custom_command(TARGET copy_resources POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_SOURCE_DIR} ${RESOURCE_DEST_DIR}
+#     COMMENT "Copying resource files recursively to the build directory..."
+# )
 
-# Ensure the resources are copied before building the executable
-add_dependencies(${projectName} copy_resources)
+# # Ensure the resources are copied before building the executable
+# add_dependencies(${projectName} copy_resources)
