@@ -101,7 +101,7 @@ class Main : public wxFrame
 
 	public:
 
-		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 905,713 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 920,689 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
 
