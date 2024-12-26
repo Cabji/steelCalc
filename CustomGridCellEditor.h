@@ -12,18 +12,23 @@ public:
 
     virtual bool EndEdit(int row, int col, const wxGrid* grid, const wxString& oldval, wxString* newval) override
     {
+        m_row = row;
+        m_col = col;
+        m_grid = const_cast<wxGrid*>(grid);
+
         wxString value = GetValue();
         if (ValidateValue(value))
         {
             std::cout << "Valid value: " << value.ToStdString() << std::endl;
             *newval = value;
-            // dev-note: we have to store the sanitized value in a member variable 
-            // because ApplyEdit() will use the unsanitized value if we use GetValue()
-            m_sanitizedValue = value;
+            m_sanitizedValue = value; // Store the sanitized value
             return true;
         }
         else
         {
+            // dev-note: the way the sanitation works, there can never be invalid 
+            // input. either it's valid, or the cell is cleared.
+            // i don't know how i feel about this.
             std::cout << "Invalid value: " << value.ToStdString() << std::endl;
             return false;
         }
@@ -31,8 +36,8 @@ public:
 
     virtual void ApplyEdit(int row, int col, wxGrid* grid) override
     {
-        wxString value = m_sanitizedValue;
-        grid->SetCellValue(row, col, value);
+        std::cout << "Value in Apply Edit: " << m_sanitizedValue.ToStdString() << std::endl;
+        grid->SetCellValue(row, col, m_sanitizedValue); // Use the sanitized value
     }
 
 private:
@@ -59,11 +64,12 @@ private:
 
         // Remove the locale-specific thousand separator
         sanitizedInput.Replace(wxString(localeThousand), wxEmptyString);
-        
-        // if the user empties the cell, set it to 0
+
+        // Allow empty cell values
         if (sanitizedInput.IsEmpty())
         {
-            sanitizedInput = "0";
+            value = sanitizedInput; // Assign the empty value back to the reference
+            return true;
         }
 
         // Convert the sanitized string to double
@@ -76,8 +82,9 @@ private:
         return isValid;
     }
 
-    // class members
-    wxString m_sanitizedValue; 
+    wxString m_sanitizedValue; // Member variable to store the sanitized value
+    int m_row, m_col; // Row and column of the cell being edited
+    wxGrid* m_grid; // Pointer to the grid
 };
 
 #endif // CUSTOMGRIDCELLEDITOR_H

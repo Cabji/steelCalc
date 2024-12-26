@@ -4,10 +4,12 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 
 # Current Aim
 
-- Create CMakeLists.txt file
-- Create UI in wxFB
-  - Add widgets to allow entering size specs for circular shaped steel
-  
+- Start code for auto-calculations when user changes input values. Use  SteelCalcMain::UpdateResults()
+
+# To Do
+
+  - Handle switch of UI widgets to allow entering size specs for circular shaped steel
+
 # Planned Features (Subject to Change)
 
 1. Bar quantity calculator

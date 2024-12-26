@@ -4,6 +4,7 @@ set(SOURCES
       MyApp.cpp
       SteelCalcBase.cpp 
       SteelCalcMain.cpp
+      CustomGridCellEditor.h
    )
 
 project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
