@@ -19,6 +19,11 @@ class SteelCalcMain : public Main
 	//// end generated class members
 		// custom constructor declared below here
 		SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style);
+
+	private:
+		// Event handler for grid cell value changes
+		void OnGridCellValueChanged(wxGridEvent& event);
+		void UpdateResults();
 };
 
 #endif // __SteelCalcMain__

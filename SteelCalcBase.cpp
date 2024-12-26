@@ -22,7 +22,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_statusBar = this->CreateStatusBar( 1, wxSTB_SIZEGRIP, wxID_ANY );
 	m_mainSizer = new wxGridBagSizer( 0, 0 );
 	m_mainSizer->SetFlexibleDirection( wxBOTH );
-	m_mainSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
+	m_mainSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_scrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	m_scrolledWindow->SetScrollRate( 5, 5 );
@@ -383,7 +383,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_scrolledWindow->SetSizer( m_ScrolledWindowSizer );
 	m_scrolledWindow->Layout();
 	m_ScrolledWindowSizer->Fit( m_scrolledWindow );
-	m_mainSizer->Add( m_scrolledWindow, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
+	m_mainSizer->Add( m_scrolledWindow, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 
 	m_mainSizer->AddGrowableCol( 0 );
