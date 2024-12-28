@@ -45,12 +45,43 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent& event)
 
     // Skip the event to allow further processing
     event.Skip();
+    UpdateResults();
 }
 
 void SteelCalcMain::UpdateResults()
 {
     // Update all the results on the steel calculator main frame
-    // This function will be called when the user changes any of the input values
+    std::cout << "Updating results..." << std::endl;
 
-    
+    int totalCellsWithValue = 0;
+    double totalValue = 0.0;
+
+    int numCols = m_gridLValues->GetNumberCols();
+
+    for (int col = 0; col < numCols; ++col)
+    {
+        wxString cellValue = m_gridLValues->GetCellValue(0, col); // Assuming only 1 row
+        if (cellValue.IsEmpty())
+        {
+            break; // Break the loop if a cell does not have a value
+        }
+
+        double value;
+        if (cellValue.ToDouble(&value))
+        {
+            totalCellsWithValue++;
+            totalValue += value;
+        }
+        else
+        {
+            // Handle the case where the cell value is not a valid number
+            std::cerr << "Invalid number in cell (0, " << col << "): " << cellValue.ToStdString() << std::endl;
+        }
+    }
+
+    std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
+    std::cout << "Total value of cells: " << totalValue << std::endl;
+    m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
+    // You can update the status bar or other UI elements with the results
+    SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }
