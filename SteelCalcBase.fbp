@@ -835,7 +835,7 @@
                         <property name="border">5</property>
                         <property name="colspan">1</property>
                         <property name="column">0</property>
-                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
+                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</property>
                         <property name="row">1</property>
                         <property name="rowspan">1</property>
                         <object class="wxStaticText" expanded="false">
@@ -893,14 +893,14 @@
                           <property name="window_extra_style"></property>
                           <property name="window_name"></property>
                           <property name="window_style"></property>
-                          <property name="wrap">-1</property>
+                          <property name="wrap">200</property>
                         </object>
                       </object>
                       <object class="gbsizeritem" expanded="false">
                         <property name="border">5</property>
                         <property name="colspan">1</property>
                         <property name="column">1</property>
-                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
+                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</property>
                         <property name="row">1</property>
                         <property name="rowspan">1</property>
                         <object class="wxStaticText" expanded="false">
@@ -965,7 +965,7 @@
                         <property name="border">5</property>
                         <property name="colspan">1</property>
                         <property name="column">2</property>
-                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
+                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</property>
                         <property name="row">1</property>
                         <property name="rowspan">1</property>
                         <object class="wxStaticText" expanded="false">
@@ -1030,7 +1030,7 @@
                         <property name="border">5</property>
                         <property name="colspan">1</property>
                         <property name="column">3</property>
-                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
+                        <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND</property>
                         <property name="row">1</property>
                         <property name="rowspan">1</property>
                         <object class="wxStaticText" expanded="false">
@@ -1095,7 +1095,7 @@
                         <property name="border">5</property>
                         <property name="colspan">1</property>
                         <property name="column">0</property>
-                        <property name="flag">wxALL</property>
+                        <property name="flag">wxALL|wxEXPAND</property>
                         <property name="row">2</property>
                         <property name="rowspan">1</property>
                         <object class="wxStaticText" expanded="false">

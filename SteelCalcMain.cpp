@@ -82,6 +82,7 @@ void SteelCalcMain::UpdateResults()
     std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
     std::cout << "Total value of cells: " << totalValue << std::endl;
     m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
-    // You can update the status bar or other UI elements with the results
-    SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
+
+    m_mainSizer->Layout();
+    //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }

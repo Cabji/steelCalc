@@ -148,24 +148,24 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_CalculatedSizer->Add( m_lblCalculatedHeader, wxGBPosition( 0, 0 ), wxGBSpan( 1, 3 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblCalculatedTotalBarLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total bar length: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedTotalBarLength->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedTotalBarLength, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_lblCalculatedTotalBarLength->Wrap( 200 );
+	m_CalculatedSizer->Add( m_lblCalculatedTotalBarLength, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	m_lblCalculatedBarArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar area: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblCalculatedBarArea->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedBarArea, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_CalculatedSizer->Add( m_lblCalculatedBarArea, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	m_lblCalculatedProcessingType = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Processing type: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblCalculatedProcessingType->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedProcessingType, wxGBPosition( 1, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_CalculatedSizer->Add( m_lblCalculatedProcessingType, wxGBPosition( 1, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	m_lblCalculatedCostPerMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Cost per Mg: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblCalculatedCostPerMg->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedCostPerMg, wxGBPosition( 1, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_CalculatedSizer->Add( m_lblCalculatedCostPerMg, wxGBPosition( 1, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	m_lblWeightPerBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Weight: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblWeightPerBar->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblWeightPerBar, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
+	m_CalculatedSizer->Add( m_lblWeightPerBar, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 
 	m_barProcessSizer->Add( m_CalculatedSizer, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
