@@ -4,9 +4,7 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 
 # Current Aim
 
-- Fix sizer bug when UpdateResults() is called: sizer/widgets are not automatically adjusting size to fit required information in them
 - Continue code for auto-calculations when user changes input values. Use  SteelCalcMain::UpdateResults().
-  - Calculate bar Area value
   - Determine bar processing type (count how many length values there are)
   - Calculate Cost per Mg
   - Calculate total Weight

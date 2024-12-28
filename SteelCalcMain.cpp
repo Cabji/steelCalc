@@ -1,12 +1,14 @@
 #include "SteelCalcMain.h"
 #include "CustomGridCellEditor.h"
 #include <wx/msgdlg.h>
+#include <wx/regex.h>
 
 SteelCalcMain::SteelCalcMain(wxWindow* parent)
     : Main(parent)
 {
     // Bind the event handler for grid cell value changes
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
+    m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
 
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
@@ -26,6 +28,7 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
 
     // Bind the event handler for grid cell value changes
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
+    m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
 
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
@@ -34,7 +37,38 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
     this->Fit();
 }
 
-void SteelCalcMain::OnGridCellValueChanged(wxGridEvent& event)
+double SteelCalcMain::GetBarArea(const wxString &barSpec)
+{
+    double radius = GetBarRadius(barSpec);
+    std::cout << "Bar radius: " << radius << std::endl;
+    return M_PI * radius * radius;
+}
+
+double SteelCalcMain::GetBarRadius(const wxString &barSpec)
+{
+    // Extract the numeric value from the bar specification value (eg: N12, R6.5, SS16)
+    wxRegEx re("[0-9.]+");
+    wxString numericValue;
+    if (re.Matches(m_processingCurrentBarSize))
+    {
+        numericValue = re.GetMatch(m_processingCurrentBarSize);
+    }
+    std::cout << "Numeric value: " << numericValue << std::endl;
+    return wxAtof(numericValue) / 2 / 1000;
+}
+
+void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
+{
+    // Get the selected bar specification
+    wxString selectedBarSpec = m_specsGandD->GetStringSelection();
+    std::cout << "Selected bar spec: " << selectedBarSpec << std::endl;
+
+    event.Skip();
+    // Update the results
+    UpdateResults();
+}
+
+void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
 {
     // Get the row and column of the changed cell
     int row = event.GetRow();
@@ -46,6 +80,25 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent& event)
     // Skip the event to allow further processing
     event.Skip();
     UpdateResults();
+}
+
+wxString SteelCalcMain::GetBarProcessingType(const int &numOfValues)
+{
+    // dev-note: this method sanitizes the input and returns appropriate type string for output
+    wxString result = wxEmptyString;
+    if (numOfValues < 0)
+    {
+        return result;
+    }
+    if (numOfValues > 3)
+    {
+        result = m_processingTypes[3];
+    }
+    else
+    {
+        result = m_processingTypes[numOfValues];
+    }
+    return result;
 }
 
 void SteelCalcMain::UpdateResults()
@@ -82,7 +135,12 @@ void SteelCalcMain::UpdateResults()
     std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
     std::cout << "Total value of cells: " << totalValue << std::endl;
     m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
-
-    m_mainSizer->Layout();
+    m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
+    double barArea = GetBarArea(m_processingCurrentBarSize);
+    m_lblCalculatedProcessingType->SetLabel(GetBarProcessingType(totalCellsWithValue));
+    m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
+    
+    // Update the layout of the sizer
+    m_containingSizer->Layout();
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }

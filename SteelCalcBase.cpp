@@ -11,7 +11,7 @@
 
 Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 920,689 ), wxDefaultSize );
+	this->SetSizeHints( wxSize( 920,690 ), wxDefaultSize );
 
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
