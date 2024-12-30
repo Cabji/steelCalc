@@ -33,13 +33,15 @@ class SteelCalcMain : public Main
 		double GetBarArea(const wxString& barSpec);
 		wxString GetBarProcessingType(const int& numOfValues);
 		double GetBarRadius(const wxString& barSpec);
+		void Init();
 		void OnBarSpecChoiceChanged(wxCommandEvent& event);
 		void OnGridCellValueChanged(wxGridEvent& event);
+		void OnCircularInputToggled(wxCommandEvent& event);
 		void UpdateResults();
-
+		
 		// members
 		wxString m_processingCurrentBarSize = wxEmptyString;
-		wxArrayString m_processingTypes = {_("Enter bar information"), _("Stock"), _("C&B"), _("Complex Shape")};
+		wxArrayString m_processingTypes = {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
 };
 
 #endif // __SteelCalcMain__

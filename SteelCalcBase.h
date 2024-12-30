@@ -39,13 +39,18 @@ class Main : public wxFrame
 		wxMenuBar* m_menubar;
 		wxMenu* m_menuFile;
 		wxStatusBar* m_statusBar;
+		wxGridBagSizer* m_mainSizer;
 		wxScrolledWindow* m_scrolledWindow;
+		wxGridBagSizer* m_ScrolledWindowSizer;
+		wxGridBagSizer* m_barProcessSizer;
 		wxStaticText* m_lblHeaderText;
 		wxCheckBox* m_chbCircularInput;
 		wxGrid* m_gridLValues;
+		wxGridBagSizer* m_InputSizer;
 		wxStaticText* m_lblInputSizerHeader;
 		wxStaticText* m_lblBarGrade;
 		wxChoice* m_specsGandD;
+		wxGridBagSizer* m_CalculatedSizer;
 		wxStaticText* m_lblCalculatedHeader;
 		wxStaticText* m_lblCalculatedTotalBarLength;
 		wxStaticText* m_lblCalculatedBarArea;
@@ -53,6 +58,7 @@ class Main : public wxFrame
 		wxStaticText* m_lblCalculatedCostPerMg;
 		wxStaticText* m_lblWeightPerBar;
 		wxGrid* m_gridCircularLValues;
+		wxGridBagSizer* m_barCalculatorSizer;
 		wxStaticText* m_lblBarCalculator;
 		wxStaticText* m_lblBCArea;
 		wxStaticText* m_lblBCBar;
@@ -66,6 +72,7 @@ class Main : public wxFrame
 		wxTextCtrl* m_BCBarCentre;
 		wxChoice* m_BCBarSpans;
 		wxStaticText* m_BCTotalQty;
+		wxGridBagSizer* m_tieCalculatorSizer;
 		wxStaticText* m_lblTiesCalculator;
 		wxStaticText* m_lblTiesArea;
 		wxStaticText* m_lblTiesBarLength;
@@ -82,6 +89,7 @@ class Main : public wxFrame
 		wxStaticText* m_TiesTotalQtyBars;
 		wxStaticText* m_TiesTotalLinealBar;
 		wxStaticText* m_TiesTotalQtyTies;
+		wxGridBagSizer* m_labourCalculatorSizer;
 		wxStaticText* m_lblLabourCalculator;
 		wxStaticText* m_lblLabourArea;
 		wxStaticText* m_lblLabourBarCentreA;

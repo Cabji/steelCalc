@@ -6,32 +6,18 @@
 SteelCalcMain::SteelCalcMain(wxWindow* parent)
     : Main(parent)
 {
-    // Bind the event handler for grid cell value changes
-    m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
-    m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
-
-    // Set the custom cell editor for the grid cells
-    m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
-
-    // Fit the frame to its contents
-    this->Fit();
+    // initialize common construction code
+    Init();
 }
 
 SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : Main(parent, id, title, pos, size, style)
 {
+    // initialize common construction code
+    Init();
+
     // Set the title of the frame
     SetTitle(title);
-
-    // Bind the event handler for grid cell value changes
-    m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
-    m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
-
-    // Set the custom cell editor for the grid cells
-    m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
-
-    wxString output(this->GetClassInfo()->GetClassName());
-    std::cout << "Class Name of this: " << output << std::endl;
 }
 
 double SteelCalcMain::GetBarArea(const wxString &barSpec)
@@ -52,6 +38,27 @@ double SteelCalcMain::GetBarRadius(const wxString &barSpec)
     }
     std::cout << "Numeric value: " << numericValue << std::endl;
     return wxAtof(numericValue) / 2 / 1000;
+}
+
+void SteelCalcMain::Init()
+{
+    // Bind the event handler for grid cell value changes
+    m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
+    m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
+    m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
+
+    // Set the custom cell editor for the grid cells
+    m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
+    
+    // detach the circular grid object from its sizer
+    m_barProcessSizer->Detach(m_gridCircularLValues);
+
+    wxString output(this->GetClassInfo()->GetClassName());
+    std::cout << "Class Name of this: " << output << std::endl;
+    
+    // Fit the frame to its contents
+    this->Fit();
+    UpdateResults();
 }
 
 void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
@@ -76,6 +83,29 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
 
     // Skip the event to allow further processing
     event.Skip();
+    UpdateResults();
+}
+
+void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
+{
+    std::cout << "Circular input checkbox toggled!" << std::endl;
+    // Perform actions based on the checkbox state
+    if (event.IsChecked())
+    {
+        // swap user input grid to circular input grid - m_circularGridLValues
+        m_barProcessSizer->Detach(m_gridLValues);
+        m_gridLValues->Hide();
+        m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_gridCircularLValues->Show();
+    }
+    else
+    {
+        // swap user input grid to linear input grid - m_gridLValues
+        m_barProcessSizer->Detach(m_gridCircularLValues);
+        m_gridCircularLValues->Hide();
+        m_barProcessSizer->Add(m_gridLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_gridLValues->Show();
+    }
     UpdateResults();
 }
 
@@ -108,6 +138,7 @@ void SteelCalcMain::UpdateResults()
 
     int numCols = m_gridLValues->GetNumberCols();
 
+    // get values from input grid cells
     for (int col = 0; col < numCols; ++col)
     {
         wxString cellValue = m_gridLValues->GetCellValue(0, col); // Assuming only 1 row
@@ -135,10 +166,10 @@ void SteelCalcMain::UpdateResults()
     m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
     m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
     double barArea = GetBarArea(m_processingCurrentBarSize);
-    m_lblCalculatedProcessingType->SetLabel(GetBarProcessingType(totalCellsWithValue));
+    m_lblCalculatedProcessingType->SetLabel("Processing Type: " + GetBarProcessingType(totalCellsWithValue));
     m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
     
     // Update the layout of the sizer
-    m_containingSizer->Fit(this);
+    m_mainSizer->Layout();
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }
