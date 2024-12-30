@@ -10,12 +10,12 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+#include <wx/string.h>
 #include <wx/menu.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/string.h>
 #include <wx/statusbr.h>
 #include <wx/stattext.h>
 #include <wx/checkbox.h>
@@ -37,6 +37,7 @@ class Main : public wxFrame
 
 	protected:
 		wxMenuBar* m_menubar;
+		wxMenu* m_menuFile;
 		wxStatusBar* m_statusBar;
 		wxScrolledWindow* m_scrolledWindow;
 		wxStaticText* m_lblHeaderText;
@@ -95,7 +96,7 @@ class Main : public wxFrame
 
 	public:
 
-		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 905,713 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
 

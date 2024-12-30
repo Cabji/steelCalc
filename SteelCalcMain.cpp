@@ -33,8 +33,8 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
 
-    // Fit the frame to its contents
-    this->Fit();
+    wxString output(this->GetClassInfo()->GetClassName());
+    std::cout << "Class Name of this: " << output << std::endl;
 }
 
 double SteelCalcMain::GetBarArea(const wxString &barSpec)
@@ -132,8 +132,9 @@ void SteelCalcMain::UpdateResults()
         }
     }
 
-    std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
-    std::cout << "Total value of cells: " << totalValue << std::endl;
+    // std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
+    // std::cout << "Total value of cells: " << totalValue << std::endl;
+
     m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
     m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
     double barArea = GetBarArea(m_processingCurrentBarSize);
@@ -141,6 +142,6 @@ void SteelCalcMain::UpdateResults()
     m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
     
     // Update the layout of the sizer
-    m_containingSizer->Layout();
+    m_containingSizer->Fit(this);
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }
