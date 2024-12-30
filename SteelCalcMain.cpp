@@ -44,6 +44,7 @@ void SteelCalcMain::Init()
 {
     // Bind the event handler for grid cell value changes
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
+    m_gridCircularLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
     m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
     m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
 
@@ -77,9 +78,19 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
     // Get the row and column of the changed cell
     int row = event.GetRow();
     int col = event.GetCol();
+    wxGrid* grid;
 
+    // choose which grid is being used
+    if (m_gridCircularLValues->IsShown()) 
+    {
+        grid = m_gridCircularLValues;
+    }
+    else
+    {
+        grid = m_gridLValues;
+    }
     // Get the new value of the cell
-    wxString newValue = m_gridLValues->GetCellValue(row, col);
+    wxString newValue = grid->GetCellValue(row, col);
 
     // Skip the event to allow further processing
     event.Skip();
@@ -135,40 +146,65 @@ void SteelCalcMain::UpdateResults()
 
     int totalCellsWithValue = 0;
     double totalValue = 0.0;
+    double itemDiameter = 0.0;
+    double itemLapLength = 0.0;
 
     int numCols = m_gridLValues->GetNumberCols();
 
-    // get values from input grid cells
-    for (int col = 0; col < numCols; ++col)
+    if (m_gridCircularLValues->IsShown())
     {
-        wxString cellValue = m_gridLValues->GetCellValue(0, col); // Assuming only 1 row
-        if (cellValue.IsEmpty())
-        {
-            break; // Break the loop if a cell does not have a value
-        }
-
-        double value;
-        if (cellValue.ToDouble(&value))
-        {
-            totalCellsWithValue++;
-            totalValue += value;
-        }
-        else
-        {
-            // Handle the case where the cell value is not a valid number
-            std::cerr << "Invalid number in cell (0, " << col << "): " << cellValue.ToStdString() << std::endl;
-        }
+        std::cout << "Circular input grid is shown!" << std::endl;
+        // get values from input grid cells
+        m_gridCircularLValues->GetCellValue(0, 0).ToDouble(&itemDiameter);
+        m_gridCircularLValues->GetCellValue(0, 1).ToDouble(&itemLapLength);
     }
 
+    if (m_gridLValues->IsShown())
+    {
+        // get values from input grid cells
+        for (int col = 0; col < numCols; ++col)
+        {
+            wxString cellValue = m_gridLValues->GetCellValue(0, col); // Assuming only 1 row
+            if (cellValue.IsEmpty())
+            {
+                break; // Break the loop if a cell does not have a value
+            }
+
+            double value;
+            if (cellValue.ToDouble(&value))
+            {
+                totalCellsWithValue++;
+                totalValue += value;
+            }
+            else
+            {
+                // Handle the case where the cell value is not a valid number
+                std::cerr << "Invalid number in cell (0, " << col << "): " << cellValue.ToStdString() << std::endl;
+            }
+        }
+    }
     // std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
     // std::cout << "Total value of cells: " << totalValue << std::endl;
 
-    m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
-    m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
-    double barArea = GetBarArea(m_processingCurrentBarSize);
-    m_lblCalculatedProcessingType->SetLabel("Processing Type: " + GetBarProcessingType(totalCellsWithValue));
-    m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
-    
+    if (m_gridLValues->IsShown())
+    {
+        m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
+        m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
+        double barArea = GetBarArea(m_processingCurrentBarSize);
+        m_lblCalculatedProcessingType->SetLabel("Processing Type: " + GetBarProcessingType(totalCellsWithValue));
+        m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
+        double barWeight = barArea * totalValue * MASS_N_GRADE_STEEL;
+        m_lblWeightPerBar->SetLabel(wxString::Format("Weight per bar: %.8f Mg (%.2f Kg)", barWeight, barWeight * 1000));
+        double barCost = barWeight * m_costPerMg;
+        m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Cost per bar: %.2f", barCost));
+    }
+    if (m_gridCircularLValues->IsShown())
+    {
+        std::cout << "Item diameter: " << itemDiameter << ", Item lap length: " << itemLapLength << std::endl;
+        std::cout << "Total bar length: " << itemLapLength + M_PI * itemDiameter << std::endl;
+        m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemLapLength + M_PI * itemDiameter));
+    }
+
     // Update the layout of the sizer
     m_mainSizer->Layout();
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));

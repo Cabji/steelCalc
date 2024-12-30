@@ -4,13 +4,6 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 
 # Current Aims
 
-- Add Circular shape input checkbox toggle handler
-  - Switch circular input wxGrid for lineal input wxGrid widgets in the layout
-
-- Continue code for auto-calculations when user changes input values. Use  SteelCalcMain::UpdateResults().
-  - Determine bar processing type (count how many length values there are)
-  - Calculate Cost per Mg
-  - Calculate total Weight
 
 - When grid cell enters edit mode, select all text in the cell
 

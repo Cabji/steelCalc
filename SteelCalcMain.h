@@ -40,8 +40,10 @@ class SteelCalcMain : public Main
 		void UpdateResults();
 		
 		// members
+		double MASS_N_GRADE_STEEL = 8.051;
 		wxString m_processingCurrentBarSize = wxEmptyString;
 		wxArrayString m_processingTypes = {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
+		double m_costPerMg = 2200.0; // Cost per Mg placeholder value
 };
 
 #endif // __SteelCalcMain__
