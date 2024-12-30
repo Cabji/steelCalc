@@ -23,9 +23,6 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
     // Set the title of the frame
     SetTitle(title);
 
-    // Hide a specific widget from the base class
-    m_chbCircularInput->Hide();
-
     // Bind the event handler for grid cell value changes
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
     m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
