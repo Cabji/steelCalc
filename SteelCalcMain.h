@@ -35,9 +35,11 @@ class SteelCalcMain : public Main
 		double GetBarRadius(const wxString& barSpec);
 		void Init();
 		void OnBarSpecChoiceChanged(wxCommandEvent& event);
+		void OnTextCtrlValueChanged(wxFocusEvent& event);
 		void OnGridCellValueChanged(wxGridEvent& event);
 		void OnCircularInputToggled(wxCommandEvent& event);
 		void UpdateResults();
+		bool ValidateValue(wxString& value);
 		
 		// members
 		double MASS_N_GRADE_STEEL = 8.051;

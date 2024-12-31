@@ -194,60 +194,34 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	m_lblBarCalculator = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Quantity Calculator"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblBarCalculator->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBarCalculator, wxGBPosition( 0, 0 ), wxGBSpan( 1, 5 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_barCalculatorSizer->Add( m_lblBarCalculator, wxGBPosition( 0, 0 ), wxGBSpan( 1, 3 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
-	m_lblBCArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Area"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblBCArea->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCArea, wxGBPosition( 1, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblBCBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblBCBar->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCBar, wxGBPosition( 1, 3 ), wxGBSpan( 1, 3 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblBCLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Length"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblBCLength->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCLength, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblBCWidth = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Width"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblBCWidth->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCWidth, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_lblBCSpan = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Span"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblBCSpan->Wrap( -1 );
+	m_barCalculatorSizer->Add( m_lblBCSpan, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblBCBarCentre = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Centre"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblBCBarCentre->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCBarCentre, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblBCBarSpans = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Centres span the..."), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblBCBarSpans->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCBarSpans, wxGBPosition( 2, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_barCalculatorSizer->Add( m_lblBCBarCentre, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblBCTotalQty = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total Quantity"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblBCTotalQty->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_lblBCTotalQty, wxGBPosition( 2, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_barCalculatorSizer->Add( m_lblBCTotalQty, wxGBPosition( 1, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
-	m_BCLength = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_barCalculatorSizer->Add( m_BCLength, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	m_BCWidth = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_barCalculatorSizer->Add( m_BCWidth, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_BCSpan = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_barCalculatorSizer->Add( m_BCSpan, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 	m_BCBarCentre = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_barCalculatorSizer->Add( m_BCBarCentre, wxGBPosition( 3, 2 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	wxString m_BCBarSpansChoices[] = { _("Length"), _("Width") };
-	int m_BCBarSpansNChoices = sizeof( m_BCBarSpansChoices ) / sizeof( wxString );
-	m_BCBarSpans = new wxChoice( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_BCBarSpansNChoices, m_BCBarSpansChoices, 0 );
-	m_BCBarSpans->SetSelection( 0 );
-	m_barCalculatorSizer->Add( m_BCBarSpans, wxGBPosition( 3, 3 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_barCalculatorSizer->Add( m_BCBarCentre, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 	m_BCTotalQty = new wxStaticText( m_scrolledWindow, wxID_ANY, _("0 bars"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_BCTotalQty->Wrap( -1 );
-	m_barCalculatorSizer->Add( m_BCTotalQty, wxGBPosition( 3, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+	m_barCalculatorSizer->Add( m_BCTotalQty, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
 
 
 	m_barCalculatorSizer->AddGrowableCol( 0 );
 	m_barCalculatorSizer->AddGrowableCol( 1 );
 	m_barCalculatorSizer->AddGrowableCol( 2 );
-	m_barCalculatorSizer->AddGrowableCol( 3 );
 
 	m_ScrolledWindowSizer->Add( m_barCalculatorSizer, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 

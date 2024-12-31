@@ -36,7 +36,7 @@ public:
 
     virtual void ApplyEdit(int row, int col, wxGrid* grid) override
     {
-        std::cout << "Value in Apply Edit: " << m_sanitizedValue.ToStdString() << std::endl;
+        //std::cout << "Value in Apply Edit: " << m_sanitizedValue.ToStdString() << std::endl;
         grid->SetCellValue(row, col, m_sanitizedValue); // Use the sanitized value
     }
 

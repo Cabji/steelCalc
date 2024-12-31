@@ -43,10 +43,12 @@ double SteelCalcMain::GetBarRadius(const wxString &barSpec)
 void SteelCalcMain::Init()
 {
     // Bind the event handler for grid cell value changes
+    m_BCBarCentre->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
+    m_BCSpan->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
+    m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
     m_gridCircularLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
     m_specsGandD->Bind(wxEVT_CHOICE, &SteelCalcMain::OnBarSpecChoiceChanged, this);
-    m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
 
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
@@ -70,6 +72,16 @@ void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
 
     event.Skip();
     // Update the results
+    UpdateResults();
+}
+
+void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
+{
+    wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
+    std::cout << "Text Ctrl value changed!" << std::endl;
+    wxString value = textCtrl->GetValue();
+    ValidateValue(value);
+    textCtrl->SetValue(value);
     UpdateResults();
 }
 
@@ -205,7 +217,57 @@ void SteelCalcMain::UpdateResults()
         m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemLapLength + M_PI * itemDiameter));
     }
 
+    // Calculate the total number of bars required
+    double l_bcSpan = 0.0;
+    double l_bcBarCentre = 0.0;
+    if (m_BCSpan->GetValue().ToDouble(&l_bcSpan) && m_BCBarCentre->GetValue().ToDouble(&l_bcBarCentre) && (l_bcBarCentre != 0.0))
+    {
+        int bcTotalBars = static_cast<int>(l_bcSpan / l_bcBarCentre + 1);
+        m_BCTotalQty->SetLabel(wxString::Format("%d bars", bcTotalBars));
+    }
+    
     // Update the layout of the sizer
     m_mainSizer->Layout();
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
 }
+
+bool SteelCalcMain::ValidateValue(wxString& value)
+    {
+        // In here we need to sanitize the cell input value to ensure it can be converted to double type
+        // We need to deal with the locale-specific decimal separator and thousands separator so use wxNumberFormatter for that
+        double num;
+        wxString sanitizedInput;
+
+        // Get the locale-specific decimal and thousand separators
+        wxChar localeDecimal = wxNumberFormatter::GetDecimalSeparator();
+        wxChar *localeThousand;
+        wxNumberFormatter::GetThousandsSeparatorIfUsed(localeThousand);
+
+        // Remove all non-numeric characters except the decimal separator
+        for (wxChar ch : value)
+        {
+            if (wxIsdigit(ch) || ch == localeDecimal)
+            {
+                sanitizedInput += ch;
+            }
+        }
+
+        // Remove the locale-specific thousand separator
+        sanitizedInput.Replace(wxString(localeThousand), wxEmptyString);
+
+        // Allow empty cell values
+        if (sanitizedInput.IsEmpty())
+        {
+            value = sanitizedInput; // Assign the empty value back to the reference
+            return true;
+        }
+
+        // Convert the sanitized string to double
+        bool isValid = sanitizedInput.ToDouble(&num);
+        if (isValid)
+        {
+            value = sanitizedInput; // Assign the sanitized value back to the reference
+        }
+        std::cout << "Sanitized value: " << sanitizedInput.ToStdString() << ", isValid: " << isValid << std::endl;
+        return isValid;
+    }
