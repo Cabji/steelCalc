@@ -66,31 +66,16 @@ class Main : public wxFrame
 		wxTextCtrl* m_BCSpan;
 		wxTextCtrl* m_BCBarCentre;
 		wxStaticText* m_BCTotalQty;
-		wxGridBagSizer* m_tieCalculatorSizer;
-		wxStaticText* m_lblTiesCalculator;
-		wxStaticText* m_lblTiesArea;
-		wxStaticText* m_lblTiesBarLength;
-		wxStaticText* m_lblTiesSpanDistance;
-		wxStaticText* m_lblTiesBarCentre;
-		wxStaticText* m_lblTiesTieCentre;
-		wxStaticText* m_lblTiesTotalQtyBars;
-		wxStaticText* m_lblTiesTotalLinealBar;
-		wxStaticText* m_lblTiesTotalQtyTies;
-		wxTextCtrl* m_TiesBarLength;
-		wxTextCtrl* m_TiesSpanDistance;
-		wxTextCtrl* m_TiesBarCentre;
-		wxTextCtrl* m_TiesTieCentre;
-		wxStaticText* m_TiesTotalQtyBars;
-		wxStaticText* m_TiesTotalLinealBar;
-		wxStaticText* m_TiesTotalQtyTies;
 		wxGridBagSizer* m_labourCalculatorSizer;
 		wxStaticText* m_lblLabourCalculator;
-		wxStaticText* m_lblLabourArea;
+		wxStaticText* m_lblLabourLength;
+		wxStaticText* m_lblLabourWidth;
 		wxStaticText* m_lblLabourBarCentreA;
 		wxStaticText* m_lblLabourBarCentreB;
 		wxStaticText* m_lblLabourTieCentre;
 		wxStaticText* m_lblLabourTotalQtyTies;
-		wxTextCtrl* m_LabourArea;
+		wxTextCtrl* m_LabourLength;
+		wxTextCtrl* m_LabourWidth;
 		wxTextCtrl* m_LabourBarCentreA;
 		wxTextCtrl* m_LabourBarCentreB;
 		wxTextCtrl* m_LabourTieCentre;
@@ -98,7 +83,7 @@ class Main : public wxFrame
 
 	public:
 
-		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 950,660 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 920,470 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
 

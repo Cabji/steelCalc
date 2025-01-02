@@ -11,7 +11,7 @@
 
 Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 950,660 ), wxDefaultSize );
+	this->SetSizeHints( wxSize( 920,470 ), wxDefaultSize );
 
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
@@ -24,9 +24,9 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_mainSizer->SetFlexibleDirection( wxBOTH );
 	m_mainSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_scrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_scrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxSize( 900,470 ), wxHSCROLL|wxVSCROLL );
 	m_scrolledWindow->SetScrollRate( 5, 5 );
-	m_scrolledWindow->SetMinSize( wxSize( 920,570 ) );
+	m_scrolledWindow->SetMinSize( wxSize( 900,470 ) );
 
 	m_ScrolledWindowSizer = new wxGridBagSizer( 0, 0 );
 	m_ScrolledWindowSizer->SetFlexibleDirection( wxBOTH );
@@ -50,8 +50,8 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_gridLValues->EnableEditing( true );
 	m_gridLValues->EnableGridLines( true );
 	m_gridLValues->SetGridLineColour( wxSystemSettings::GetColour( wxSYS_COLOUR_INACTIVECAPTION ) );
-	m_gridLValues->EnableDragGridSize( true );
-	m_gridLValues->SetMargins( 1, 5 );
+	m_gridLValues->EnableDragGridSize( false );
+	m_gridLValues->SetMargins( 0, 0 );
 
 	// Columns
 	m_gridLValues->EnableDragColMove( false );
@@ -159,12 +159,15 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	// Columns
 	m_gridCircularLValues->EnableDragColMove( false );
-	m_gridCircularLValues->EnableDragColSize( true );
+	m_gridCircularLValues->EnableDragColSize( false );
 	m_gridCircularLValues->SetColLabelValue( 0, _("Diameter") );
 	m_gridCircularLValues->SetColLabelValue( 1, _("Lap") );
+	m_gridCircularLValues->SetColLabelSize( wxGRID_AUTOSIZE );
 	m_gridCircularLValues->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
+	m_gridCircularLValues->SetRowSize( 0, 563 );
+	m_gridCircularLValues->AutoSizeRows();
 	m_gridCircularLValues->EnableDragRowSize( true );
 	m_gridCircularLValues->SetRowLabelValue( 0, _("Value") );
 	m_gridCircularLValues->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
@@ -225,78 +228,6 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	m_ScrolledWindowSizer->Add( m_barCalculatorSizer, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
-	m_tieCalculatorSizer = new wxGridBagSizer( 0, 0 );
-	m_tieCalculatorSizer->SetFlexibleDirection( wxBOTH );
-	m_tieCalculatorSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
-
-	m_lblTiesCalculator = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Ties Based on Lineal m of Bar"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesCalculator->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesCalculator, wxGBPosition( 0, 0 ), wxGBSpan( 1, 7 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Area"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesArea->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesArea, wxGBPosition( 1, 0 ), wxGBSpan( 1, 3 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesBarLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Length"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesBarLength->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesBarLength, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesSpanDistance = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Span Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesSpanDistance->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesSpanDistance, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesBarCentre = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Centre"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesBarCentre->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesBarCentre, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesTieCentre = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Ties at every x centre"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesTieCentre->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesTieCentre, wxGBPosition( 2, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesTotalQtyBars = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total Quantity of Bars"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesTotalQtyBars->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesTotalQtyBars, wxGBPosition( 2, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesTotalLinealBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total Lineal of Bar"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesTotalLinealBar->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesTotalLinealBar, wxGBPosition( 2, 5 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblTiesTotalQtyTies = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total Quantity of Ties"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblTiesTotalQtyTies->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_lblTiesTotalQtyTies, wxGBPosition( 2, 6 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_TiesBarLength = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_tieCalculatorSizer->Add( m_TiesBarLength, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	m_TiesSpanDistance = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_tieCalculatorSizer->Add( m_TiesSpanDistance, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	m_TiesBarCentre = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_tieCalculatorSizer->Add( m_TiesBarCentre, wxGBPosition( 3, 2 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	m_TiesTieCentre = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_tieCalculatorSizer->Add( m_TiesTieCentre, wxGBPosition( 3, 3 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
-
-	m_TiesTotalQtyBars = new wxStaticText( m_scrolledWindow, wxID_ANY, _("0 bars"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_TiesTotalQtyBars->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_TiesTotalQtyBars, wxGBPosition( 3, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_TiesTotalLinealBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("0 lin. m"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_TiesTotalLinealBar->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_TiesTotalLinealBar, wxGBPosition( 3, 5 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_TiesTotalQtyTies = new wxStaticText( m_scrolledWindow, wxID_ANY, _("0 bars"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_TiesTotalQtyTies->Wrap( -1 );
-	m_tieCalculatorSizer->Add( m_TiesTotalQtyTies, wxGBPosition( 3, 6 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-
-	m_tieCalculatorSizer->AddGrowableCol( 0 );
-	m_tieCalculatorSizer->AddGrowableCol( 1 );
-	m_tieCalculatorSizer->AddGrowableCol( 2 );
-	m_tieCalculatorSizer->AddGrowableCol( 3 );
-
-	m_ScrolledWindowSizer->Add( m_tieCalculatorSizer, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
-
 	m_labourCalculatorSizer = new wxGridBagSizer( 0, 0 );
 	m_labourCalculatorSizer->SetFlexibleDirection( wxBOTH );
 	m_labourCalculatorSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
@@ -305,41 +236,48 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_lblLabourCalculator->Wrap( -1 );
 	m_labourCalculatorSizer->Add( m_lblLabourCalculator, wxGBPosition( 0, 0 ), wxGBSpan( 1, 5 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
-	m_lblLabourArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Area (m2)"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblLabourArea->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_lblLabourArea, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_lblLabourLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Length"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblLabourLength->Wrap( -1 );
+	m_labourCalculatorSizer->Add( m_lblLabourLength, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+
+	m_lblLabourWidth = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Width"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblLabourWidth->Wrap( -1 );
+	m_labourCalculatorSizer->Add( m_lblLabourWidth, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblLabourBarCentreA = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Centre A"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblLabourBarCentreA->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_lblLabourBarCentreA, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_lblLabourBarCentreA, wxGBPosition( 1, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblLabourBarCentreB = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Centre B"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblLabourBarCentreB->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_lblLabourBarCentreB, wxGBPosition( 1, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_lblLabourBarCentreB, wxGBPosition( 1, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblLabourTieCentre = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Ties at every x centre"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblLabourTieCentre->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_lblLabourTieCentre, wxGBPosition( 1, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_lblLabourTieCentre, wxGBPosition( 1, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_lblLabourTotalQtyTies = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Total Quantity of Ties"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblLabourTotalQtyTies->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_lblLabourTotalQtyTies, wxGBPosition( 1, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_lblLabourTotalQtyTies, wxGBPosition( 1, 5 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
-	m_LabourArea = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_labourCalculatorSizer->Add( m_LabourArea, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_LabourLength = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_labourCalculatorSizer->Add( m_LabourLength, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+
+	m_LabourWidth = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_labourCalculatorSizer->Add( m_LabourWidth, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 	m_LabourBarCentreA = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_labourCalculatorSizer->Add( m_LabourBarCentreA, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_LabourBarCentreA, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 	m_LabourBarCentreB = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_labourCalculatorSizer->Add( m_LabourBarCentreB, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_LabourBarCentreB, wxGBPosition( 2, 3 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 	m_LabourTieCentre = new wxTextCtrl( m_scrolledWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_labourCalculatorSizer->Add( m_LabourTieCentre, wxGBPosition( 2, 3 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_LabourTieCentre, wxGBPosition( 2, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_LabourTotalQtyTies = new wxStaticText( m_scrolledWindow, wxID_ANY, _("0 ties"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_LabourTotalQtyTies->Wrap( -1 );
-	m_labourCalculatorSizer->Add( m_LabourTotalQtyTies, wxGBPosition( 2, 4 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+	m_labourCalculatorSizer->Add( m_LabourTotalQtyTies, wxGBPosition( 2, 5 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
 
 
 	m_labourCalculatorSizer->AddGrowableCol( 0 );
@@ -347,18 +285,16 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_labourCalculatorSizer->AddGrowableCol( 2 );
 	m_labourCalculatorSizer->AddGrowableCol( 3 );
 
-	m_ScrolledWindowSizer->Add( m_labourCalculatorSizer, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
+	m_ScrolledWindowSizer->Add( m_labourCalculatorSizer, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
 
 	m_ScrolledWindowSizer->AddGrowableCol( 0 );
 	m_ScrolledWindowSizer->AddGrowableRow( 0 );
 	m_ScrolledWindowSizer->AddGrowableRow( 1 );
 	m_ScrolledWindowSizer->AddGrowableRow( 2 );
-	m_ScrolledWindowSizer->AddGrowableRow( 3 );
 
 	m_scrolledWindow->SetSizer( m_ScrolledWindowSizer );
 	m_scrolledWindow->Layout();
-	m_ScrolledWindowSizer->Fit( m_scrolledWindow );
 	m_mainSizer->Add( m_scrolledWindow, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
 
