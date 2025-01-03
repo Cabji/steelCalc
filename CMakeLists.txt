@@ -4,6 +4,7 @@ set(SOURCES
       MyApp.cpp
       SteelCalcBase.cpp 
       SteelCalcMain.cpp
+      SteelCalcOptions.cpp
       CustomGridCellEditor.h
    )
 

@@ -15,6 +15,18 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
+	wxMenuItem* m_menuFileAbout;
+	m_menuFileAbout = new wxMenuItem( m_menuFile, wxID_MENU_FILE_ABOUT, wxString( _("&About") ) + wxT('\t') + wxT("a"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileAbout );
+
+	wxMenuItem* m_menuFileOptions;
+	m_menuFileOptions = new wxMenuItem( m_menuFile, wxID_MENU_FILE_OPTIONS, wxString( _("&Options") ) + wxT('\t') + wxT("o"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileOptions );
+
+	wxMenuItem* m_menuFileExit;
+	m_menuFileExit = new wxMenuItem( m_menuFile, wxID_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileExit );
+
 	m_menubar->Append( m_menuFile, _("File") );
 
 	this->SetMenuBar( m_menubar );
@@ -308,5 +320,44 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 }
 
 Main::~Main()
+{
+}
+
+Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxSize( 266,135 ), wxSize( -1,-1 ) );
+
+	wxGridBagSizer* m_optionsSizer;
+	m_optionsSizer = new wxGridBagSizer( 0, 0 );
+	m_optionsSizer->SetFlexibleDirection( wxBOTH );
+	m_optionsSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_lblOptionsLabour = new wxStaticText( this, wxID_ANY, _("<b>Labour</b>"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblOptionsLabour->SetLabelMarkup( _("<b>Labour</b>") );
+	m_lblOptionsLabour->Wrap( -1 );
+	m_optionsSizer->Add( m_lblOptionsLabour, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxALIGN_TOP|wxALL|wxEXPAND, 5 );
+
+	m_optionsLabourAddPerimeterTies = new wxCheckBox( this, wxID_ANY, _("Automatically add perimeter ties"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_optionsSizer->Add( m_optionsLabourAddPerimeterTies, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+
+	m_optionsLabourAddSetupTies = new wxCheckBox( this, wxID_ANY, _("Automatically add setup ties"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_optionsSizer->Add( m_optionsLabourAddSetupTies, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+
+	m_optionsLabourAddLapTies = new wxCheckBox( this, wxID_ANY, _("Automatically add estimated lap ties"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_optionsSizer->Add( m_optionsLabourAddLapTies, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+
+
+	m_optionsSizer->AddGrowableCol( 0 );
+	m_optionsSizer->AddGrowableRow( 1 );
+	m_optionsSizer->AddGrowableRow( 2 );
+	m_optionsSizer->AddGrowableRow( 3 );
+
+	this->SetSizer( m_optionsSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+}
+
+Options::~Options()
 {
 }

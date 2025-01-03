@@ -22,29 +22,15 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
     SetTitle(title);
 }
 
-double SteelCalcMain::GetBarArea(const wxString &barSpec)
-{
-    double radius = GetBarRadius(barSpec);
-    std::cout << "Bar radius: " << radius << std::endl;
-    return M_PI * radius * radius;
-}
-
-double SteelCalcMain::GetBarRadius(const wxString &barSpec)
-{
-    // Extract the numeric value from the bar specification value (eg: N12, R6.5, SS16)
-    wxRegEx re("[0-9.]+");
-    wxString numericValue;
-    if (re.Matches(m_processingCurrentBarSize))
-    {
-        numericValue = re.GetMatch(m_processingCurrentBarSize);
-    }
-    std::cout << "Numeric value: " << numericValue << std::endl;
-    return wxAtof(numericValue) / 2 / 1000;
-}
-
 void SteelCalcMain::Init()
 {
-    // Bind the event handler for grid cell value changes
+    // point to the Options frame instance
+    m_optionsFrame = new Options(this);
+
+    // Bind event handlers
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, wxID_MENU_FILE_ABOUT);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileOptions, this, wxID_MENU_FILE_OPTIONS);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileExit, this, wxID_MENU_FILE_EXIT);
     m_BCBarCentre->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
     m_BCSpan->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
     m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
@@ -71,6 +57,45 @@ void SteelCalcMain::Init()
     UpdateResults();
 }
 
+double SteelCalcMain::GetBarArea(const wxString &barSpec)
+{
+    double radius = GetBarRadius(barSpec);
+    std::cout << "Bar radius: " << radius << std::endl;
+    return M_PI * radius * radius;
+}
+
+wxString SteelCalcMain::GetBarProcessingType(const int &numOfValues)
+{
+    // dev-note: this method sanitizes the input and returns appropriate type string for output
+    wxString result = wxEmptyString;
+    if (numOfValues < 0)
+    {
+        return result;
+    }
+    if (numOfValues > 3)
+    {
+        result = m_processingTypes[3];
+    }
+    else
+    {
+        result = m_processingTypes[numOfValues];
+    }
+    return result;
+}
+
+double SteelCalcMain::GetBarRadius(const wxString &barSpec)
+{
+    // Extract the numeric value from the bar specification value (eg: N12, R6.5, SS16)
+    wxRegEx re("[0-9.]+");
+    wxString numericValue;
+    if (re.Matches(m_processingCurrentBarSize))
+    {
+        numericValue = re.GetMatch(m_processingCurrentBarSize);
+    }
+    std::cout << "Numeric value: " << numericValue << std::endl;
+    return wxAtof(numericValue) / 2 / 1000;
+}
+
 void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
 {
     // Get the selected bar specification
@@ -82,13 +107,26 @@ void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
     UpdateResults();
 }
 
-void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
+void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
 {
-    wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
-    std::cout << "Text Ctrl value changed!" << std::endl;
-    wxString value = textCtrl->GetValue();
-    ValidateValue(value);
-    textCtrl->SetValue(value);
+    std::cout << "Circular input checkbox toggled!" << std::endl;
+    // Perform actions based on the checkbox state
+    if (event.IsChecked())
+    {
+        // swap user input grid to circular input grid - m_circularGridLValues
+        m_barProcessSizer->Detach(m_gridLValues);
+        m_gridLValues->Hide();
+        m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_gridCircularLValues->Show();
+    }
+    else
+    {
+        // swap user input grid to linear input grid - m_gridLValues
+        m_barProcessSizer->Detach(m_gridCircularLValues);
+        m_gridCircularLValues->Hide();
+        m_barProcessSizer->Add(m_gridLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_gridLValues->Show();
+    }
     UpdateResults();
     event.Skip();
 }
@@ -117,47 +155,33 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
     UpdateResults();
 }
 
-void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
+void SteelCalcMain::OnMenuFileAbout(wxCommandEvent& event)
 {
-    std::cout << "Circular input checkbox toggled!" << std::endl;
-    // Perform actions based on the checkbox state
-    if (event.IsChecked())
-    {
-        // swap user input grid to circular input grid - m_circularGridLValues
-        m_barProcessSizer->Detach(m_gridLValues);
-        m_gridLValues->Hide();
-        m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
-        m_gridCircularLValues->Show();
-    }
-    else
-    {
-        // swap user input grid to linear input grid - m_gridLValues
-        m_barProcessSizer->Detach(m_gridCircularLValues);
-        m_gridCircularLValues->Hide();
-        m_barProcessSizer->Add(m_gridLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
-        m_gridLValues->Show();
-    }
-    UpdateResults();
-    event.Skip();
+    wxMessageBox("This is a wxWidgets' SteelCalc sample", "About SteelCalc", wxOK | wxICON_INFORMATION, this);
 }
 
-wxString SteelCalcMain::GetBarProcessingType(const int &numOfValues)
+void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
 {
-    // dev-note: this method sanitizes the input and returns appropriate type string for output
-    wxString result = wxEmptyString;
-    if (numOfValues < 0)
+    m_optionsFrame->Show(true);
+}
+
+void SteelCalcMain::OnMenuFileExit(wxCommandEvent& event)
+{
+    if (wxMessageBox("Are you sure you want to exit?", "Confirm Exit", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES)
     {
-        return result;
+        Close(true);
     }
-    if (numOfValues > 3)
-    {
-        result = m_processingTypes[3];
-    }
-    else
-    {
-        result = m_processingTypes[numOfValues];
-    }
-    return result;
+}
+
+void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
+{
+    wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
+    std::cout << "Text Ctrl value changed!" << std::endl;
+    wxString value = textCtrl->GetValue();
+    ValidateValue(value);
+    textCtrl->SetValue(value);
+    UpdateResults();
+    event.Skip();
 }
 
 void SteelCalcMain::UpdateResults()
@@ -250,7 +274,7 @@ void SteelCalcMain::UpdateResults()
         double l_labourActualPerimeter = 2 * (l_labourLength + l_labourWidth);
         double l_labourTotalQtyTies = std::ceil(l_labourAvgPerimeter / l_labourTieCentre + 1);
         m_LabourTotalQtyTies->SetLabel(wxString::Format("%d ties", static_cast<int>(l_labourTotalQtyTies)));
-    }    
+    }
     // Update the layout of the sizer
     m_mainSizer->Layout();
     //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));

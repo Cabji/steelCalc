@@ -29,15 +29,17 @@ class SteelCalcMain : public Main
 		SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style);
 
 	private:
-		// Event handler for grid cell value changes
+		void Init();
 		double GetBarArea(const wxString& barSpec);
 		wxString GetBarProcessingType(const int& numOfValues);
 		double GetBarRadius(const wxString& barSpec);
-		void Init();
 		void OnBarSpecChoiceChanged(wxCommandEvent& event);
-		void OnTextCtrlValueChanged(wxFocusEvent& event);
-		void OnGridCellValueChanged(wxGridEvent& event);
 		void OnCircularInputToggled(wxCommandEvent& event);
+		void OnGridCellValueChanged(wxGridEvent& event);
+		void OnMenuFileAbout(wxCommandEvent& event);
+		void OnMenuFileOptions(wxCommandEvent& event);
+		void OnMenuFileExit(wxCommandEvent& event);
+		void OnTextCtrlValueChanged(wxFocusEvent& event);		
 		void UpdateResults();
 		bool ValidateValue(wxString& value);
 		
@@ -46,6 +48,9 @@ class SteelCalcMain : public Main
 		wxString m_processingCurrentBarSize = wxEmptyString;
 		wxArrayString m_processingTypes = {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
 		double m_costPerMg = 2200.0; // Cost per Mg placeholder value
+
+		// pointer to the Options frame instance
+		Options* m_optionsFrame = nullptr;
 };
 
 #endif // __SteelCalcMain__

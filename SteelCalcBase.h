@@ -11,6 +11,9 @@
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/menu.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -36,6 +39,13 @@ class Main : public wxFrame
 	private:
 
 	protected:
+		enum
+		{
+			wxID_MENU_FILE_ABOUT = 6000,
+			wxID_MENU_FILE_OPTIONS,
+			wxID_MENU_FILE_EXIT,
+		};
+
 		wxMenuBar* m_menubar;
 		wxMenu* m_menuFile;
 		wxStatusBar* m_statusBar;
@@ -86,6 +96,27 @@ class Main : public wxFrame
 		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 920,470 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class Options
+///////////////////////////////////////////////////////////////////////////////
+class Options : public wxFrame
+{
+	private:
+
+	protected:
+		wxStaticText* m_lblOptionsLabour;
+		wxCheckBox* m_optionsLabourAddPerimeterTies;
+		wxCheckBox* m_optionsLabourAddSetupTies;
+		wxCheckBox* m_optionsLabourAddLapTies;
+
+	public:
+
+		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,135 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~Options();
 
 };
 
