@@ -60,7 +60,7 @@
       <property name="window_name"></property>
       <property name="window_style">wxTAB_TRAVERSAL</property>
       <property name="xrc_skip_sizer">1</property>
-      <object class="wxMenuBar" expanded="false">
+      <object class="wxMenuBar" expanded="true">
         <property name="bg"></property>
         <property name="context_help"></property>
         <property name="context_menu">1</property>
@@ -82,7 +82,7 @@
         <property name="window_extra_style"></property>
         <property name="window_name"></property>
         <property name="window_style"></property>
-        <object class="wxMenu" expanded="false">
+        <object class="wxMenu" expanded="true">
           <property name="label">File</property>
           <property name="name">m_menuFile</property>
           <property name="permission">protected</property>
@@ -91,7 +91,7 @@
             <property name="checked">0</property>
             <property name="enabled">1</property>
             <property name="help"></property>
-            <property name="id">wxID_MENU_FILE_ABOUT</property>
+            <property name="id">id_MENU_FILE_ABOUT</property>
             <property name="kind">wxITEM_NORMAL</property>
             <property name="label">&amp;About</property>
             <property name="name">m_menuFileAbout</property>
@@ -104,7 +104,7 @@
             <property name="checked">0</property>
             <property name="enabled">1</property>
             <property name="help"></property>
-            <property name="id">wxID_MENU_FILE_OPTIONS</property>
+            <property name="id">id_MENU_FILE_OPTIONS</property>
             <property name="kind">wxITEM_NORMAL</property>
             <property name="label">&amp;Options</property>
             <property name="name">m_menuFileOptions</property>
@@ -117,7 +117,7 @@
             <property name="checked">0</property>
             <property name="enabled">1</property>
             <property name="help"></property>
-            <property name="id">wxID_MENU_FILE_EXIT</property>
+            <property name="id">id_MENU_FILE_EXIT</property>
             <property name="kind">wxITEM_NORMAL</property>
             <property name="label">E&amp;xit</property>
             <property name="name">m_menuFileExit</property>
@@ -2568,7 +2568,7 @@
     <object class="Frame" expanded="true">
       <property name="aui_managed">0</property>
       <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
-      <property name="bg"></property>
+      <property name="bg">wxSYS_COLOUR_WINDOW</property>
       <property name="center">wxBOTH</property>
       <property name="context_help"></property>
       <property name="context_menu">1</property>
@@ -2581,13 +2581,13 @@
       <property name="hidden">0</property>
       <property name="id">wxID_ANY</property>
       <property name="maximum_size">-1,-1</property>
-      <property name="minimum_size">266,135</property>
+      <property name="minimum_size">266,155</property>
       <property name="name">Options</property>
       <property name="pos"></property>
-      <property name="size">266,135</property>
+      <property name="size">266,155</property>
       <property name="style">wxDEFAULT_FRAME_STYLE</property>
       <property name="subclass">; ; forward_declare</property>
-      <property name="title"></property>
+      <property name="title">Options</property>
       <property name="tooltip"></property>
       <property name="two_step_creation">0</property>
       <property name="window_extra_style"></property>

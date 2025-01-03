@@ -41,9 +41,9 @@ class Main : public wxFrame
 	protected:
 		enum
 		{
-			wxID_MENU_FILE_ABOUT = 6000,
-			wxID_MENU_FILE_OPTIONS,
-			wxID_MENU_FILE_EXIT,
+			id_MENU_FILE_ABOUT = 6000,
+			id_MENU_FILE_OPTIONS,
+			id_MENU_FILE_EXIT,
 		};
 
 		wxMenuBar* m_menubar;
@@ -114,7 +114,7 @@ class Options : public wxFrame
 
 	public:
 
-		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,135 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,155 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Options();
 

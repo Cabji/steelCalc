@@ -5,12 +5,14 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 # Current Aims
 
 - Steelfixing labour calculator needs to include perimeter (and set up?) ties
- - Create options frame and UI
- - Add File menu event handlers
- - Implement labour options into calculations in UpdateResults()
+ - ✔️ Create options frame and UI
+ - ✔️ Add File menu event handlers
+  - ✔️ Investigate/fix Options frame re-open crash bug
+ - ✔️ Implement labour options into calculations in UpdateResults()
+- Customize About and Exit dialogs
 - Make values from the calculator sections affect the results in the Processing section
 - When grid cell enters edit mode, select all text in the cell
-- Add some menu items like About and Quit
+
 
 # Planned Features (Subject to Change)
 

@@ -25,6 +25,6 @@ bool SteelCalcOptions::GetAddSetupTies()
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
     // dev-note: perhaps save the options to disk here at some stage?
-    Hide();
-    event.Skip();
+    this->Show(false);
+    std::cout << "Options frame hidden!" << std::endl;
 }

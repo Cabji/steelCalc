@@ -16,15 +16,15 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
 	wxMenuItem* m_menuFileAbout;
-	m_menuFileAbout = new wxMenuItem( m_menuFile, wxID_MENU_FILE_ABOUT, wxString( _("&About") ) + wxT('\t') + wxT("a"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileAbout = new wxMenuItem( m_menuFile, id_MENU_FILE_ABOUT, wxString( _("&About") ) + wxT('\t') + wxT("a"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileAbout );
 
 	wxMenuItem* m_menuFileOptions;
-	m_menuFileOptions = new wxMenuItem( m_menuFile, wxID_MENU_FILE_OPTIONS, wxString( _("&Options") ) + wxT('\t') + wxT("o"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileOptions = new wxMenuItem( m_menuFile, id_MENU_FILE_OPTIONS, wxString( _("&Options") ) + wxT('\t') + wxT("o"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileOptions );
 
 	wxMenuItem* m_menuFileExit;
-	m_menuFileExit = new wxMenuItem( m_menuFile, wxID_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileExit );
 
 	m_menubar->Append( m_menuFile, _("File") );
@@ -325,7 +325,8 @@ Main::~Main()
 
 Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 266,135 ), wxSize( -1,-1 ) );
+	this->SetSizeHints( wxSize( 266,155 ), wxSize( -1,-1 ) );
+	this->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
 
 	wxGridBagSizer* m_optionsSizer;
 	m_optionsSizer = new wxGridBagSizer( 0, 0 );

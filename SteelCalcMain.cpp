@@ -1,5 +1,5 @@
-#include "SteelCalcMain.h"
 #include "CustomGridCellEditor.h"
+#include "SteelCalcMain.h"
 #include <algorithm>
 #include <cmath>
 #include <wx/msgdlg.h>
@@ -25,12 +25,12 @@ SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& ti
 void SteelCalcMain::Init()
 {
     // point to the Options frame instance
-    m_optionsFrame = new Options(this);
+    m_optionsFrame = new SteelCalcOptions(this);
 
     // Bind event handlers
-    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, wxID_MENU_FILE_ABOUT);
-    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileOptions, this, wxID_MENU_FILE_OPTIONS);
-    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileExit, this, wxID_MENU_FILE_EXIT);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, id_MENU_FILE_ABOUT);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileOptions, this, id_MENU_FILE_OPTIONS);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileExit, this, id_MENU_FILE_EXIT);
     m_BCBarCentre->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
     m_BCSpan->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
     m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
@@ -162,7 +162,17 @@ void SteelCalcMain::OnMenuFileAbout(wxCommandEvent& event)
 
 void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
 {
-    m_optionsFrame->Show(true);
+    if (!m_optionsFrame)
+    {
+        std::cout << "Options frame does not exist!" << std::endl;
+        m_optionsFrame = new SteelCalcOptions(this);
+    }
+    else
+    {
+        std::cout << "Options frame exists!" << std::endl;
+        m_optionsFrame->Show(true);
+    }
+    event.Skip();
 }
 
 void SteelCalcMain::OnMenuFileExit(wxCommandEvent& event)
@@ -273,6 +283,18 @@ void SteelCalcMain::UpdateResults()
         double l_labourAvgPerimeter = 2 * (sqrt(l_labourArea / l_labourAspectRatio) + sqrt(l_labourArea * l_labourAspectRatio));
         double l_labourActualPerimeter = 2 * (l_labourLength + l_labourWidth);
         double l_labourTotalQtyTies = std::ceil(l_labourAvgPerimeter / l_labourTieCentre + 1);
+        if (m_optionsFrame->GetAddPerimeterTies())
+        {
+            l_labourTotalQtyTies += (std::ceil(l_labourLength / l_labourBarCentreA) + std::ceil(l_labourWidth / l_labourBarCentreB)) * 2;
+        }
+        if (m_optionsFrame->GetAddSetupTies())
+        {
+            l_labourTotalQtyTies += (l_labourLength / 3.0) * (l_labourWidth / l_labourBarCentreB);
+        }
+        if  (m_optionsFrame->GetAddLapTies())
+        {
+            l_labourTotalQtyTies += (l_labourWidth / l_labourBarCentreA);
+        }
         m_LabourTotalQtyTies->SetLabel(wxString::Format("%d ties", static_cast<int>(l_labourTotalQtyTies)));
     }
     // Update the layout of the sizer
