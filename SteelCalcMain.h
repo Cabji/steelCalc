@@ -22,12 +22,17 @@ class SteelCalcMain : public Main
 		CB,
 		ComplexShape
 	};
+
+	double const APP_VERSION = 0.1;
+
 	public:
 		/** Constructor */
 		SteelCalcMain( wxWindow* parent );
 	//// end generated class members
 		// custom constructor declared below here
 		SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style);
+
+		void TriggerUpdateResults() { UpdateResults(); }
 
 	private:
 		void Init();

@@ -1,10 +1,14 @@
+#include "SteelCalcMain.h"
 #include "SteelCalcOptions.h"
 
-SteelCalcOptions::SteelCalcOptions( wxWindow* parent )
+SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
 :
 Options( parent )
 {
-    Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this);
+    m_mainFrame = dynamic_cast<SteelCalcMain*>(parent);
+    
+    // Bind the close event handler
+    Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
 }
 
 bool SteelCalcOptions::GetAddLapTies()
@@ -25,6 +29,10 @@ bool SteelCalcOptions::GetAddSetupTies()
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
     // dev-note: perhaps save the options to disk here at some stage?
-    this->Show(false);
+    this->Hide();
+    if (m_mainFrame)
+    {
+        m_mainFrame->TriggerUpdateResults();
+    }
     std::cout << "Options frame hidden!" << std::endl;
 }

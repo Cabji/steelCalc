@@ -157,7 +157,7 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
 
 void SteelCalcMain::OnMenuFileAbout(wxCommandEvent& event)
 {
-    wxMessageBox("This is a wxWidgets' SteelCalc sample", "About SteelCalc", wxOK | wxICON_INFORMATION, this);
+    wxMessageBox(wxString::Format("Steel Calculator v%.1f\n\nCalculate information about steel reinforcement.\n\ngithub.com/cabji/steelcalc", APP_VERSION), "About Steel Calculator", wxOK | wxICON_INFORMATION, this);
 }
 
 void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
@@ -177,7 +177,7 @@ void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
 
 void SteelCalcMain::OnMenuFileExit(wxCommandEvent& event)
 {
-    if (wxMessageBox("Are you sure you want to exit?", "Confirm Exit", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES)
+    if (wxMessageBox("Confirm...", "Are you sure?", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES)
     {
         Close(true);
     }
