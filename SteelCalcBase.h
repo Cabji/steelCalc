@@ -66,6 +66,7 @@ class Main : public wxFrame
 		wxStaticText* m_lblCalculatedBarArea;
 		wxStaticText* m_lblCalculatedProcessingType;
 		wxStaticText* m_lblCalculatedCostPerMg;
+		wxStaticText* m_lblCalculatedCostPerBar;
 		wxStaticText* m_lblWeightPerBar;
 		wxStaticText* m_lblWeightTotalMg;
 		wxGrid* m_gridCircularLValues;

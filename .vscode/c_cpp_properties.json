@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "C:/cpp/include/wxWidgets-3.2.6-static/include",
-                "C:/cpp/include/wxWidgets-3.2.6-static/lib/gcc_x64_lib/mswud"
+                "C:/cpp/include/wxWidgets-3.2.6-static/lib/gcc_x64_lib/mswu"
             ],
             "defines": [
                 "_DEBUG",
@@ -15,7 +15,8 @@
             "windowsSdkVersion": "10.0.22621.0",
             "cStandard": "c17",
             "cppStandard": "c++20",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

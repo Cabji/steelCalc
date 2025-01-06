@@ -207,6 +207,7 @@ void SteelCalcMain::UpdateResults()
     double l_barWeight = 0.0;
     double l_barCost = 0.0;
     double l_bcTotalMg = 0.0;
+    double l_bcTotalCost = 0.0;
 
     int numCols = m_gridLValues->GetNumberCols();
 
@@ -255,7 +256,7 @@ void SteelCalcMain::UpdateResults()
         l_barWeight = l_barArea * itemTotalLength * MASS_N_GRADE_STEEL;
         m_lblWeightPerBar->SetLabel(wxString::Format("Weight per bar: %.8f Mg (%.2f Kg)", l_barWeight, l_barWeight * 1000));
         l_barCost = l_barWeight * m_costPerMg;
-        m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Cost per bar: %.2f", l_barCost));
+        m_lblCalculatedCostPerBar->SetLabel(wxString::Format("Bar Cost: %.2f", l_barCost));
     }
     if (m_gridCircularLValues->IsShown())
     {
@@ -271,8 +272,10 @@ void SteelCalcMain::UpdateResults()
     {
         int l_bcTotalBars = static_cast<int>(l_bcSpan / l_bcBarCentre + 1);
         l_bcTotalMg = l_bcTotalBars * l_barWeight;
+        l_bcTotalCost = l_bcTotalMg * m_costPerMg;
         m_BCTotalQty->SetLabel(wxString::Format("%d bars", l_bcTotalBars));
         m_lblWeightTotalMg->SetLabel(wxString::Format("Tonnage: %.8f Mg (%.2f Kg)", l_bcTotalMg, l_bcTotalMg * 1000));
+        m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Mg Cost: %.2f ", l_bcTotalCost));
     }
 
     // Calculate the steelfixing labour unit 'SFU' amount (number of ties in an Area)
