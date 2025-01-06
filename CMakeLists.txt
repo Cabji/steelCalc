@@ -12,17 +12,17 @@ project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 # wxWidgets specific configuration
-set(wxWidgets_CONFIGURATION "mswud")
+set(wxWidgets_CONFIGURATION "mswu")
 set(wxWidgets_ROOT_DIR $ENV{WXWIN})
 set(wxWidgets_LIB_DIR $ENV{WXWIN}/lib/gcc_x64_lib)
 set(wxWidgets_INCLUDE_DIRS
       "${wxWidgets_ROOT_DIR}/include"
-      "${wxWidgets_ROOT_DIR}/lib/gcc_x64_lib/mswud"
+      "${wxWidgets_ROOT_DIR}/lib/gcc_x64_lib/mswu"
    )
 
 include_directories(
       $ENV{WXWIN}/include
-      $ENV{WXWIN}/lib/gcc_x64_lib/mswud
+      $ENV{WXWIN}/lib/gcc_x64_lib/mswu
       )
 
 link_directories($ENV{WXWIN}/lib/gcc_x64_lib)

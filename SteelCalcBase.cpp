@@ -149,6 +149,10 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_lblWeightPerBar->Wrap( -1 );
 	m_CalculatedSizer->Add( m_lblWeightPerBar, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
+	m_lblWeightTotalMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Tonnage: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblWeightTotalMg->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblWeightTotalMg, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL, 5 );
+
 
 	m_CalculatedSizer->AddGrowableCol( 0 );
 	m_CalculatedSizer->AddGrowableCol( 1 );
@@ -241,8 +245,8 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_ScrolledWindowSizer->Add( m_barCalculatorSizer, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
 	m_labourCalculatorSizer = new wxGridBagSizer( 0, 0 );
-	m_labourCalculatorSizer->SetFlexibleDirection( wxBOTH );
-	m_labourCalculatorSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
+	m_labourCalculatorSizer->SetFlexibleDirection( wxHORIZONTAL );
+	m_labourCalculatorSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_lblLabourCalculator = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Steelfixing Labour Based on Area"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblLabourCalculator->Wrap( -1 );
@@ -296,6 +300,9 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_labourCalculatorSizer->AddGrowableCol( 1 );
 	m_labourCalculatorSizer->AddGrowableCol( 2 );
 	m_labourCalculatorSizer->AddGrowableCol( 3 );
+	m_labourCalculatorSizer->AddGrowableRow( 0 );
+	m_labourCalculatorSizer->AddGrowableRow( 1 );
+	m_labourCalculatorSizer->AddGrowableRow( 2 );
 
 	m_ScrolledWindowSizer->Add( m_labourCalculatorSizer, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 

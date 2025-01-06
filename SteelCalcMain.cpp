@@ -5,14 +5,14 @@
 #include <wx/msgdlg.h>
 #include <wx/regex.h>
 
-SteelCalcMain::SteelCalcMain(wxWindow* parent)
+SteelCalcMain::SteelCalcMain(wxWindow *parent)
     : Main(parent)
 {
     // initialize common construction code
     Init();
 }
 
-SteelCalcMain::SteelCalcMain(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+SteelCalcMain::SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style)
     : Main(parent, id, title, pos, size, style)
 {
     // initialize common construction code
@@ -45,13 +45,13 @@ void SteelCalcMain::Init()
 
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
-    
+
     // detach the circular grid object from its sizer
     m_barProcessSizer->Detach(m_gridCircularLValues);
 
     wxString output(this->GetClassInfo()->GetClassName());
     std::cout << "Class Name of this: " << output << std::endl;
-    
+
     // Fit the frame to its contents
     this->Fit();
     UpdateResults();
@@ -136,10 +136,10 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
     // Get the row and column of the changed cell
     int row = event.GetRow();
     int col = event.GetCol();
-    wxGrid* grid;
+    wxGrid *grid;
 
     // choose which grid is being used
-    if (m_gridCircularLValues->IsShown()) 
+    if (m_gridCircularLValues->IsShown())
     {
         grid = m_gridCircularLValues;
     }
@@ -155,12 +155,12 @@ void SteelCalcMain::OnGridCellValueChanged(wxGridEvent &event)
     UpdateResults();
 }
 
-void SteelCalcMain::OnMenuFileAbout(wxCommandEvent& event)
+void SteelCalcMain::OnMenuFileAbout(wxCommandEvent &event)
 {
     wxMessageBox(wxString::Format("Steel Calculator v%.1f\n\nCalculate information about steel reinforcement.\n\ngithub.com/cabji/steelcalc", APP_VERSION), "About Steel Calculator", wxOK | wxICON_INFORMATION, this);
 }
 
-void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
+void SteelCalcMain::OnMenuFileOptions(wxCommandEvent &event)
 {
     if (!m_optionsFrame)
     {
@@ -175,7 +175,7 @@ void SteelCalcMain::OnMenuFileOptions(wxCommandEvent& event)
     event.Skip();
 }
 
-void SteelCalcMain::OnMenuFileExit(wxCommandEvent& event)
+void SteelCalcMain::OnMenuFileExit(wxCommandEvent &event)
 {
     if (wxMessageBox("Confirm...", "Are you sure?", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES)
     {
@@ -185,7 +185,7 @@ void SteelCalcMain::OnMenuFileExit(wxCommandEvent& event)
 
 void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
 {
-    wxTextCtrl* textCtrl = dynamic_cast<wxTextCtrl*>(event.GetEventObject());
+    wxTextCtrl *textCtrl = dynamic_cast<wxTextCtrl *>(event.GetEventObject());
     std::cout << "Text Ctrl value changed!" << std::endl;
     wxString value = textCtrl->GetValue();
     ValidateValue(value);
@@ -200,9 +200,13 @@ void SteelCalcMain::UpdateResults()
     std::cout << "Updating results..." << std::endl;
 
     int totalCellsWithValue = 0;
-    double totalValue = 0.0;
+    double itemTotalLength = 0.0;
     double itemDiameter = 0.0;
     double itemLapLength = 0.0;
+    double l_barArea = 0.0;
+    double l_barWeight = 0.0;
+    double l_barCost = 0.0;
+    double l_bcTotalMg = 0.0;
 
     int numCols = m_gridLValues->GetNumberCols();
 
@@ -229,7 +233,7 @@ void SteelCalcMain::UpdateResults()
             if (cellValue.ToDouble(&value))
             {
                 totalCellsWithValue++;
-                totalValue += value;
+                itemTotalLength += value;
             }
             else
             {
@@ -239,19 +243,19 @@ void SteelCalcMain::UpdateResults()
         }
     }
     // std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
-    // std::cout << "Total value of cells: " << totalValue << std::endl;
+    // std::cout << "Total value of cells: " << itemTotalLength << std::endl;
 
     if (m_gridLValues->IsShown())
     {
-        m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", totalValue));
+        m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemTotalLength));
         m_processingCurrentBarSize = m_specsGandD->GetStringSelection();
-        double barArea = GetBarArea(m_processingCurrentBarSize);
+        l_barArea = GetBarArea(m_processingCurrentBarSize);
         m_lblCalculatedProcessingType->SetLabel("Processing Type: " + GetBarProcessingType(totalCellsWithValue));
-        m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", barArea));
-        double barWeight = barArea * totalValue * MASS_N_GRADE_STEEL;
-        m_lblWeightPerBar->SetLabel(wxString::Format("Weight per bar: %.8f Mg (%.2f Kg)", barWeight, barWeight * 1000));
-        double barCost = barWeight * m_costPerMg;
-        m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Cost per bar: %.2f", barCost));
+        m_lblCalculatedBarArea->SetLabel(wxString::Format("Bar area: %.8f", l_barArea));
+        l_barWeight = l_barArea * itemTotalLength * MASS_N_GRADE_STEEL;
+        m_lblWeightPerBar->SetLabel(wxString::Format("Weight per bar: %.8f Mg (%.2f Kg)", l_barWeight, l_barWeight * 1000));
+        l_barCost = l_barWeight * m_costPerMg;
+        m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Cost per bar: %.2f", l_barCost));
     }
     if (m_gridCircularLValues->IsShown())
     {
@@ -260,15 +264,17 @@ void SteelCalcMain::UpdateResults()
         m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemLapLength + M_PI * itemDiameter));
     }
 
-    // Calculate the total number of bars required
+    // Calculate the total number of bars required & total tonnage
     double l_bcSpan = 0.0;
     double l_bcBarCentre = 0.0;
     if (m_BCSpan->GetValue().ToDouble(&l_bcSpan) && m_BCBarCentre->GetValue().ToDouble(&l_bcBarCentre) && (l_bcBarCentre != 0.0))
     {
-        int bcTotalBars = static_cast<int>(l_bcSpan / l_bcBarCentre + 1);
-        m_BCTotalQty->SetLabel(wxString::Format("%d bars", bcTotalBars));
+        int l_bcTotalBars = static_cast<int>(l_bcSpan / l_bcBarCentre + 1);
+        l_bcTotalMg = l_bcTotalBars * l_barWeight;
+        m_BCTotalQty->SetLabel(wxString::Format("%d bars", l_bcTotalBars));
+        m_lblWeightTotalMg->SetLabel(wxString::Format("Tonnage: %.8f Mg (%.2f Kg)", l_bcTotalMg, l_bcTotalMg * 1000));
     }
-    
+
     // Calculate the steelfixing labour unit 'SFU' amount (number of ties in an Area)
     double l_labourLength = 0.0;
     double l_labourWidth = 0.0;
@@ -291,7 +297,7 @@ void SteelCalcMain::UpdateResults()
         {
             l_labourTotalQtyTies += (l_labourLength / 3.0) * (l_labourWidth / l_labourBarCentreB);
         }
-        if  (m_optionsFrame->GetAddLapTies())
+        if (m_optionsFrame->GetAddLapTies())
         {
             l_labourTotalQtyTies += (l_labourWidth / l_labourBarCentreA);
         }
@@ -299,10 +305,10 @@ void SteelCalcMain::UpdateResults()
     }
     // Update the layout of the sizer
     m_mainSizer->Layout();
-    //SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, totalValue));
+    // SetStatusText(wxString::Format("Total cells with value: %d, Total value: %.2f", totalCellsWithValue, itemTotalLength));
 }
 
-bool SteelCalcMain::ValidateValue(wxString& value)
+bool SteelCalcMain::ValidateValue(wxString &value)
 {
     // In here we need to sanitize the cell input value to ensure it can be converted to double type
     // We need to deal with the locale-specific decimal separator and thousands separator so use wxNumberFormatter for that
