@@ -5,10 +5,11 @@ This project aims to be a useful tool for calculating info about steel reinforcm
 # Current Aims
 
 - Adjust UI expansion settings for
-- labour calc text input widgets
-- labour calc main heading satictext centering
-- Bar Type heading
-- Make values from the calculator sections affect the results in the Processing section
+  - Bar type wxChoice
+  - ✔️labour calc text input widgets
+  - ✔️labour calc main heading satictext centering
+  - ✔️Bar Type heading
+  - ✔️Make values from the calculator sections affect the results in the Processing section
 - When grid cell enters edit mode, select all text in the cell
 
 # Planned Features (Subject to Change)

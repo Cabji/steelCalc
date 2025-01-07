@@ -22,8 +22,8 @@
 #include <wx/statusbr.h>
 #include <wx/stattext.h>
 #include <wx/checkbox.h>
-#include <wx/grid.h>
 #include <wx/choice.h>
+#include <wx/grid.h>
 #include <wx/gbsizer.h>
 #include <wx/textctrl.h>
 #include <wx/scrolwin.h>
@@ -55,20 +55,18 @@ class Main : public wxFrame
 		wxGridBagSizer* m_barProcessSizer;
 		wxStaticText* m_lblHeaderText;
 		wxCheckBox* m_chbCircularInput;
-		wxGrid* m_gridLValues;
-		wxGridBagSizer* m_InputSizer;
-		wxStaticText* m_lblInputSizerHeader;
 		wxStaticText* m_lblBarGrade;
 		wxChoice* m_specsGandD;
+		wxGrid* m_gridLValues;
 		wxGridBagSizer* m_CalculatedSizer;
 		wxStaticText* m_lblCalculatedHeader;
+		wxStaticText* m_lblCalculatedProcessingType;
 		wxStaticText* m_lblCalculatedTotalBarLength;
 		wxStaticText* m_lblCalculatedBarArea;
-		wxStaticText* m_lblCalculatedProcessingType;
-		wxStaticText* m_lblCalculatedCostPerMg;
 		wxStaticText* m_lblCalculatedCostPerBar;
 		wxStaticText* m_lblWeightPerBar;
 		wxStaticText* m_lblWeightTotalMg;
+		wxStaticText* m_lblCalculatedCostPerMg;
 		wxGrid* m_gridCircularLValues;
 		wxGridBagSizer* m_barCalculatorSizer;
 		wxStaticText* m_lblBarCalculator;
