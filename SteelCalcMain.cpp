@@ -116,7 +116,7 @@ void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
         // swap user input grid to circular input grid - m_circularGridLValues
         m_barProcessSizer->Detach(m_gridLValues);
         m_gridLValues->Hide();
-        m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(3, 0), wxGBSpan(1, 2), wxALL, 5);
         m_gridCircularLValues->Show();
     }
     else
@@ -124,7 +124,7 @@ void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
         // swap user input grid to linear input grid - m_gridLValues
         m_barProcessSizer->Detach(m_gridCircularLValues);
         m_gridCircularLValues->Hide();
-        m_barProcessSizer->Add(m_gridLValues, wxGBPosition(2, 0), wxGBSpan(1, 2), wxALL, 5);
+        m_barProcessSizer->Add(m_gridLValues, wxGBPosition(3, 0), wxGBSpan(1, 2), wxALL, 5);
         m_gridLValues->Show();
     }
     UpdateResults();

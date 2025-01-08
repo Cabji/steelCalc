@@ -11,7 +11,7 @@
 
 Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 920,470 ), wxDefaultSize );
+	this->SetSizeHints( wxSize( 925,575 ), wxDefaultSize );
 
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
@@ -45,7 +45,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_ScrolledWindowSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_barProcessSizer = new wxGridBagSizer( 0, 0 );
-	m_barProcessSizer->SetFlexibleDirection( wxVERTICAL );
+	m_barProcessSizer->SetFlexibleDirection( wxBOTH );
 	m_barProcessSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_lblHeaderText = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Enter Item's dimensions below, one side for each Ln value. Enter the values in meters. Example: 600mm is 0.6\nA starter bar would be something like: L1: 1.0, L2: 0.2\nIf you want to calculate circular shaped bar fabrication, click the checkbox to switch to circular input mode."), wxDefaultPosition, wxDefaultSize, 0 );
@@ -57,13 +57,13 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	m_lblBarGrade = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Grade && Diameter"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblBarGrade->Wrap( -1 );
-	m_barProcessSizer->Add( m_lblBarGrade, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxTOP, 5 );
+	m_barProcessSizer->Add( m_lblBarGrade, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	wxString m_specsGandDChoices[] = { _("N10"), _("N12"), _("N16"), _("N20"), _("N24"), _("N28"), _("N32"), _("N36"), _("N40"), _("R6.5"), _("R10"), _("R12"), _("R16"), _("R20"), _("R24"), _("S12"), _("SS12"), _("SS16") };
 	int m_specsGandDNChoices = sizeof( m_specsGandDChoices ) / sizeof( wxString );
 	m_specsGandD = new wxChoice( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_specsGandDNChoices, m_specsGandDChoices, 0 );
 	m_specsGandD->SetSelection( 1 );
-	m_barProcessSizer->Add( m_specsGandD, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxBOTTOM|wxRIGHT|wxTOP, 5 );
+	m_barProcessSizer->Add( m_specsGandD, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 
 	m_gridLValues = new wxGrid( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
@@ -103,6 +103,48 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	// Cell Defaults
 	m_gridLValues->SetDefaultCellAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 	m_barProcessSizer->Add( m_gridLValues, wxGBPosition( 3, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_gridCircularLValues = new wxGrid( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_gridCircularLValues->CreateGrid( 1, 2 );
+	m_gridCircularLValues->EnableEditing( true );
+	m_gridCircularLValues->EnableGridLines( true );
+	m_gridCircularLValues->EnableDragGridSize( false );
+	m_gridCircularLValues->SetMargins( 0, 0 );
+
+	// Columns
+	m_gridCircularLValues->EnableDragColMove( false );
+	m_gridCircularLValues->EnableDragColSize( false );
+	m_gridCircularLValues->SetColLabelValue( 0, _("Diameter") );
+	m_gridCircularLValues->SetColLabelValue( 1, _("Lap") );
+	m_gridCircularLValues->SetColLabelSize( wxGRID_AUTOSIZE );
+	m_gridCircularLValues->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_gridCircularLValues->SetRowSize( 0, 563 );
+	m_gridCircularLValues->AutoSizeRows();
+	m_gridCircularLValues->EnableDragRowSize( true );
+	m_gridCircularLValues->SetRowLabelValue( 0, _("Value") );
+	m_gridCircularLValues->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_gridCircularLValues->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_gridCircularLValues->Hide();
+
+	m_barProcessSizer->Add( m_gridCircularLValues, wxGBPosition( 4, 0 ), wxGBSpan( 1, 2 ), wxALL, 5 );
+
+
+	m_barProcessSizer->AddGrowableCol( 1 );
+	m_barProcessSizer->AddGrowableRow( 0 );
+	m_barProcessSizer->AddGrowableRow( 1 );
+	m_barProcessSizer->AddGrowableRow( 2 );
+	m_barProcessSizer->AddGrowableRow( 3 );
+	m_barProcessSizer->AddGrowableRow( 4 );
+
+	m_ScrolledWindowSizer->Add( m_barProcessSizer, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), 0, 5 );
 
 	m_CalculatedSizer = new wxGridBagSizer( 0, 0 );
 	m_CalculatedSizer->SetFlexibleDirection( wxBOTH );
@@ -152,49 +194,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_CalculatedSizer->AddGrowableRow( 1 );
 	m_CalculatedSizer->AddGrowableRow( 2 );
 
-	m_barProcessSizer->Add( m_CalculatedSizer, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_gridCircularLValues = new wxGrid( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-
-	// Grid
-	m_gridCircularLValues->CreateGrid( 1, 2 );
-	m_gridCircularLValues->EnableEditing( true );
-	m_gridCircularLValues->EnableGridLines( true );
-	m_gridCircularLValues->EnableDragGridSize( false );
-	m_gridCircularLValues->SetMargins( 0, 0 );
-
-	// Columns
-	m_gridCircularLValues->EnableDragColMove( false );
-	m_gridCircularLValues->EnableDragColSize( false );
-	m_gridCircularLValues->SetColLabelValue( 0, _("Diameter") );
-	m_gridCircularLValues->SetColLabelValue( 1, _("Lap") );
-	m_gridCircularLValues->SetColLabelSize( wxGRID_AUTOSIZE );
-	m_gridCircularLValues->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
-
-	// Rows
-	m_gridCircularLValues->SetRowSize( 0, 563 );
-	m_gridCircularLValues->AutoSizeRows();
-	m_gridCircularLValues->EnableDragRowSize( true );
-	m_gridCircularLValues->SetRowLabelValue( 0, _("Value") );
-	m_gridCircularLValues->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
-
-	// Label Appearance
-
-	// Cell Defaults
-	m_gridCircularLValues->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	m_gridCircularLValues->Hide();
-
-	m_barProcessSizer->Add( m_gridCircularLValues, wxGBPosition( 4, 0 ), wxGBSpan( 1, 2 ), wxALL, 5 );
-
-
-	m_barProcessSizer->AddGrowableCol( 0 );
-	m_barProcessSizer->AddGrowableRow( 0 );
-	m_barProcessSizer->AddGrowableRow( 1 );
-	m_barProcessSizer->AddGrowableRow( 2 );
-	m_barProcessSizer->AddGrowableRow( 3 );
-	m_barProcessSizer->AddGrowableRow( 4 );
-
-	m_ScrolledWindowSizer->Add( m_barProcessSizer, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
+	m_ScrolledWindowSizer->Add( m_CalculatedSizer, wxGBPosition( 4, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 	m_barCalculatorSizer = new wxGridBagSizer( 0, 0 );
 	m_barCalculatorSizer->SetFlexibleDirection( wxBOTH );

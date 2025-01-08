@@ -58,6 +58,7 @@ class Main : public wxFrame
 		wxStaticText* m_lblBarGrade;
 		wxChoice* m_specsGandD;
 		wxGrid* m_gridLValues;
+		wxGrid* m_gridCircularLValues;
 		wxGridBagSizer* m_CalculatedSizer;
 		wxStaticText* m_lblCalculatedHeader;
 		wxStaticText* m_lblCalculatedProcessingType;
@@ -67,7 +68,6 @@ class Main : public wxFrame
 		wxStaticText* m_lblWeightPerBar;
 		wxStaticText* m_lblWeightTotalMg;
 		wxStaticText* m_lblCalculatedCostPerMg;
-		wxGrid* m_gridCircularLValues;
 		wxGridBagSizer* m_barCalculatorSizer;
 		wxStaticText* m_lblBarCalculator;
 		wxStaticText* m_lblBCSpan;
@@ -93,7 +93,7 @@ class Main : public wxFrame
 
 	public:
 
-		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 920,470 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 925,575 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
 
