@@ -348,7 +348,9 @@ void SteelCalcMain::UpdateResults()
     // Calculate the total number of bars required & total tonnage
     double l_bcSpan = 0.0;
     double l_bcBarCentre = 0.0;
-    if (m_BCSpan->GetValue().ToDouble(&l_bcSpan) && m_BCBarCentre->GetValue().ToDouble(&l_bcBarCentre) && (l_bcBarCentre != 0.0))
+    if (m_BCSpan->GetValue().ToDouble(&l_bcSpan) && 
+        m_BCBarCentre->GetValue().ToDouble(&l_bcBarCentre) && 
+        (l_bcBarCentre != 0.0))
     {
         int l_bcTotalBars = static_cast<int>(l_bcSpan / l_bcBarCentre + 1);
         l_bcTotalMg = l_bcTotalBars * l_barWeight;
@@ -357,6 +359,13 @@ void SteelCalcMain::UpdateResults()
         m_lblWeightTotalMg->SetLabel(wxString::Format("Tonnage: %.8f Mg (%.2f Kg)", l_bcTotalMg, l_bcTotalMg * 1000));
         m_lblCalculatedCostPerMg->SetLabel(wxString::Format("Mg Cost: %.2f ", l_bcTotalCost));
     }
+    else
+    {
+        // required factors are not available so set result to 0
+        m_BCTotalQty->SetLabel("0 bars");
+        m_lblWeightTotalMg->SetLabel("Tonnage: 0.0000000 Mg (0.00 Kg)");
+        m_lblCalculatedCostPerMg->SetLabel("Mg Cost: 0.00 ");
+    }
 
     // Calculate the steelfixing labour unit 'SFU' amount (number of ties in an Area)
     double l_labourLength = 0.0;
@@ -364,7 +373,11 @@ void SteelCalcMain::UpdateResults()
     double l_labourBarCentreA = 0.0;
     double l_labourBarCentreB = 0.0;
     double l_labourTieCentre = 0.0;
-    if (m_LabourLength->GetValue().ToDouble(&l_labourLength) && m_LabourWidth->GetValue().ToDouble(&l_labourWidth) && m_LabourBarCentreA->GetValue().ToDouble(&l_labourBarCentreA) && m_LabourBarCentreB->GetValue().ToDouble(&l_labourBarCentreB) && m_LabourTieCentre->GetValue().ToDouble(&l_labourTieCentre))
+    if (m_LabourLength->GetValue().ToDouble(&l_labourLength) && 
+        m_LabourWidth->GetValue().ToDouble(&l_labourWidth) && 
+        m_LabourBarCentreA->GetValue().ToDouble(&l_labourBarCentreA) && 
+        m_LabourBarCentreB->GetValue().ToDouble(&l_labourBarCentreB) && 
+        m_LabourTieCentre->GetValue().ToDouble(&l_labourTieCentre))
     {
         double l_labourAspectRatio = std::max(l_labourLength, l_labourWidth) / std::min(l_labourLength, l_labourWidth);
         double l_labourArea = l_labourLength * l_labourWidth;
@@ -385,6 +398,12 @@ void SteelCalcMain::UpdateResults()
             l_labourTotalQtyTies += (l_labourWidth / l_labourBarCentreA);
         }
         m_LabourTotalQtyTies->SetLabel(wxString::Format("%d ties", static_cast<int>(l_labourTotalQtyTies)));
+    
+    }
+    else
+    {
+        // required factors are not available so set result to 0
+        m_LabourTotalQtyTies->SetLabel("0 ties");
     }
     // Update the layout of the sizer
     m_mainSizer->Layout();
