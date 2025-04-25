@@ -26,6 +26,21 @@ bool SteelCalcOptions::GetAddSetupTies()
     return m_optionsLabourAddSetupTies->GetValue();
 }
 
+void SteelCalcOptions::SetAddLapTies(const bool &value)
+{
+    m_optionsLabourAddLapTies->SetValue(value);
+}
+
+void SteelCalcOptions::SetAddPerimeterTies(const bool &value)
+{
+    m_optionsLabourAddPerimeterTies->SetValue(value);
+}
+
+void SteelCalcOptions::SetAddSetupTies(const bool &value)
+{
+    m_optionsLabourAddSetupTies->SetValue(value);
+}
+
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
     // dev-note: perhaps save the options to disk here at some stage?
@@ -33,6 +48,7 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     if (m_mainFrame)
     {
         m_mainFrame->TriggerUpdateResults();
+        m_mainFrame->TriggerSaveConfig();
     }
     std::cout << "Options frame hidden!" << std::endl;
 }

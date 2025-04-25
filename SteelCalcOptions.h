@@ -18,9 +18,13 @@ class SteelCalcOptions : public Options
 		/** Constructor */
 		SteelCalcOptions( wxWindow* parent );
 	//// end generated class members
+
 		bool GetAddLapTies();
 		bool GetAddPerimeterTies();
 		bool GetAddSetupTies();
+		void SetAddLapTies(const bool& value);
+		void SetAddPerimeterTies(const bool& value);
+		void SetAddSetupTies(const bool& value);
 	private: 
 		// Handlers for Options events.
 		void OnClose( wxCloseEvent& event );

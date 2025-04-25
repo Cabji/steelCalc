@@ -2,6 +2,8 @@
 #include "SteelCalcMain.h"
 #include <algorithm>
 #include <cmath>
+#include <wx/fileconf.h>
+#include <wx/filename.h>
 #include <wx/msgdlg.h>
 #include <wx/regex.h>
 
@@ -27,12 +29,18 @@ void SteelCalcMain::Init()
     // point to the Options frame instance
     m_optionsFrame = new SteelCalcOptions(this);
 
+    std::cout << "Default config file is: " << DEFAULT_CONFIG_FILENAME << std::endl;
+    // load settings from config file 
+    SettingsLoadAllFromDisk();
+
     // Bind event handlers
+    Bind(wxEVT_CLOSE_WINDOW, &SteelCalcMain::OnClose, this);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, id_MENU_FILE_ABOUT);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileOptions, this, id_MENU_FILE_OPTIONS);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileExit, this, id_MENU_FILE_EXIT);
     m_BCBarCentre->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
     m_BCSpan->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
+    m_btnClearAll->Bind(wxEVT_BUTTON, &SteelCalcMain::OnBtnClearAllInputEntries, this);
     m_chbCircularInput->Bind(wxEVT_CHECKBOX, &SteelCalcMain::OnCircularInputToggled, this);
     m_gridLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
     m_gridCircularLValues->Bind(wxEVT_GRID_CELL_CHANGED, &SteelCalcMain::OnGridCellValueChanged, this);
@@ -107,6 +115,31 @@ void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
     UpdateResults();
 }
 
+void SteelCalcMain::OnBtnClearAllInputEntries(wxCommandEvent& event)
+{
+    // Display a confirmation dialog
+    int response = wxMessageBox("Are you sure you want to clear all input fields?", "Confirm Clear All", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this);
+
+    if (response == wxYES)
+    {
+        // Clear all input fields
+        m_BCBarCentre->SetValue("");
+        m_BCSpan->SetValue("");
+        m_LabourBarCentreA->SetValue("");
+        m_LabourBarCentreB->SetValue("");
+        m_LabourLength->SetValue("");
+        m_LabourTieCentre->SetValue("");
+        m_LabourWidth->SetValue("");
+        m_gridLValues->ClearGrid();
+        m_gridCircularLValues->ClearGrid();
+
+        // Update results after clearing
+        UpdateResults();
+    }
+
+    event.Skip();
+}
+
 void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
 {
     std::cout << "Circular input checkbox toggled!" << std::endl;
@@ -128,6 +161,12 @@ void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
         m_gridLValues->Show();
     }
     UpdateResults();
+    event.Skip();
+}
+
+void SteelCalcMain::OnClose(wxCloseEvent &event)
+{
+    SettingsSaveAllToDisk();
     event.Skip();
 }
 
@@ -192,6 +231,47 @@ void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
     textCtrl->SetValue(value);
     UpdateResults();
     event.Skip();
+}
+
+void SteelCalcMain::SettingsLoadAllFromDisk()
+{
+    // check for conf file existence
+    if (!wxFileName::FileExists(DEFAULT_CONFIG_FILENAME))
+    {
+        std::cout << "Config file does not exist. Using default settings." << std::endl;
+        return;
+    }
+
+    wxFileConfig configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
+    
+    bool tempValue;
+    configObj.Read("LabourAddLapTies", &tempValue);
+    m_optionsFrame->SetAddLapTies(tempValue);
+    configObj.Read("LabourAddPerimeterTies", &tempValue);
+    m_optionsFrame->SetAddPerimeterTies(tempValue);
+    configObj.Read("LabourAddSetupTies", &tempValue);
+    m_optionsFrame->SetAddSetupTies(tempValue);
+
+    std::cout << "Settings loaded from config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+}
+
+void SteelCalcMain::SettingsSaveAllToDisk()
+{
+
+    wxFileConfig configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
+    // add the values that you want to save below here
+    configObj.Write("LabourAddLapTies", m_optionsFrame->GetAddLapTies());
+    configObj.Write("LabourAddPerimeterTies", m_optionsFrame->GetAddPerimeterTies());
+    configObj.Write("LabourAddSetupTies", m_optionsFrame->GetAddSetupTies());
+    configObj.Flush();
+    if (configObj.Flush())
+    {
+        std::cout << "Settings saved to config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+    }
+    else
+    {
+        std::cerr << "!!! Settings failed to save to file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+    }
 }
 
 void SteelCalcMain::UpdateResults()

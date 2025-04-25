@@ -11,7 +11,7 @@
 
 Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-	this->SetSizeHints( wxSize( 925,575 ), wxDefaultSize );
+	this->SetSizeHints( wxSize( 925,600 ), wxDefaultSize );
 
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
@@ -146,56 +146,6 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	m_ScrolledWindowSizer->Add( m_barProcessSizer, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), 0, 5 );
 
-	m_CalculatedSizer = new wxGridBagSizer( 0, 0 );
-	m_CalculatedSizer->SetFlexibleDirection( wxBOTH );
-	m_CalculatedSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-	m_lblCalculatedHeader = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Auto Calculated Values"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedHeader->SetLabelMarkup( _("Auto Calculated Values") );
-	m_lblCalculatedHeader->Wrap( -1 );
-	m_lblCalculatedHeader->SetBackgroundColour( wxColour( 240, 242, 149 ) );
-
-	m_CalculatedSizer->Add( m_lblCalculatedHeader, wxGBPosition( 0, 0 ), wxGBSpan( 1, 4 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
-	m_lblCalculatedProcessingType = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Processing type: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedProcessingType->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedProcessingType, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
-
-	m_lblCalculatedTotalBarLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar length: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedTotalBarLength->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedTotalBarLength, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_lblCalculatedBarArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar area: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedBarArea->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedBarArea, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_lblCalculatedCostPerBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Cost: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedCostPerBar->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedCostPerBar, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_lblWeightPerBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Weight: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblWeightPerBar->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblWeightPerBar, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-	m_lblWeightTotalMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Tonnage: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblWeightTotalMg->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblWeightTotalMg, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
-
-	m_lblCalculatedCostPerMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Mg Cost: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_lblCalculatedCostPerMg->Wrap( -1 );
-	m_CalculatedSizer->Add( m_lblCalculatedCostPerMg, wxGBPosition( 4, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
-
-
-	m_CalculatedSizer->AddGrowableCol( 0 );
-	m_CalculatedSizer->AddGrowableCol( 1 );
-	m_CalculatedSizer->AddGrowableCol( 2 );
-	m_CalculatedSizer->AddGrowableCol( 3 );
-	m_CalculatedSizer->AddGrowableRow( 0 );
-	m_CalculatedSizer->AddGrowableRow( 1 );
-	m_CalculatedSizer->AddGrowableRow( 2 );
-
-	m_ScrolledWindowSizer->Add( m_CalculatedSizer, wxGBPosition( 4, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
-
 	m_barCalculatorSizer = new wxGridBagSizer( 0, 0 );
 	m_barCalculatorSizer->SetFlexibleDirection( wxBOTH );
 	m_barCalculatorSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
@@ -296,6 +246,59 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_labourCalculatorSizer->AddGrowableRow( 2 );
 
 	m_ScrolledWindowSizer->Add( m_labourCalculatorSizer, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
+
+	m_CalculatedSizer = new wxGridBagSizer( 0, 0 );
+	m_CalculatedSizer->SetFlexibleDirection( wxBOTH );
+	m_CalculatedSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_lblCalculatedHeader = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Auto Calculated Values"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedHeader->SetLabelMarkup( _("Auto Calculated Values") );
+	m_lblCalculatedHeader->Wrap( -1 );
+	m_lblCalculatedHeader->SetBackgroundColour( wxColour( 240, 242, 149 ) );
+
+	m_CalculatedSizer->Add( m_lblCalculatedHeader, wxGBPosition( 0, 0 ), wxGBSpan( 1, 4 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
+
+	m_lblCalculatedProcessingType = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Processing type: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedProcessingType->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblCalculatedProcessingType, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+
+	m_lblCalculatedTotalBarLength = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar length: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedTotalBarLength->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblCalculatedTotalBarLength, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+
+	m_lblCalculatedBarArea = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar area: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedBarArea->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblCalculatedBarArea, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+
+	m_lblCalculatedCostPerBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Bar Cost: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedCostPerBar->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblCalculatedCostPerBar, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+
+	m_lblWeightPerBar = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Weight: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblWeightPerBar->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblWeightPerBar, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+
+	m_lblWeightTotalMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Tonnage: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblWeightTotalMg->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblWeightTotalMg, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
+
+	m_lblCalculatedCostPerMg = new wxStaticText( m_scrolledWindow, wxID_ANY, _("Mg Cost: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblCalculatedCostPerMg->Wrap( -1 );
+	m_CalculatedSizer->Add( m_lblCalculatedCostPerMg, wxGBPosition( 4, 1 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL|wxEXPAND, 5 );
+
+	m_btnClearAll = new wxButton( m_scrolledWindow, wxID_ANY, _("Clear All Input Entries"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_CalculatedSizer->Add( m_btnClearAll, wxGBPosition( 0, 5 ), wxGBSpan( 5, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+
+	m_CalculatedSizer->AddGrowableCol( 0 );
+	m_CalculatedSizer->AddGrowableCol( 1 );
+	m_CalculatedSizer->AddGrowableCol( 2 );
+	m_CalculatedSizer->AddGrowableCol( 3 );
+	m_CalculatedSizer->AddGrowableRow( 0 );
+	m_CalculatedSizer->AddGrowableRow( 1 );
+	m_CalculatedSizer->AddGrowableRow( 2 );
+
+	m_ScrolledWindowSizer->Add( m_CalculatedSizer, wxGBPosition( 4, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER|wxALL|wxEXPAND, 5 );
 
 
 	m_ScrolledWindowSizer->AddGrowableCol( 0 );

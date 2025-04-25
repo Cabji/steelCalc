@@ -26,6 +26,7 @@
 #include <wx/grid.h>
 #include <wx/gbsizer.h>
 #include <wx/textctrl.h>
+#include <wx/button.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
 
@@ -59,15 +60,6 @@ class Main : public wxFrame
 		wxChoice* m_specsGandD;
 		wxGrid* m_gridLValues;
 		wxGrid* m_gridCircularLValues;
-		wxGridBagSizer* m_CalculatedSizer;
-		wxStaticText* m_lblCalculatedHeader;
-		wxStaticText* m_lblCalculatedProcessingType;
-		wxStaticText* m_lblCalculatedTotalBarLength;
-		wxStaticText* m_lblCalculatedBarArea;
-		wxStaticText* m_lblCalculatedCostPerBar;
-		wxStaticText* m_lblWeightPerBar;
-		wxStaticText* m_lblWeightTotalMg;
-		wxStaticText* m_lblCalculatedCostPerMg;
 		wxGridBagSizer* m_barCalculatorSizer;
 		wxStaticText* m_lblBarCalculator;
 		wxStaticText* m_lblBCSpan;
@@ -90,10 +82,20 @@ class Main : public wxFrame
 		wxTextCtrl* m_LabourBarCentreB;
 		wxTextCtrl* m_LabourTieCentre;
 		wxStaticText* m_LabourTotalQtyTies;
+		wxGridBagSizer* m_CalculatedSizer;
+		wxStaticText* m_lblCalculatedHeader;
+		wxStaticText* m_lblCalculatedProcessingType;
+		wxStaticText* m_lblCalculatedTotalBarLength;
+		wxStaticText* m_lblCalculatedBarArea;
+		wxStaticText* m_lblCalculatedCostPerBar;
+		wxStaticText* m_lblWeightPerBar;
+		wxStaticText* m_lblWeightTotalMg;
+		wxStaticText* m_lblCalculatedCostPerMg;
+		wxButton* m_btnClearAll;
 
 	public:
 
-		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 925,575 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Main( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Steel Calculator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 925,600 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Main();
 
