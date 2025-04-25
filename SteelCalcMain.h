@@ -24,7 +24,7 @@ class SteelCalcMain : public Main
 		ComplexShape
 	};
 
-	const double APP_VERSION = 0.1;
+	const double APP_VERSION = 0.2;
 	const wxString DEFAULT_CONFIG_FILENAME = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath() + wxFileName::GetPathSeparator() + "SteelCalc.conf";
 
 	public:
