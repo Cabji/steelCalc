@@ -32,7 +32,8 @@ void SteelCalcMain::Init()
     std::cout << "Default config file is: " << DEFAULT_CONFIG_FILENAME << std::endl;
     // load settings from config file 
     SettingsLoadAllFromDisk();
-
+    auto specNames = m_specsGandD->GetStrings();
+    
     // Bind event handlers
     Bind(wxEVT_CLOSE_WINDOW, &SteelCalcMain::OnClose, this);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, id_MENU_FILE_ABOUT);

@@ -36,6 +36,7 @@ class SteelCalcMain : public Main
 
 		void TriggerUpdateResults() { UpdateResults(); }
 		void TriggerSaveConfig() { SettingsSaveAllToDisk(); }
+		wxArrayString GetBarClassifications() { return m_specsGandD->GetStrings(); }
 
 	private:
 		void Init();

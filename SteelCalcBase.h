@@ -29,6 +29,7 @@
 #include <wx/button.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
+#include <wx/dataview.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -113,10 +114,13 @@ class Options : public wxFrame
 		wxCheckBox* m_optionsLabourAddPerimeterTies;
 		wxCheckBox* m_optionsLabourAddSetupTies;
 		wxCheckBox* m_optionsLabourAddLapTies;
+		wxStaticText* m_lblOptionsCalculationFactors;
+		wxStaticText* m_lblOptionsCFBarGradeCosts;
+		wxDataViewListCtrl* m_optionsCalculationFactorsBarGradeCosts;
 
 	public:
 
-		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,155 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,414 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Options();
 

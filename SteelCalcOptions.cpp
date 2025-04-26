@@ -9,6 +9,25 @@ Options( parent )
     
     // Bind the close event handler
     Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
+    
+    // Populate the Bar Grade Costs widget
+    if (m_optionsCalculationFactorsBarGradeCosts)
+    {
+        // Add columns with header titles
+        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Bar Grade", wxDATAVIEW_CELL_INERT, 150, wxALIGN_LEFT);
+        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Cost per Mg", wxDATAVIEW_CELL_EDITABLE, 150, wxALIGN_RIGHT);
+
+        // Populate rows with default values
+        wxArrayString barClassifications = m_mainFrame->GetBarClassifications();
+        for (const wxString& barType : barClassifications)
+        {
+            wxVector<wxVariant> row;
+            row.push_back(wxVariant(barType)); // Bar Grade
+            row.push_back(wxVariant("0"));    // Default Cost
+            m_optionsCalculationFactorsBarGradeCosts->AppendItem(row);
+        }
+    }
+    this->Layout();
 }
 
 bool SteelCalcOptions::GetAddLapTies()

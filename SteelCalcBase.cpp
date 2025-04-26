@@ -332,27 +332,36 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxGridBagSizer* m_optionsSizer;
 	m_optionsSizer = new wxGridBagSizer( 0, 0 );
 	m_optionsSizer->SetFlexibleDirection( wxBOTH );
-	m_optionsSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	m_optionsSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
 	m_lblOptionsLabour = new wxStaticText( this, wxID_ANY, _("<b>Labour</b>"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_lblOptionsLabour->SetLabelMarkup( _("<b>Labour</b>") );
 	m_lblOptionsLabour->Wrap( -1 );
-	m_optionsSizer->Add( m_lblOptionsLabour, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxALIGN_TOP|wxALL|wxEXPAND, 5 );
+	m_optionsSizer->Add( m_lblOptionsLabour, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxALIGN_TOP|wxALL, 5 );
 
 	m_optionsLabourAddPerimeterTies = new wxCheckBox( this, wxID_ANY, _("Automatically add perimeter ties"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_optionsSizer->Add( m_optionsLabourAddPerimeterTies, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+	m_optionsSizer->Add( m_optionsLabourAddPerimeterTies, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_optionsLabourAddSetupTies = new wxCheckBox( this, wxID_ANY, _("Automatically add setup ties"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_optionsSizer->Add( m_optionsLabourAddSetupTies, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+	m_optionsSizer->Add( m_optionsLabourAddSetupTies, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 	m_optionsLabourAddLapTies = new wxCheckBox( this, wxID_ANY, _("Automatically add estimated lap ties"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_optionsSizer->Add( m_optionsLabourAddLapTies, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
+	m_optionsSizer->Add( m_optionsLabourAddLapTies, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_lblOptionsCalculationFactors = new wxStaticText( this, wxID_ANY, _("Calculation Factors"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblOptionsCalculationFactors->Wrap( -1 );
+	m_optionsSizer->Add( m_lblOptionsCalculationFactors, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
+
+	m_lblOptionsCFBarGradeCosts = new wxStaticText( this, wxID_ANY, _("Bar Grade Costs"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_lblOptionsCFBarGradeCosts->Wrap( -1 );
+	m_optionsSizer->Add( m_lblOptionsCFBarGradeCosts, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
+
+	m_optionsCalculationFactorsBarGradeCosts = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_HORIZ_RULES|wxDV_ROW_LINES|wxDV_VERT_RULES );
+	m_optionsSizer->Add( m_optionsCalculationFactorsBarGradeCosts, wxGBPosition( 6, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 
 	m_optionsSizer->AddGrowableCol( 0 );
-	m_optionsSizer->AddGrowableRow( 1 );
-	m_optionsSizer->AddGrowableRow( 2 );
-	m_optionsSizer->AddGrowableRow( 3 );
+	m_optionsSizer->AddGrowableRow( 6 );
 
 	this->SetSizer( m_optionsSizer );
 	this->Layout();
