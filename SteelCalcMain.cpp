@@ -264,6 +264,7 @@ void SteelCalcMain::SettingsSaveAllToDisk()
     configObj.Write("LabourAddLapTies", m_optionsFrame->GetAddLapTies());
     configObj.Write("LabourAddPerimeterTies", m_optionsFrame->GetAddPerimeterTies());
     configObj.Write("LabourAddSetupTies", m_optionsFrame->GetAddSetupTies());
+    SettingsSaveBarGradeCostsToDisk(configObj);
     configObj.Flush();
     if (configObj.Flush())
     {
@@ -272,6 +273,17 @@ void SteelCalcMain::SettingsSaveAllToDisk()
     else
     {
         std::cerr << "!!! Settings failed to save to file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+    }
+}
+
+void SteelCalcMain::SettingsSaveBarGradeCostsToDisk(wxFileConfig &configObj)
+{
+    configObj.DeleteGroup("BarGradeCosts");
+    configObj.SetPath("BarGradeCosts");
+    wxVector<std::pair<wxString, wxString>> barData = m_optionsFrame->GetBarClassificationData();
+    for (std::pair<wxString, wxString> barCost : barData)
+    {
+        configObj.Write(barCost.first, barCost.second);
     }
 }
 
