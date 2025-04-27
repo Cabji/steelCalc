@@ -22,6 +22,7 @@ class SteelCalcOptions : public Options
 		bool GetAddLapTies();
 		bool GetAddPerimeterTies();
 		bool GetAddSetupTies();
+		wxVector<std::pair<wxString, wxString>> GetBarClassificationData();
 		void SetAddLapTies(const bool& value);
 		void SetAddPerimeterTies(const bool& value);
 		void SetAddSetupTies(const bool& value);

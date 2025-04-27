@@ -357,6 +357,8 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_optionsSizer->Add( m_lblOptionsCFBarGradeCosts, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 
 	m_optionsCalculationFactorsBarGradeCosts = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_HORIZ_RULES|wxDV_ROW_LINES|wxDV_VERT_RULES );
+	m_optionsCalculationFactorsBarGradeCosts->SetToolTip( _("Sort the data by clicking on the Bar Grade column's heading.") );
+
 	m_optionsSizer->Add( m_optionsCalculationFactorsBarGradeCosts, wxGBPosition( 6, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 

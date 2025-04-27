@@ -3151,7 +3151,7 @@
             <property name="size"></property>
             <property name="style">wxDV_HORIZ_RULES|wxDV_ROW_LINES|wxDV_VERT_RULES</property>
             <property name="subclass">; ; forward_declare</property>
-            <property name="tooltip"></property>
+            <property name="tooltip">Sort the data by clicking on the Bar Grade column&apos;s heading.</property>
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
             <property name="window_style"></property>

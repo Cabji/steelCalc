@@ -7,15 +7,15 @@ Options( parent )
 {
     m_mainFrame = dynamic_cast<SteelCalcMain*>(parent);
     
-    // Bind the close event handler
-    Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
+    // Bind event handlers
+    this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
     
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
     {
         // Add columns with header titles
-        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Bar Grade", wxDATAVIEW_CELL_INERT, 150, wxALIGN_LEFT);
-        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Cost per Mg", wxDATAVIEW_CELL_EDITABLE, 150, wxALIGN_RIGHT);
+        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Bar Grade", wxDATAVIEW_CELL_EDITABLE, 75, wxALIGN_LEFT, wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_RESIZABLE);
+        m_optionsCalculationFactorsBarGradeCosts->AppendTextColumn("Cost per Mg", wxDATAVIEW_CELL_EDITABLE, 75, wxALIGN_RIGHT);
 
         // Populate rows with default values
         wxArrayString barClassifications = m_mainFrame->GetBarClassifications();
@@ -43,6 +43,20 @@ bool SteelCalcOptions::GetAddPerimeterTies()
 bool SteelCalcOptions::GetAddSetupTies()
 {
     return m_optionsLabourAddSetupTies->GetValue();
+}
+
+wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationData()
+{
+    wxVector<std::pair<wxString, wxString>> barData;
+
+    unsigned int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetItemCount();
+    for (unsigned int i = 0; i < rowCount; ++i)
+    {
+        wxString barGrade	= m_optionsCalculationFactorsBarGradeCosts->GetTextValue(i, 0);
+        wxString costPerMg	= m_optionsCalculationFactorsBarGradeCosts->GetTextValue(i, 1);
+		barData.push_back(std::make_pair(barGrade, costPerMg));
+    }
+    return barData;
 }
 
 void SteelCalcOptions::SetAddLapTies(const bool &value)
