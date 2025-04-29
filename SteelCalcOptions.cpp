@@ -1,5 +1,6 @@
 #include "SteelCalcMain.h"
 #include "SteelCalcOptions.h"
+#include <wx/msgdlg.h>
 
 SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
 :
@@ -9,6 +10,7 @@ Options( parent )
     
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &SteelCalcOptions::OnBarClassificationValueChange, this);
     
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
@@ -27,6 +29,7 @@ Options( parent )
             m_optionsCalculationFactorsBarGradeCosts->AppendItem(row);
         }
     }
+    // update user-seen UI
     this->Layout();
 }
 
@@ -74,6 +77,51 @@ void SteelCalcOptions::SetAddSetupTies(const bool &value)
     m_optionsLabourAddSetupTies->SetValue(value);
 }
 
+void SteelCalcOptions::OnBarClassificationValueChange(wxDataViewEvent &event)
+{
+    // when the data in the Bar Cost class table changes, we need to check what the user inputs and sanitize it
+    // column 0 can be any string value (it's the Bar Name / label)
+    // column 1 has to be a float (it's the Bar Cost, so it's a currency value - ?rem to write this for multi-locale support)
+    
+    // get row & col of changed value event.
+    int row = m_optionsCalculationFactorsBarGradeCosts->ItemToRow(event.GetItem());
+    int col = event.GetColumn();
+
+    // get changed value
+    wxString newValue = m_optionsCalculationFactorsBarGradeCosts->GetTextValue(row, col);
+    
+    // bar label/name
+    if (col == 0)
+    {
+        // allow string value, trim whitespace
+        newValue = newValue.Trim().Trim(false);
+        if (newValue.IsEmpty()) 
+        {
+            wxMessageBox("Bar name cannot be empty.", "Invalid input", wxOK | wxICON_ERROR);
+            m_optionsCalculationFactorsBarGradeCosts->SetTextValue("", row, col);
+        }
+        else
+        {
+            m_optionsCalculationFactorsBarGradeCosts->SetValue(newValue, row, col);
+        }
+    }
+    else if (col == 1)
+    {
+        // allow only a valid float or int value
+        double cost;
+        if (!newValue.ToDouble(&cost) || cost < 0)
+        {
+            wxMessageBox("Bar cost must be a valid non-negative number.", "Invalid Input", wxOK | wxICON_ERROR);
+            m_optionsCalculationFactorsBarGradeCosts->SetTextValue("0", row, col);
+        }
+        else
+        {
+            m_optionsCalculationFactorsBarGradeCosts->SetValue(wxString::Format("%.2f", cost), row, col);
+        }
+    }
+    event.Skip();
+}
+
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
     // dev-note: perhaps save the options to disk here at some stage?
@@ -85,3 +133,4 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     }
     std::cout << "Options frame hidden!" << std::endl;
 }
+

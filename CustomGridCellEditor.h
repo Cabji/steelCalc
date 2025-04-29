@@ -8,7 +8,20 @@
 class CustomGridCellEditor : public wxGridCellTextEditor
 {
 public:
+    enum class ValidationType
+    {
+        FLOAT,
+        INTEGER,
+        STRING
+    };
+
     CustomGridCellEditor() : wxGridCellTextEditor() {}
+
+    virtual void ApplyEdit(int row, int col, wxGrid* grid) override
+    {
+        //std::cout << "Value in Apply Edit: " << m_sanitizedValue.ToStdString() << std::endl;
+        grid->SetCellValue(row, col, m_sanitizedValue); // Use the sanitized value
+    }
 
     virtual bool EndEdit(int row, int col, const wxGrid* grid, const wxString& oldval, wxString* newval) override
     {
@@ -34,14 +47,10 @@ public:
         }
     }
 
-    virtual void ApplyEdit(int row, int col, wxGrid* grid) override
-    {
-        //std::cout << "Value in Apply Edit: " << m_sanitizedValue.ToStdString() << std::endl;
-        grid->SetCellValue(row, col, m_sanitizedValue); // Use the sanitized value
-    }
+    void SetValidationType(ValidationType type) { m_validationType = type; }
 
 private:
-    bool ValidateValue(wxString& value)
+    bool ValidateFloat(wxString& value)
     {
         // In here we need to sanitize the cell input value to ensure it can be converted to double type
         // We need to deal with the locale-specific decimal separator and thousands separator so use wxNumberFormatter for that
@@ -82,9 +91,55 @@ private:
         return isValid;
     }
 
-    wxString m_sanitizedValue; // Member variable to store the sanitized value
-    int m_row, m_col; // Row and column of the cell being edited
-    wxGrid* m_grid; // Pointer to the grid
+	bool ValidateInteger(wxString& value)
+	{
+		long num;
+		wxString sanitizedInput;
+
+		// remove all non-numeric characters
+		for (wxChar ch : value)
+			if (wxIsdigit(ch))
+				sanitizedInput += ch;
+
+		// allow empty cell values
+		if (sanitizedInput.IsEmpty())
+		{
+			value = sanitizedInput;
+			return true;
+		}
+
+		// convert sanitized string to integer
+		bool isValid = sanitizedInput.ToLong(&num);
+		if (isValid) { value = sanitizedInput; }
+		return isValid;
+	}
+
+	bool ValidateString(wxString& value)
+	{
+		//string validation is to just trim whitespace from both ends
+		value = value.Trim().Trim(false);
+		return true;
+	}
+
+    bool ValidateValue(wxString& value)
+    {
+        switch (m_validationType)
+		{
+			case ValidationType::FLOAT:
+				return ValidateFloat(value);
+			case ValidationType::INTEGER:
+				return ValidateInteger(value);
+			case ValidationType::STRING:
+				return ValidateString(value);
+			default:
+				return false;
+		}
+    }
+
+    wxString m_sanitizedValue; 
+    int m_row, m_col; 
+    ValidationType m_validationType;
+    wxGrid* m_grid;
 };
 
 #endif // CUSTOMGRIDCELLEDITOR_H

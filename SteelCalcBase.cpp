@@ -20,7 +20,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menuFile->Append( m_menuFileAbout );
 
 	wxMenuItem* m_menuFileOptions;
-	m_menuFileOptions = new wxMenuItem( m_menuFile, id_MENU_FILE_OPTIONS, wxString( _("&Options") ) + wxT('\t') + wxT("o"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileOptions = new wxMenuItem( m_menuFile, id_MENU_FILE_OPTIONS, wxString( _("&Options") ) , _("Open program Options"), wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileOptions );
 
 	wxMenuItem* m_menuFileExit;
