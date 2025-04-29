@@ -24,7 +24,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menuFile->Append( m_menuFileOptions );
 
 	wxMenuItem* m_menuFileExit;
-	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileExit );
 
 	m_menubar->Append( m_menuFile, _("File") );
