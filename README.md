@@ -38,20 +38,15 @@ There is no estimated completion date for the project.
 
 # Current Development Aims
 
-- Adjust UI expansion settings for
-  - Bar type wxChoice
-  - ✔️labour calc text input widgets
-  - ✔️labour calc main heading satictext centering
-  - ✔️Bar Type heading
-  - ✔️Make values from the calculator sections affect the results in the Processing section
-- When grid cell enters edit mode, select all text in the cell
 - Configuration options
-  - Cost per Mg for each grade/diameter of steel bar
+  - Redo using wxGrid for Cost per Mg for each grade/diameter of steel bar
+    - Sanitization/formatting of input data (no c&b emoji strings thx!)
   - Steel mass
   - Unit of measure to use
   - Unit of currency to use
 - Array of Items (Steel Scheduling)
   - Create a data structure to build a group of Items
+- When grid cell enters edit mode, select all text in the cell
 
 # Planned Features (Subject to Change)
 
