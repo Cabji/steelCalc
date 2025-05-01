@@ -54,6 +54,7 @@ void SteelCalcMain::Init()
 
     // Set the custom cell editor for the grid cells
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
+    m_gridLValues->Layout();
 
     // detach the circular grid object from its sizer
     m_barProcessSizer->Detach(m_gridCircularLValues);

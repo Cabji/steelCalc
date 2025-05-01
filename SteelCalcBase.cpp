@@ -24,7 +24,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menuFile->Append( m_menuFileOptions );
 
 	wxMenuItem* m_menuFileExit;
-	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileExit );
 
 	m_menubar->Append( m_menuFile, _("File") );
@@ -92,9 +92,8 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_gridLValues->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
-	m_gridLValues->SetRowSize( 0, 563 );
 	m_gridLValues->AutoSizeRows();
-	m_gridLValues->EnableDragRowSize( true );
+	m_gridLValues->EnableDragRowSize( false );
 	m_gridLValues->SetRowLabelValue( 0, _("Value") );
 	m_gridLValues->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
@@ -102,7 +101,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 
 	// Cell Defaults
 	m_gridLValues->SetDefaultCellAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
-	m_barProcessSizer->Add( m_gridLValues, wxGBPosition( 3, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_barProcessSizer->Add( m_gridLValues, wxGBPosition( 3, 0 ), wxGBSpan( 1, 2 ), wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 
 	m_gridCircularLValues = new wxGrid( m_scrolledWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
@@ -144,7 +143,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_barProcessSizer->AddGrowableRow( 3 );
 	m_barProcessSizer->AddGrowableRow( 4 );
 
-	m_ScrolledWindowSizer->Add( m_barProcessSizer, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), 0, 5 );
+	m_ScrolledWindowSizer->Add( m_barProcessSizer, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND, 5 );
 
 	m_barCalculatorSizer = new wxGridBagSizer( 0, 0 );
 	m_barCalculatorSizer->SetFlexibleDirection( wxBOTH );
@@ -356,9 +355,34 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_lblOptionsCFBarGradeCosts->Wrap( -1 );
 	m_optionsSizer->Add( m_lblOptionsCFBarGradeCosts, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 
-	m_optionsCalculationFactorsBarGradeCosts = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_HORIZ_RULES|wxDV_ROW_LINES|wxDV_VERT_RULES );
-	m_optionsCalculationFactorsBarGradeCosts->SetToolTip( _("Sort the data by clicking on the Bar Grade column's heading.") );
+	m_optionsCalculationFactorsBarGradeCosts = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
+	// Grid
+	m_optionsCalculationFactorsBarGradeCosts->CreateGrid( 3, 2 );
+	m_optionsCalculationFactorsBarGradeCosts->EnableEditing( true );
+	m_optionsCalculationFactorsBarGradeCosts->EnableGridLines( true );
+	m_optionsCalculationFactorsBarGradeCosts->EnableDragGridSize( false );
+	m_optionsCalculationFactorsBarGradeCosts->SetMargins( 0, 0 );
+
+	// Columns
+	m_optionsCalculationFactorsBarGradeCosts->SetColSize( 0, 73 );
+	m_optionsCalculationFactorsBarGradeCosts->SetColSize( 1, 133 );
+	m_optionsCalculationFactorsBarGradeCosts->EnableDragColMove( false );
+	m_optionsCalculationFactorsBarGradeCosts->EnableDragColSize( true );
+	m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue( 0, _("Bar Name") );
+	m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue( 1, _("Cost per Mg") );
+	m_optionsCalculationFactorsBarGradeCosts->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_optionsCalculationFactorsBarGradeCosts->AutoSizeRows();
+	m_optionsCalculationFactorsBarGradeCosts->EnableDragRowSize( true );
+	m_optionsCalculationFactorsBarGradeCosts->SetRowLabelSize( 0 );
+	m_optionsCalculationFactorsBarGradeCosts->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_optionsCalculationFactorsBarGradeCosts->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
 	m_optionsSizer->Add( m_optionsCalculationFactorsBarGradeCosts, wxGBPosition( 6, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 

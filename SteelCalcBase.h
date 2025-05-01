@@ -29,7 +29,6 @@
 #include <wx/button.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
-#include <wx/dataview.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +115,7 @@ class Options : public wxFrame
 		wxCheckBox* m_optionsLabourAddLapTies;
 		wxStaticText* m_lblOptionsCalculationFactors;
 		wxStaticText* m_lblOptionsCFBarGradeCosts;
-		wxDataViewListCtrl* m_optionsCalculationFactorsBarGradeCosts;
+		wxGrid* m_optionsCalculationFactorsBarGradeCosts;
 
 	public:
 
