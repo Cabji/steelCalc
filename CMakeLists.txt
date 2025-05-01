@@ -5,15 +5,19 @@ set(SOURCES
       SteelCalcBase.cpp 
       SteelCalcMain.cpp
       SteelCalcOptions.cpp
-      CustomGridCellEditor.h
       CustomGridCellEditor.cpp
    )
 
 project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
+# local machine/local build settings
+set(localMachine_WX_LIB_NAME "gcc_x64_lib")
+
+# Force static linking BEFORE find_package
+set(wxWidgets_USE_STATIC ON CACHE BOOL "Use static libraries" FORCE)
+
 # wxWidgets specific configuration
-set(localMachine_WX_LIB_NAME "gcc_x64_dll")
 set(wxWidgets_CONFIGURATION "mswu")
 set(wxWidgets_ROOT_DIR $ENV{WXWIN})
 set(wxWidgets_LIB_DIR $ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME})
@@ -30,10 +34,9 @@ include_directories(
 link_directories($ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME})
 
 # Find wxWidgets for static linking
-find_package(wxWidgets 3.2 REQUIRED COMPONENTS gl core base)
+find_package(wxWidgets 3.2 COMPONENTS gl core base REQUIRED)
 
 include(${wxWidgets_USE_FILE})
-set(wxWidgets_USE_STATIC ON)
 
 # add sources to executable
 add_executable(${projectName} WIN32 ${SOURCES})
