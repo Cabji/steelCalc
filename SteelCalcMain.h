@@ -25,8 +25,8 @@ class SteelCalcMain : public Main
 		ComplexShape
 	};
 
-	const double APP_VERSION = 0.2;
-	const wxString DEFAULT_CONFIG_FILENAME = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath() + wxFileName::GetPathSeparator() + "SteelCalc.conf";
+	const double 	APP_VERSION				= 0.2;
+	const wxString 	DEFAULT_CONFIG_FILENAME	= wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath() + wxFileName::GetPathSeparator() + "SteelCalc.conf";
 
 	public:
 		/** Constructor */
@@ -35,38 +35,38 @@ class SteelCalcMain : public Main
 		// custom constructor declared below here
 		SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style);
 
-		void TriggerUpdateResults() { UpdateResults(); }
-		void TriggerSaveConfig() { SettingsSaveAllToDisk(); }
-		wxArrayString GetBarClassifications() { return m_specsGandD->GetStrings(); }
+		void			TriggerUpdateResults()	{ UpdateResults(); }
+		void			TriggerSaveConfig()		{ SettingsSaveAllToDisk(); }
+		wxArrayString	GetBarClassifications()	{ return m_specsGandD->GetStrings(); }
 
 	private:
-		void Init();
-		double GetBarArea(const wxString& barSpec);
-		wxString GetBarProcessingType(const int& numOfValues);
-		double GetBarRadius(const wxString& barSpec);
-		void OnBarSpecChoiceChanged(wxCommandEvent& event);
-		void OnBtnClearAllInputEntries(wxCommandEvent& event);
-		void OnCircularInputToggled(wxCommandEvent& event);
-		void OnClose(wxCloseEvent &event);
-		void OnGridCellValueChanged(wxGridEvent& event);
-		void OnMenuFileAbout(wxCommandEvent& event);
-		void OnMenuFileOptions(wxCommandEvent& event);
-		void OnMenuFileExit(wxCommandEvent& event);
-		void OnTextCtrlValueChanged(wxFocusEvent& event);
-		void SettingsLoadAllFromDisk();
-		void SettingsSaveAllToDisk();
-		void SettingsSaveBarGradeCostsToDisk(wxFileConfig& configObj);
-		void UpdateResults();
-		bool ValidateValue(wxString& value);
+		void 			Init();
+		double			GetBarArea(const wxString& barSpec);
+		wxString		GetBarProcessingType(const int& numOfValues);
+		double			GetBarRadius(const wxString& barSpec);
+		void			OnBarSpecChoiceChanged(wxCommandEvent& event);
+		void			OnBtnClearAllInputEntries(wxCommandEvent& event);
+		void			OnCircularInputToggled(wxCommandEvent& event);
+		void			OnClose(wxCloseEvent &event);
+		void			OnGridCellValueChanged(wxGridEvent& event);
+		void			OnMenuFileAbout(wxCommandEvent& event);
+		void			OnMenuFileOptions(wxCommandEvent& event);
+		void			OnMenuFileExit(wxCommandEvent& event);
+		void			OnTextCtrlValueChanged(wxFocusEvent& event);
+		void			SettingsLoadAllFromDisk();
+		void			SettingsSaveAllToDisk();
+		void			SettingsSaveBarGradeCostsToDisk(wxFileConfig& configObj);
+		void 			UpdateResults();
+		bool			ValidateValue(wxString& value);
 		
 		// members
-		double MASS_N_GRADE_STEEL = 8.051;
-		wxString m_processingCurrentBarSize = wxEmptyString;
-		wxArrayString m_processingTypes = {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
-		double m_costPerMg = 2200.0; // Cost per Mg placeholder value
+		double				MASS_N_GRADE_STEEL			= 8.051; // placeholder
+		wxString			m_processingCurrentBarSize	= wxEmptyString;
+		wxArrayString		m_processingTypes			= {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
+		double				m_costPerMg					= 2200.0; // Cost per Mg placeholder value
 
 		// pointer to the Options frame instance
-		SteelCalcOptions* m_optionsFrame = nullptr;
+		SteelCalcOptions* 	m_optionsFrame				= nullptr;
 };
 
 #endif // __SteelCalcMain__

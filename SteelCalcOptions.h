@@ -21,18 +21,20 @@ class SteelCalcOptions : public Options
 		SteelCalcOptions( wxWindow* parent );
 	//// end generated class members
 
-		bool GetAddLapTies();
-		bool GetAddPerimeterTies();
-		bool GetAddSetupTies();
-		wxVector<std::pair<wxString, wxString>> GetBarClassificationData();
-		void SetAddLapTies(const bool& value);
-		void SetAddPerimeterTies(const bool& value);
-		void SetAddSetupTies(const bool& value);
+		bool 									GetAddLapTies();
+		bool 									GetAddPerimeterTies();
+		bool 									GetAddSetupTies();
+		wxVector<std::pair<wxString, wxString>>	GetBarClassificationData();
+		void 									SetAddLapTies(const bool& value);
+		void 									SetAddPerimeterTies(const bool& value);
+		void 									SetAddSetupTies(const bool& value);
 	private: 
 		// Handlers for Options events.
 		// void OnBarClassificationValueChange( wxDataViewEvent& event);
-		void OnClose( wxCloseEvent& event );
-		SteelCalcMain* m_mainFrame;
+		void	OnClose( wxCloseEvent& event );
+
+		// private members
+		SteelCalcMain*	m_mainFrame;
 };
 
 #endif // __SteelCalcOptions__

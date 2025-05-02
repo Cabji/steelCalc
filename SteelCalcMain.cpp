@@ -246,14 +246,33 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
 
     wxFileConfig configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
     
-    bool tempValue;
+    bool    tempValue;
+    int     counter = 0;
     configObj.Read("LabourAddLapTies", &tempValue);
     m_optionsFrame->SetAddLapTies(tempValue);
     configObj.Read("LabourAddPerimeterTies", &tempValue);
     m_optionsFrame->SetAddPerimeterTies(tempValue);
     configObj.Read("LabourAddSetupTies", &tempValue);
     m_optionsFrame->SetAddSetupTies(tempValue);
+    if (configObj.HasGroup("BarGradeCosts"))
+    {
+        wxVector<std::pair<wxString, wxString>> barData;
+        wxString                                barGrade, costPerMg;
+        long                                    index = 0;
+        counter = configObj.GetNumberOfEntries();
+        configObj.SetPath("/BarGradeCosts");
+        if (configObj.GetFirstEntry(barGrade, index))
+        {
+            do
+            {
+                configObj.Read(barGrade, &costPerMg);
+                std::cout << "Bar grade: " << barGrade << ", Cost per Mg: " << costPerMg << std::endl;
+            }
+            while(configObj.GetNextEntry(barGrade, index));
+        }
+        std::cout << "Processed " << counter << " bar grades from config file." << std::endl;
 
+    }
     std::cout << "Settings loaded from config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
 }
 
