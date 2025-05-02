@@ -15,22 +15,27 @@ Options( parent )
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
     {
-        // ensure grid has 2 columns
-        int colCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
-        if (colCount < 2)
-        {
-            m_optionsCalculationFactorsBarGradeCosts->AppendCols((2 - colCount));
-        }
-        m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(0, "Bar Name");
-        m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(1, "Cost per Mg");
-
-        // set text alignment of second col
-        wxGridCellAttr* rightAlignAttr = new wxGridCellAttr();
+        // local data acquisition
+        CustomGridCellEditor* 	floatEditor 		= new CustomGridCellEditor();
+        CustomGridCellEditor* 	stringEditor 		= new CustomGridCellEditor();
+        wxGridCellAttr* 		rightAlignAttr 		= new wxGridCellAttr();
+        wxArrayString 			barClassifications 	= m_mainFrame->GetBarClassifications();
+        int						colCount			= m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
+        floatEditor->SetValidationType(CustomGridCellEditor::ValidationType::FLOAT);
+        stringEditor->SetValidationType(CustomGridCellEditor::ValidationType::STRING);
         rightAlignAttr->SetAlignment(wxALIGN_RIGHT, wxALIGN_CENTER);
+        
+        // ensure grid has 2 columns
+        if (colCount < 2) { m_optionsCalculationFactorsBarGradeCosts->AppendCols((2 - colCount)); }
+        
+		// set grid/column attributes
+		m_optionsCalculationFactorsBarGradeCosts->SetDefaultEditor(stringEditor);
+		m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(0, "Bar Name");
+        m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(1, "Cost per Mg");
         m_optionsCalculationFactorsBarGradeCosts->SetColAttr(1, rightAlignAttr);
+        m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
 
-        // Populate rows with default values
-        wxArrayString barClassifications = m_mainFrame->GetBarClassifications();
+        // Populate rows with bar classifications and costs
         int row = 0;
         for (const wxString& barType : barClassifications)
         {
@@ -46,11 +51,13 @@ Options( parent )
         }
 
         // set grid's size and scroll behaviour
-        m_optionsCalculationFactorsBarGradeCosts->SetMinSize(wxSize(-1, 200));
+        wxSize uiSize = m_optionsCalculationFactorsBarGradeCosts->GetSize();
+        m_optionsCalculationFactorsBarGradeCosts->SetMinSize(uiSize);
         m_optionsCalculationFactorsBarGradeCosts->EnableScrolling(false, true);
+        // update user-seen UI
+        m_optionsCalculationFactorsBarGradeCosts->Layout();
     }
     // update user-seen UI
-    m_optionsCalculationFactorsBarGradeCosts->Layout();
     this->Layout();
 }
 
@@ -73,13 +80,13 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
 {
     wxVector<std::pair<wxString, wxString>> barData;
 
-    // unsigned int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetItemCount();
-    // for (unsigned int i = 0; i < rowCount; ++i)
-    // {
-    //     wxString barGrade	= m_optionsCalculationFactorsBarGradeCosts->GetTextValue(i, 0);
-    //     wxString costPerMg	= m_optionsCalculationFactorsBarGradeCosts->GetTextValue(i, 1);
-	// 	barData.push_back(std::make_pair(barGrade, costPerMg));
-    // }
+    int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberRows();
+    for (int i = 0; i < rowCount; ++i)
+    {
+        wxString barGrade	= m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, 0);
+        wxString costPerMg	= m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, 1);
+		barData.push_back(std::make_pair(barGrade, costPerMg));
+    }
     return barData;
 }
 
@@ -97,51 +104,6 @@ void SteelCalcOptions::SetAddSetupTies(const bool &value)
 {
     m_optionsLabourAddSetupTies->SetValue(value);
 }
-
-// void SteelCalcOptions::OnBarClassificationValueChange(wxDataViewEvent &event)
-// {
-//     // when the data in the Bar Cost class table changes, we need to check what the user inputs and sanitize it
-//     // column 0 can be any string value (it's the Bar Name / label)
-//     // column 1 has to be a float (it's the Bar Cost, so it's a currency value - ?rem to write this for multi-locale support)
-    
-//     // get row & col of changed value event.
-//     int row = m_optionsCalculationFactorsBarGradeCosts->ItemToRow(event.GetItem());
-//     int col = event.GetColumn();
-
-//     // get changed value
-//     wxString newValue = m_optionsCalculationFactorsBarGradeCosts->GetTextValue(row, col);
-    
-//     // bar label/name
-//     if (col == 0)
-//     {
-//         // allow string value, trim whitespace
-//         newValue = newValue.Trim().Trim(false);
-//         if (newValue.IsEmpty()) 
-//         {
-//             wxMessageBox("Bar name cannot be empty.", "Invalid input", wxOK | wxICON_ERROR);
-//             m_optionsCalculationFactorsBarGradeCosts->SetTextValue("", row, col);
-//         }
-//         else
-//         {
-//             m_optionsCalculationFactorsBarGradeCosts->SetValue(newValue, row, col);
-//         }
-//     }
-//     else if (col == 1)
-//     {
-//         // allow only a valid float or int value
-//         double cost;
-//         if (!newValue.ToDouble(&cost) || cost < 0)
-//         {
-//             wxMessageBox("Bar cost must be a valid non-negative number.", "Invalid Input", wxOK | wxICON_ERROR);
-//             m_optionsCalculationFactorsBarGradeCosts->SetTextValue("0", row, col);
-//         }
-//         else
-//         {
-//             m_optionsCalculationFactorsBarGradeCosts->SetValue(wxString::Format("%.2f", cost), row, col);
-//         }
-//     }
-//     event.Skip();
-// }
 
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
