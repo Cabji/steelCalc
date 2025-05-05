@@ -36,6 +36,7 @@ Options( parent )
         m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
 
         // Populate rows with bar classifications and costs
+        // dev-note: be aware that this is to populate with a default set of values only (0.0 for cost)
         int row = 0;
         for (const wxString& barType : barClassifications)
         {
@@ -107,7 +108,17 @@ void SteelCalcOptions::SetAddSetupTies(const bool &value)
 
 void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxString, wxString>> &barData)
 {
+    // this method will be called AFTER the constructor has been called
+    // so we have to handle the barData and populate the m_optionsCalculationFactorBarGradeCosts grid with it
+
+    // local data acquisition
     m_barGradeAndCostData = barData;
+    for (int i = 0; i < m_optionsCalculationFactorsBarGradeCosts->GetNumberRows(); ++i)
+    {
+        m_optionsCalculationFactorsBarGradeCosts->SetCellValue(i, 0, m_barGradeAndCostData[i].first);
+        m_optionsCalculationFactorsBarGradeCosts->SetCellValue(i, 1, m_barGradeAndCostData[i].second);
+    }
+    std::cout << "Updated bar classification data in the Options frame." << std::endl;
 }
 
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
