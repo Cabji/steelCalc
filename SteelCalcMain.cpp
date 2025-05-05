@@ -266,12 +266,13 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
             do
             {
                 configObj.Read(barGrade, &costPerMg);
-                std::cout << "Bar grade: " << barGrade << ", Cost per Mg: " << costPerMg << std::endl;
+                // std::cout << "Bar grade: " << barGrade << ", Cost per Mg: " << costPerMg << std::endl;
+                barData.push_back(std::make_pair(barGrade, costPerMg));
             }
             while(configObj.GetNextEntry(barGrade, index));
         }
         std::cout << "Processed " << counter << " bar grades from config file." << std::endl;
-
+        m_optionsFrame->SetBarClassificationData(barData);
     }
     std::cout << "Settings loaded from config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
 }

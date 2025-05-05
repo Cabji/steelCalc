@@ -105,6 +105,11 @@ void SteelCalcOptions::SetAddSetupTies(const bool &value)
     m_optionsLabourAddSetupTies->SetValue(value);
 }
 
+void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxString, wxString>> &barData)
+{
+    m_barGradeAndCostData = barData;
+}
+
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
     // dev-note: perhaps save the options to disk here at some stage?
