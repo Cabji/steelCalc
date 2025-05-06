@@ -10,7 +10,7 @@ Options( parent )
     
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
-    //m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &SteelCalcOptions::OnBarClassificationValueChange, this);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &SteelCalcOptions::GridSort, this);
     
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
@@ -34,7 +34,7 @@ Options( parent )
         m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(1, "Cost per Mg");
         m_optionsCalculationFactorsBarGradeCosts->SetColAttr(1, rightAlignAttr);
         m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
-
+        m_optionsCalculationFactorsBarGradeCosts->SetSortingColumn(0);
         // Populate rows with bar classifications and costs
         // dev-note: be aware that this is to populate with a default set of values only (0.0 for cost)
         int row = 0;
@@ -89,6 +89,11 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
 		barData.push_back(std::make_pair(barGrade, costPerMg));
     }
     return barData;
+}
+
+void SteelCalcOptions::GridSort(wxGridEvent& event)
+{
+    std::cout << "Grid sort event triggered!" << std::endl;
 }
 
 void SteelCalcOptions::SetAddLapTies(const bool &value)
