@@ -1,5 +1,6 @@
 #include "SteelCalcMain.h"
 #include "SteelCalcOptions.h"
+#include <algorithm>
 #include <wx/msgdlg.h>
 
 SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
@@ -35,6 +36,7 @@ Options( parent )
         m_optionsCalculationFactorsBarGradeCosts->SetColAttr(1, rightAlignAttr);
         m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
         m_optionsCalculationFactorsBarGradeCosts->SetSortingColumn(0);
+        
         // Populate rows with bar classifications and costs
         // dev-note: be aware that this is to populate with a default set of values only (0.0 for cost)
         int row = 0;
@@ -93,7 +95,51 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
 
 void SteelCalcOptions::GridSort(wxGridEvent& event)
 {
-    std::cout << "Grid sort event triggered!" << std::endl;
+    // dev-note: we are sorting based on col 0 atm but if user clicks on col 1
+    // it is breaking the data. implement support for sort by any col.
+    
+    wxGrid* triggerGrid = dynamic_cast<wxGrid*>(event.GetEventObject());
+    if (triggerGrid)
+    {
+        // local data acquisition
+        int colToSort = event.GetCol();
+        int rowCount = triggerGrid->GetNumberRows();
+        int colCount = triggerGrid->GetNumberCols();
+        
+        if (rowCount <= 1)
+        {
+            // only 1 row, no sorting needed.
+            return;
+        }
+
+        // extract data from grid into vector of pairs
+        std::vector<std::pair<wxString,wxString>> gridData;
+        for (int i = 0; i < rowCount; ++i)
+        {
+            wxString key = triggerGrid->GetCellValue(i, colToSort);
+            wxString value = triggerGrid->GetCellValue(i, 1);
+            gridData.emplace_back(key, value);
+        }
+
+        // sort the data in ascending order (alphanumerical) based on the key
+        std::sort(gridData.begin(), gridData.end(), [colToSort](const auto& a, const auto& b) {
+            return a.first.Cmp(b.first) < 0; // using wxString::Cmp for comparison
+        });
+
+        // repopulate the grid wit sorted data
+        for (int i = 0; i < rowCount; ++i)
+        {
+            triggerGrid->SetCellValue(i, 0, gridData[i].first);
+            triggerGrid->SetCellValue(i, 1, gridData[i].second);
+        }
+
+        std::cout << "Grid sorted by column " << colToSort << std::endl;
+    }
+    else 
+    {
+        std::cout << "!! Grid sort event triggered, but wxGrid object was not the trigger object." << std::endl;
+    }
+    event.Skip();
 }
 
 void SteelCalcOptions::SetAddLapTies(const bool &value)
