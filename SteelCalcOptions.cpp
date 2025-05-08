@@ -12,7 +12,7 @@ Options( parent )
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
     m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &SteelCalcOptions::GridSort, this);
-    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_EDITOR_HIDDEN, &SteelCalcOptions::OnGridEditorHidden, this);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_KEY_DOWN, &SteelCalcOptions::OnGridKeyDown, this);
     
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
@@ -62,6 +62,7 @@ Options( parent )
         m_optionsCalculationFactorsBarGradeCosts->Layout();
     }
     // update user-seen UI
+    m_optionsCalculationFactorsBarGradeCosts->SetFocus();
     this->Layout();
 }
 
@@ -94,28 +95,29 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
     return barData;
 }
 
-void SteelCalcOptions::OnGridEditorHidden(wxGridEvent &event)
+void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 {
-	// dev-note: this handler occurs when the EDITING mode for a cell is exited.
-	// this is not the desired behaviour. it would be preferred if we can detect that the user has pressed 
-	// the Enter key while a cell in the grid's last row is "selected" (ie: has a black border)
-	
-	std::cout << "OnGridEditorHidden event handler is happening." << std::endl;
-    wxGrid* grid = dynamic_cast<wxGrid*>(event.GetEventObject());
+	std::cout << "OnGridKeyDown event handler is happening." << std::endl;
+    // wxGrid* grid = dynamic_cast<wxGrid*>(event.GetEventObject());
+     wxGrid* grid = m_optionsCalculationFactorsBarGradeCosts;
     if (!grid)
     {
+        std::cout << "!! Grid object was " << grid << std::endl;
         // allow regular processing and return
         event.Skip();
         return;
     }
 
-    // local data acquisition
-    int currentRow  = grid->GetGridCursorRow();
-    int currentCol  = grid->GetGridCursorCol();
-    int lastRow     = grid->GetNumberRows() - 1;
+    // std::cout << "GetKeyCode: " << event.GetKeyCode() << std::endl;
+    if (event.GetKeyCode() == WXK_DOWN || event.GetKeyCode() == WXK_NUMPAD_DOWN)
+    {
+        // local data acquisition
+        int currentRow  = grid->GetGridCursorRow();
+        int currentCol  = grid->GetGridCursorCol();
+        int lastRow     = grid->GetNumberRows() - 1;
 
-	// check if enter was pressed in last row
-	if (currentRow == lastRow)
+        // check if enter was pressed in last row
+        if (currentRow == lastRow)
 	{
 		// check if all cells in lastRow are empty before adding a new row
 		bool isRowEmpty = true;
@@ -130,6 +132,7 @@ void SteelCalcOptions::OnGridEditorHidden(wxGridEvent &event)
 		// return if the last row was empty as we don't want to create a new row.
 		if (isRowEmpty) { event.Skip(); return; }
 
+        std::cout << "  Adding new row to grid." << std::endl;
 		// add new row
 		grid->AppendRows(1);
 
@@ -137,7 +140,7 @@ void SteelCalcOptions::OnGridEditorHidden(wxGridEvent &event)
 		grid->SetGridCursor(lastRow + 1, 0);
 		grid->MakeCellVisible(lastRow + 1,0);
 	}
-
+    }
 	event.Skip();
 }
 

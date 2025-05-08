@@ -31,7 +31,7 @@ class SteelCalcOptions : public Options
 		void 									SetBarClassificationData(const wxVector<std::pair<wxString, wxString>>& barData);
 	private: 
 		// Handlers for Options events.
-		void 	OnGridEditorHidden( wxGridEvent& event );
+		void 	OnGridKeyDown( wxKeyEvent& event );
 		void	GridSort( wxGridEvent& event );
 		void	OnClose( wxCloseEvent& event );
 
