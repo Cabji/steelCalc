@@ -12,6 +12,7 @@ Options( parent )
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
     m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &SteelCalcOptions::GridSort, this);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_EDITOR_HIDDEN, &SteelCalcOptions::OnGridEditorHidden, this);
     
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
@@ -93,7 +94,54 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
     return barData;
 }
 
-void SteelCalcOptions::GridSort(wxGridEvent& event)
+void SteelCalcOptions::OnGridEditorHidden(wxGridEvent &event)
+{
+	// dev-note: this handler occurs when the EDITING mode for a cell is exited.
+	// this is not the desired behaviour. it would be preferred if we can detect that the user has pressed 
+	// the Enter key while a cell in the grid's last row is "selected" (ie: has a black border)
+	
+	std::cout << "OnGridEditorHidden event handler is happening." << std::endl;
+    wxGrid* grid = dynamic_cast<wxGrid*>(event.GetEventObject());
+    if (!grid)
+    {
+        // allow regular processing and return
+        event.Skip();
+        return;
+    }
+
+    // local data acquisition
+    int currentRow  = grid->GetGridCursorRow();
+    int currentCol  = grid->GetGridCursorCol();
+    int lastRow     = grid->GetNumberRows() - 1;
+
+	// check if enter was pressed in last row
+	if (currentRow == lastRow)
+	{
+		// check if all cells in lastRow are empty before adding a new row
+		bool isRowEmpty = true;
+		for(int col = 0; col < grid->GetNumberCols(); ++col)
+		{
+			if (!grid->GetCellValue(currentRow, col).IsEmpty())
+			{
+				isRowEmpty = false;
+				break;
+			}
+		}
+		// return if the last row was empty as we don't want to create a new row.
+		if (isRowEmpty) { event.Skip(); return; }
+
+		// add new row
+		grid->AppendRows(1);
+
+		// shift focus to left-most cell of new row
+		grid->SetGridCursor(lastRow + 1, 0);
+		grid->MakeCellVisible(lastRow + 1,0);
+	}
+
+	event.Skip();
+}
+
+void SteelCalcOptions::GridSort(wxGridEvent &event)
 {
     // dev-note: we are sorting based on col 0 atm but if user clicks on col 1
     // it is breaking the data. implement support for sort by any col.
@@ -113,27 +161,33 @@ void SteelCalcOptions::GridSort(wxGridEvent& event)
         }
 
         // extract data from grid into vector of pairs
-        std::vector<std::pair<wxString,wxString>> gridData;
+        std::vector<std::vector<wxString>> gridData;
         for (int i = 0; i < rowCount; ++i)
         {
-            wxString key = triggerGrid->GetCellValue(i, colToSort);
-            wxString value = triggerGrid->GetCellValue(i, 1);
-            gridData.emplace_back(key, value);
+            std::vector<wxString> rowData;
+            for (int j = 0; j < colCount; ++j)
+            {
+                rowData.push_back(triggerGrid->GetCellValue(i,j));
+            }
+            gridData.push_back(rowData);
         }
 
         // sort the data in ascending order (alphanumerical) based on the key
-        std::sort(gridData.begin(), gridData.end(), [colToSort](const auto& a, const auto& b) {
-            return a.first.Cmp(b.first) < 0; // using wxString::Cmp for comparison
+        std::sort(gridData.begin(), gridData.end(), [colToSort](const std::vector<wxString>& a, const std::vector<wxString>& b) {
+            return a[colToSort].Cmp(b[colToSort]) < 0; // using wxString::Cmp for comparison
         });
 
-        // repopulate the grid wit sorted data
+        // repopulate the grid with sorted data
         for (int i = 0; i < rowCount; ++i)
         {
-            triggerGrid->SetCellValue(i, 0, gridData[i].first);
-            triggerGrid->SetCellValue(i, 1, gridData[i].second);
+            for (int j = 0; j < colCount; ++j)
+            {
+                triggerGrid->SetCellValue(i, j, gridData[i][j]);
+            }
         }
 
         std::cout << "Grid sorted by column " << colToSort << std::endl;
+        triggerGrid->DeselectCol(colToSort);
     }
     else 
     {

@@ -383,6 +383,8 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 
 	// Cell Defaults
 	m_optionsCalculationFactorsBarGradeCosts->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_optionsCalculationFactorsBarGradeCosts->SetToolTip( _("Click column headings to sort by that column's values.") );
+
 	m_optionsSizer->Add( m_optionsCalculationFactorsBarGradeCosts, wxGBPosition( 6, 0 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
 
