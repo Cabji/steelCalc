@@ -219,9 +219,21 @@ void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxStrin
     // this method will be called AFTER the constructor has been called
     // so we have to handle the barData and populate the m_optionsCalculationFactorBarGradeCosts grid with it
 
+    // dev-note: we need to clear the grid and ensure it has enough rows to hold items from barData
+    int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberRows();
+    int barDataCount = barData.size();
+    if (rowCount < barDataCount)
+    {
+       m_optionsCalculationFactorsBarGradeCosts->AppendRows(barDataCount - rowCount);
+    }
+    else if (rowCount > barDataCount)
+    {
+        m_optionsCalculationFactorsBarGradeCosts->DeleteRows(barDataCount, rowCount - barDataCount);
+    }
+
     // local data acquisition
     m_barGradeAndCostData = barData;
-    for (int i = 0; i < m_optionsCalculationFactorsBarGradeCosts->GetNumberRows(); ++i)
+    for (int i = 0; i < barData.size(); ++i)
     {
         m_optionsCalculationFactorsBarGradeCosts->SetCellValue(i, 0, m_barGradeAndCostData[i].first);
         m_optionsCalculationFactorsBarGradeCosts->SetCellValue(i, 1, m_barGradeAndCostData[i].second);

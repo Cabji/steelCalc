@@ -244,16 +244,20 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
         return;
     }
 
-    wxFileConfig configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
-    
-    bool    tempValue;
-    int     counter = 0;
+    // local data acquisition
+    wxFileConfig    configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
+    bool            tempValue;
+    int             counter = 0;
+
+    // read values from config file
+    configObj.SetPath("/");
     configObj.Read("LabourAddLapTies", &tempValue);
     m_optionsFrame->SetAddLapTies(tempValue);
     configObj.Read("LabourAddPerimeterTies", &tempValue);
     m_optionsFrame->SetAddPerimeterTies(tempValue);
     configObj.Read("LabourAddSetupTies", &tempValue);
     m_optionsFrame->SetAddSetupTies(tempValue);
+    
     if (configObj.HasGroup("BarGradeCosts"))
     {
         wxVector<std::pair<wxString, wxString>> barData;
@@ -261,6 +265,7 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
         long                                    index = 0;
         counter = configObj.GetNumberOfEntries();
         configObj.SetPath("/BarGradeCosts");
+        
         if (configObj.GetFirstEntry(barGrade, index))
         {
             do
