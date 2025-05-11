@@ -1,26 +1,46 @@
 cmake_minimum_required(VERSION 3.20)
-set(projectName "SteelCalc")
-set(SOURCES 
-      MyApp.cpp
-      SteelCalcBase.cpp 
-      SteelCalcMain.cpp
-      SteelCalcOptions.cpp
-      CustomGridCellEditor.cpp
-   )
+# as your project grows you will need to add more source filenames and 
+# library names in the project config section for the project to build
+# wxWidgets settings should only need changing if you switch from static 
+# to dynamic built
 
+### project config
+      # your project's name
+      set(projectName "SteelCalc")
+      # names of source files in your project here (.cpp only)
+      set(SOURCES 
+            MyApp.cpp
+            SteelCalcBase.cpp 
+            SteelCalcMain.cpp
+            SteelCalcOptions.cpp
+            CustomGridCellEditor.cpp
+            cabjiSQLite3.cpp
+      )
+      # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
+      set(projectLibraries
+            libsqlite3
+      )
+### end project config
+
+### wxWidgets config - have you set Environment variable WXWIN? If not, do it now.
+      # base directory where wxWidgets was installed to (I install wx to my "cpp dev root" which is C:/cpp/ and I set ENV{WXWIN} to that path)
+      set(wxWidgets_ROOT_DIR $ENV{WXWIN})
+      # Dynamic (OFF) or Static (ON) build?
+      set(wxWidgets_USE_STATIC ON CACHE BOOL "Use static libraries" FORCE)
+      # local machine/local build settings (look in your dev root's lib/ folder for folder names, use *_lib for static, *_dll for dynamic)
+      set(localMachine_WX_LIB_NAME "gcc_x64_lib")
+      # local machine specific configuration - the configuration name (look in lib/gcc_*/ folder for folder names)
+      set(wxWidgets_CONFIGURATION "mswu")
+      # the wx components the project needs !! NOTE: do not enclose in quotes/double quotes !!
+      set(wxPackages gl core base)
+### end wxWidgets config
+
+
+######### you shouldn't have to configure anything else below here
 project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-# local machine/local build settings
-set(localMachine_WX_LIB_NAME "gcc_x64_lib")
-
-# Force static linking BEFORE find_package
-set(wxWidgets_USE_STATIC ON CACHE BOOL "Use static libraries" FORCE)
-
-# wxWidgets specific configuration
-set(wxWidgets_CONFIGURATION "mswu")
-set(wxWidgets_ROOT_DIR $ENV{WXWIN})
-set(wxWidgets_LIB_DIR $ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME})
+set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/${localMachine_WX_LIB_NAME})
 set(wxWidgets_INCLUDE_DIRS
       "${wxWidgets_ROOT_DIR}/include"
       "${wxWidgets_ROOT_DIR}/lib/${localMachine_WX_LIB_NAME}/${wxWidgets_CONFIGURATION}"
@@ -34,7 +54,7 @@ include_directories(
 link_directories($ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME})
 
 # Find wxWidgets for static linking
-find_package(wxWidgets 3.2 COMPONENTS gl core base REQUIRED)
+find_package(wxWidgets 3.2 COMPONENTS ${wxPackages} REQUIRED)
 
 include(${wxWidgets_USE_FILE})
 
@@ -42,7 +62,7 @@ include(${wxWidgets_USE_FILE})
 add_executable(${projectName} WIN32 ${SOURCES})
 
 target_include_directories(${projectName} PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(${projectName} ${wxWidgets_LIBRARIES})
+target_link_libraries(${projectName} ${wxWidgets_LIBRARIES} ${projectLibraries})
 
 # Handle project resources...
 # Define the source and destination resource directories
