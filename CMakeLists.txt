@@ -16,9 +16,12 @@ cmake_minimum_required(VERSION 3.20)
             CustomGridCellEditor.cpp
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
+      # SQLiteCpp depends on sqlite3!
       set(projectLibraries
             SQLiteCpp
+            sqlite3
       )
+      set(localCPPDevRoot "C:/cpp")
 ### end project config
 
 ### wxWidgets config - have you set Environment variable WXWIN? If not, do it now.
@@ -46,16 +49,16 @@ set(wxWidgets_INCLUDE_DIRS
    )
 
 include_directories(
-      $ENV{WXWIN}/include
+      ${localCPPDevRoot}/include
       $ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME}/${wxWidgets_CONFIGURATION}
       )
 
-link_directories($ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME})
+link_directories($ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME} ${localCPPDevRoot}/lib)
 
 # Find wxWidgets for static linking
 find_package(wxWidgets 3.2 COMPONENTS ${wxPackages} REQUIRED)
 
-include(${wxWidgets_USE_FILE})
+include(${wxWidgets_USE_FILE} ${localCPPDevRoot}/include)
 
 # add sources to executable
 add_executable(${projectName} WIN32 ${SOURCES})
