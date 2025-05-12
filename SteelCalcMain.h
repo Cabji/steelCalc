@@ -63,8 +63,8 @@ class SteelCalcMain : public Main
 		bool			ValidateValue(wxString& value);
 		
 		// members
-		SQLite::Database*	m_dbMain				= nullptr;
-		SQLite::Statement*	m_dbInventoryStatement;
+		SQLite::Database*	m_dbMain					= nullptr;
+		SQLite::Statement*	m_dbQuery;
 		double				MASS_N_GRADE_STEEL			= 8.051; // placeholder
 		wxString			m_processingCurrentBarSize	= wxEmptyString;
 		wxArrayString		m_processingTypes			= {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
