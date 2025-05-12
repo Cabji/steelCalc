@@ -141,6 +141,39 @@ void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 		grid->MakeCellVisible(lastRow + 1,0);
 	}
     }
+    else if (event.GetKeyCode() == WXK_DELETE)
+    {
+        std::cout << "  Delete key pressed." << std::endl
+                  << "    Selected row blocks size: " << grid->GetSelectedRowBlocks().size() << std::endl
+                  << "    Number of cols: " << grid->GetNumberCols() << std::endl;
+
+        // dev-note: wxGrid::GetSelectedRows() returns a vector of int values which are *only* rows that have *all* cells selected.
+        auto selectedRows = grid->GetSelectedRows();
+
+        std::cout << "    Deleting rows: " << std::endl;
+        // delete all the *entirely selected* rows
+        for (int rowToDelete : selectedRows)
+        {
+            std::cout << "      " << rowToDelete << std::endl;
+            grid->DeleteRows(rowToDelete);    
+        }
+        // shift focus to left most cell of the row above the deleted row
+        if (selectedRows.size() > 0)
+        {
+            int rowAbove = selectedRows[0] - 1;
+            if (rowAbove >= 0)
+            {
+                grid->SetGridCursor(rowAbove, 0);
+                grid->MakeCellVisible(rowAbove, 0);
+            }
+        }
+        else
+        {
+            // no rows selected, so just move the cursor to the first cell of the grid
+            grid->SetGridCursor(0, 0);
+            grid->MakeCellVisible(0, 0);
+        }
+    }
 	event.Skip();
 }
 

@@ -14,11 +14,10 @@ cmake_minimum_required(VERSION 3.20)
             SteelCalcMain.cpp
             SteelCalcOptions.cpp
             CustomGridCellEditor.cpp
-            cabjiSQLite3.cpp
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
       set(projectLibraries
-            libsqlite3
+            SQLiteCpp
       )
 ### end project config
 

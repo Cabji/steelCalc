@@ -29,11 +29,15 @@ void SteelCalcMain::Init()
     // point to the Options frame instance
     m_optionsFrame = new SteelCalcOptions(this);
 
-    std::cout << "Default config file is: " << DEFAULT_CONFIG_FILENAME << std::endl;
+    std::cout << "Default config file is: " << DEFAULT_CONFIG_FILENAME << std::endl
+              << "Default database file is: " << DEFAULT_DATABASE_FILENAME << std::endl;
+    
+    // class data acquisition
+    auto specNames = m_specsGandD->GetStrings();
+    m_dbMain = new SQLite::Database(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
     // load settings from config file 
     SettingsLoadAllFromDisk();
-    auto specNames = m_specsGandD->GetStrings();
-    
+
     // Bind event handlers
     Bind(wxEVT_CLOSE_WINDOW, &SteelCalcMain::OnClose, this);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, id_MENU_FILE_ABOUT);
