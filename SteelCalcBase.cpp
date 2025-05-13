@@ -400,3 +400,58 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 Options::~Options()
 {
 }
+
+DatabaseViewer::DatabaseViewer()
+{
+}
+
+DatabaseViewer::DatabaseViewer( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name )
+{
+	this->Create( parent, id, pos, size, style, name );
+}
+
+bool DatabaseViewer::Create( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name )
+{
+	if ( !wxPanel::Create( parent, id, pos, size, style, name ) )
+	{
+		return false;
+	}
+
+
+	wxBoxSizer* m_boxSizer;
+	m_boxSizer = new wxBoxSizer( wxVERTICAL );
+
+	m_dbUIGrid = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_dbUIGrid->CreateGrid( 0, 0 );
+	m_dbUIGrid->EnableEditing( true );
+	m_dbUIGrid->EnableGridLines( true );
+	m_dbUIGrid->EnableDragGridSize( false );
+	m_dbUIGrid->SetMargins( 0, 0 );
+
+	// Columns
+	m_dbUIGrid->EnableDragColMove( false );
+	m_dbUIGrid->EnableDragColSize( true );
+	m_dbUIGrid->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_dbUIGrid->EnableDragRowSize( true );
+	m_dbUIGrid->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_dbUIGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_boxSizer->Add( m_dbUIGrid, 0, wxALL|wxEXPAND, 5 );
+
+
+	this->SetSizer( m_boxSizer );
+	this->Layout();
+
+	return true;
+}
+
+DatabaseViewer::~DatabaseViewer()
+{
+}

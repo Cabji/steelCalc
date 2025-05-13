@@ -29,6 +29,8 @@
 #include <wx/button.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
+#include <wx/sizer.h>
+#include <wx/panel.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -122,6 +124,26 @@ class Options : public wxFrame
 		Options( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 266,414 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~Options();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class DatabaseViewer
+///////////////////////////////////////////////////////////////////////////////
+class DatabaseViewer : public wxPanel
+{
+	private:
+
+	protected:
+		wxGrid* m_dbUIGrid;
+
+	public:
+
+		DatabaseViewer();
+		DatabaseViewer( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+		bool Create( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+
+		~DatabaseViewer();
 
 };
 
