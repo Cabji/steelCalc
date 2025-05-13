@@ -33,12 +33,13 @@ void SteelCalcMain::Init()
               << "Default database file is: " << DEFAULT_DATABASE_FILENAME << std::endl;
     
     // class data acquisition
-    auto specNames = m_specsGandD->GetStrings();
-    m_dbMain    = new SQLite::Database(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
-    m_dbQuery   = new SQLite::Statement(m_dbMain&, "SELECT * FROM inventory");
+    auto specNames	= m_specsGandD->GetStrings();
+   
+	m_dbMain		= std::make_unique<SQLite::Database>    (DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    m_dbQuery		= std::make_unique<SQLite::Statement>   (*m_dbMain, "SELECT * FROM inventory");
     while (m_dbQuery->executeStep())
     {
-        auto output = m_dbQuery->getColumn("itemName").getString() + m_dbQuery->getColumn("itemSupplier").getString();
+        auto output = m_dbQuery->getColumn("itemName").getString() + " from: " + m_dbQuery->getColumn("supplierName").getString();
         std::cout << output << std::endl;
     }
     // load settings from config file 

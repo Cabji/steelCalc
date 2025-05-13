@@ -63,12 +63,12 @@ class SteelCalcMain : public Main
 		bool			ValidateValue(wxString& value);
 		
 		// members
-		SQLite::Database*	m_dbMain					= nullptr;
-		SQLite::Statement*	m_dbQuery;
-		double				MASS_N_GRADE_STEEL			= 8.051; // placeholder
-		wxString			m_processingCurrentBarSize	= wxEmptyString;
-		wxArrayString		m_processingTypes			= {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
-		double				m_costPerMg					= 2200.0; // Cost per Mg placeholder value
+		std::unique_ptr <SQLite::Database>	m_dbMain;
+		std::unique_ptr <SQLite::Statement>	m_dbQuery;
+		double								MASS_N_GRADE_STEEL			= 8.051; // placeholder
+		wxString							m_processingCurrentBarSize	= wxEmptyString;
+		wxArrayString						m_processingTypes			= {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
+		double								m_costPerMg					= 2200.0; // Cost per Mg placeholder value
 
 		// pointer to the Options frame instance
 		SteelCalcOptions* 	m_optionsFrame				= nullptr;
