@@ -30,7 +30,6 @@
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
 #include <wx/sizer.h>
-#include <wx/panel.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -130,18 +129,27 @@ class Options : public wxFrame
 ///////////////////////////////////////////////////////////////////////////////
 /// Class DatabaseViewer
 ///////////////////////////////////////////////////////////////////////////////
-class DatabaseViewer : public wxPanel
+class DatabaseViewer : public wxFrame
 {
 	private:
 
 	protected:
-		wxGrid* m_dbUIGrid;
+		enum
+		{
+			id_MENU_FILE_ABOUT = 6000,
+			id_MENU_FILE_OPTIONS,
+			id_MENU_FILE_EXIT,
+		};
+
+		wxMenuBar* m_menubar;
+		wxMenu* m_menuFile;
+		wxStaticText* m_uiChoiceDBTablesLabel;
+		wxChoice* m_uiChoicesDBTables;
+		wxGrid* m_uiTableGrid;
 
 	public:
 
-		DatabaseViewer();
-		DatabaseViewer( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
-		bool Create( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
+		DatabaseViewer( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Database Viewer"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 582,412 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~DatabaseViewer();
 

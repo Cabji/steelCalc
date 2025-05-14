@@ -16,7 +16,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menubar = new wxMenuBar( 0 );
 	m_menuFile = new wxMenu();
 	wxMenuItem* m_menuFileAbout;
-	m_menuFileAbout = new wxMenuItem( m_menuFile, id_MENU_FILE_ABOUT, wxString( _("&About") ) + wxT('\t') + wxT("a"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileAbout = new wxMenuItem( m_menuFile, id_MENU_FILE_ABOUT, wxString( _("&About") ) , _("Show information about the program"), wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileAbout );
 
 	wxMenuItem* m_menuFileOptions;
@@ -24,7 +24,7 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menuFile->Append( m_menuFileOptions );
 
 	wxMenuItem* m_menuFileExit;
-	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) + wxT('\t') + wxT("x"), wxEmptyString, wxITEM_NORMAL );
+	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) , _("Exit the program"), wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileExit );
 
 	m_menubar->Append( m_menuFile, _("File") );
@@ -401,55 +401,79 @@ Options::~Options()
 {
 }
 
-DatabaseViewer::DatabaseViewer()
+DatabaseViewer::DatabaseViewer( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-}
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-DatabaseViewer::DatabaseViewer( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name )
-{
-	this->Create( parent, id, pos, size, style, name );
-}
+	m_menubar = new wxMenuBar( 0 );
+	m_menuFile = new wxMenu();
+	wxMenuItem* m_menuFileAbout;
+	m_menuFileAbout = new wxMenuItem( m_menuFile, id_MENU_FILE_ABOUT, wxString( _("&About") ) , _("Information about tis program"), wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileAbout );
 
-bool DatabaseViewer::Create( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name )
-{
-	if ( !wxPanel::Create( parent, id, pos, size, style, name ) )
-	{
-		return false;
-	}
+	wxMenuItem* m_menuFileOptions;
+	m_menuFileOptions = new wxMenuItem( m_menuFile, id_MENU_FILE_OPTIONS, wxString( _("&Load") ) , _("Load a SQLite datbase file"), wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileOptions );
 
+	wxMenuItem* m_menuFileExit;
+	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) , _("Close the window"), wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileExit );
 
-	wxBoxSizer* m_boxSizer;
-	m_boxSizer = new wxBoxSizer( wxVERTICAL );
+	m_menubar->Append( m_menuFile, _("File") );
 
-	m_dbUIGrid = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	this->SetMenuBar( m_menubar );
+
+	wxBoxSizer* m_sizer0;
+	m_sizer0 = new wxBoxSizer( wxVERTICAL );
+
+	wxGridBagSizer* m_uiGBSizer;
+	m_uiGBSizer = new wxGridBagSizer( 0, 0 );
+	m_uiGBSizer->SetFlexibleDirection( wxBOTH );
+	m_uiGBSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_uiChoiceDBTablesLabel = new wxStaticText( this, wxID_ANY, _("Table:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_uiChoiceDBTablesLabel->Wrap( -1 );
+	m_uiGBSizer->Add( m_uiChoiceDBTablesLabel, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	wxArrayString m_uiChoicesDBTablesChoices;
+	m_uiChoicesDBTables = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_uiChoicesDBTablesChoices, 0 );
+	m_uiChoicesDBTables->SetSelection( 0 );
+	m_uiGBSizer->Add( m_uiChoicesDBTables, wxGBPosition( 0, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
+
+	m_uiTableGrid = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
 	// Grid
-	m_dbUIGrid->CreateGrid( 0, 0 );
-	m_dbUIGrid->EnableEditing( true );
-	m_dbUIGrid->EnableGridLines( true );
-	m_dbUIGrid->EnableDragGridSize( false );
-	m_dbUIGrid->SetMargins( 0, 0 );
+	m_uiTableGrid->CreateGrid( 5, 5 );
+	m_uiTableGrid->EnableEditing( true );
+	m_uiTableGrid->EnableGridLines( true );
+	m_uiTableGrid->EnableDragGridSize( false );
+	m_uiTableGrid->SetMargins( 0, 0 );
 
 	// Columns
-	m_dbUIGrid->EnableDragColMove( false );
-	m_dbUIGrid->EnableDragColSize( true );
-	m_dbUIGrid->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+	m_uiTableGrid->EnableDragColMove( false );
+	m_uiTableGrid->EnableDragColSize( true );
+	m_uiTableGrid->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
-	m_dbUIGrid->EnableDragRowSize( true );
-	m_dbUIGrid->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+	m_uiTableGrid->EnableDragRowSize( true );
+	m_uiTableGrid->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Label Appearance
 
 	// Cell Defaults
-	m_dbUIGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	m_boxSizer->Add( m_dbUIGrid, 0, wxALL|wxEXPAND, 5 );
+	m_uiTableGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	m_uiGBSizer->Add( m_uiTableGrid, wxGBPosition( 1, 0 ), wxGBSpan( 1, 2 ), wxALL|wxEXPAND, 5 );
 
 
-	this->SetSizer( m_boxSizer );
+	m_uiGBSizer->AddGrowableCol( 1 );
+
+	m_sizer0->Add( m_uiGBSizer, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( m_sizer0 );
 	this->Layout();
 
-	return true;
+	this->Centre( wxBOTH );
 }
 
 DatabaseViewer::~DatabaseViewer()
