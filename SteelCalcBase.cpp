@@ -23,6 +23,10 @@ Main::Main( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoin
 	m_menuFileOptions = new wxMenuItem( m_menuFile, id_MENU_FILE_OPTIONS, wxString( _("&Options") ) , _("Open program Options"), wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileOptions );
 
+	wxMenuItem* m_menuFileDatabaseViewer;
+	m_menuFileDatabaseViewer = new wxMenuItem( m_menuFile, id_MENU_FILE_DATABASEVIEWER, wxString( _("&Database Viewer") ) , _("Opens the Database Viewer"), wxITEM_NORMAL );
+	m_menuFile->Append( m_menuFileDatabaseViewer );
+
 	wxMenuItem* m_menuFileExit;
 	m_menuFileExit = new wxMenuItem( m_menuFile, id_MENU_FILE_EXIT, wxString( _("E&xit") ) , _("Exit the program"), wxITEM_NORMAL );
 	m_menuFile->Append( m_menuFileExit );

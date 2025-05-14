@@ -45,6 +45,7 @@ class Main : public wxFrame
 		{
 			id_MENU_FILE_ABOUT = 6000,
 			id_MENU_FILE_OPTIONS,
+			id_MENU_FILE_DATABASEVIEWER,
 			id_MENU_FILE_EXIT,
 		};
 
