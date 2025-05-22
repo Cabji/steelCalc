@@ -26,28 +26,34 @@ SteelCalcMain::SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &ti
 
 void SteelCalcMain::Init()
 {
-    // point to the Options frame instance
+    // point to the Helper frame instances
     m_optionsFrame = new SteelCalcOptions(this);
+    m_dbViewerFrame = new SteelCalcDatabaseViewer(this);
 
     std::cout << "Default config file is: " << DEFAULT_CONFIG_FILENAME << std::endl
               << "Default database file is: " << DEFAULT_DATABASE_FILENAME << std::endl;
-    
-    // class data acquisition
-    auto specNames	= m_specsGandD->GetStrings();
    
+    // class data acquisition
 	m_dbMain		= std::make_unique<SQLite::Database>    (DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     m_dbQuery		= std::make_unique<SQLite::Statement>   (*m_dbMain, "SELECT * FROM inventory");
+
+    // local data acquisition
+    auto specNames	= m_specsGandD->GetStrings();
+
+    // load settings from config file 
+    SettingsLoadAllFromDisk();
+
+    // temoporary database testing code
     while (m_dbQuery->executeStep())
     {
         auto output = m_dbQuery->getColumn("itemName").getString() + " from: " + m_dbQuery->getColumn("supplierName").getString();
         std::cout << output << std::endl;
     }
-    // load settings from config file 
-    SettingsLoadAllFromDisk();
-
+    
     // Bind event handlers
     Bind(wxEVT_CLOSE_WINDOW, &SteelCalcMain::OnClose, this);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileAbout, this, id_MENU_FILE_ABOUT);
+    Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileDatabaseViewer, this, id_MENU_FILE_DATABASEVIEWER);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileOptions, this, id_MENU_FILE_OPTIONS);
     Bind(wxEVT_MENU, &SteelCalcMain::OnMenuFileExit, this, id_MENU_FILE_EXIT);
     m_BCBarCentre->Bind(wxEVT_KILL_FOCUS, &SteelCalcMain::OnTextCtrlValueChanged, this);
@@ -227,6 +233,19 @@ void SteelCalcMain::OnMenuFileOptions(wxCommandEvent &event)
     event.Skip();
 }
 
+void SteelCalcMain::OnMenuFileDatabaseViewer(wxCommandEvent &event)
+{
+    if (!m_dbViewerFrame)
+    {
+        std::cerr << "Database Viewer frame does not exist!" << std::endl;
+    }
+    {
+        std::cout << "Showing Database Viewer..." << std::endl;
+        m_dbViewerFrame->Show(true);
+    }
+    event.Skip();
+}
+
 void SteelCalcMain::OnMenuFileExit(wxCommandEvent &event)
 {
     if (wxMessageBox("Confirm...", "Are you sure?", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES)
@@ -341,6 +360,7 @@ void SteelCalcMain::UpdateResults()
 
     int numCols = m_gridLValues->GetNumberCols();
 
+    // fetch text control values as appropriate to UI (circular or standard UI input)
     if (m_gridCircularLValues->IsShown())
     {
         std::cout << "Circular input grid is shown!" << std::endl;
@@ -376,6 +396,7 @@ void SteelCalcMain::UpdateResults()
     // std::cout << "Total cells with value: " << totalCellsWithValue << std::endl;
     // std::cout << "Total value of cells: " << itemTotalLength << std::endl;
 
+    // output updated values for bar attributes: total length, bar area, processing type, bar weight, bar cost etc.
     if (m_gridLValues->IsShown())
     {
         m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemTotalLength));
@@ -418,23 +439,30 @@ void SteelCalcMain::UpdateResults()
     }
 
     // Calculate the steelfixing labour unit 'SFU' amount (number of ties in an Area)
+    
+    // local data acquisition
     double l_labourLength = 0.0;
     double l_labourWidth = 0.0;
     double l_labourBarCentreA = 0.0;
     double l_labourBarCentreB = 0.0;
     double l_labourTieCentre = 0.0;
+
+    // check we got everything we need and in the right format
     if (m_LabourLength->GetValue().ToDouble(&l_labourLength) && 
         m_LabourWidth->GetValue().ToDouble(&l_labourWidth) && 
         m_LabourBarCentreA->GetValue().ToDouble(&l_labourBarCentreA) && 
         m_LabourBarCentreB->GetValue().ToDouble(&l_labourBarCentreB) && 
         m_LabourTieCentre->GetValue().ToDouble(&l_labourTieCentre))
     {
+        // calculation formulas
         double l_labourAspectRatio = std::max(l_labourLength, l_labourWidth) / std::min(l_labourLength, l_labourWidth);
         double l_labourArea = l_labourLength * l_labourWidth;
         double l_labourAvgSide = sqrt(l_labourArea);
         double l_labourAvgPerimeter = 2 * (sqrt(l_labourArea / l_labourAspectRatio) + sqrt(l_labourArea * l_labourAspectRatio));
         double l_labourActualPerimeter = 2 * (l_labourLength + l_labourWidth);
-        double l_labourTotalQtyTies = std::ceil(l_labourAvgPerimeter / l_labourTieCentre + 1);
+        double l_labourTotalBars = std::ceil(l_labourLength / l_labourBarCentreA + 1) + std::ceil(l_labourWidth / l_labourBarCentreB + 1);
+        double l_labourTiesPerBar = std::ceil(l_labourLength / l_labourTieCentre);
+        double l_labourTotalQtyTies = std::ceil(l_labourTiesPerBar * (l_labourWidth / l_labourBarCentreB + 1));
         if (m_optionsFrame->GetAddPerimeterTies())
         {
             l_labourTotalQtyTies += (std::ceil(l_labourLength / l_labourBarCentreA) + std::ceil(l_labourWidth / l_labourBarCentreB)) * 2;
