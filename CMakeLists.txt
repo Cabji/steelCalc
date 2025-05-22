@@ -13,6 +13,7 @@ cmake_minimum_required(VERSION 3.20)
             SteelCalcBase.cpp 
             SteelCalcMain.cpp
             SteelCalcOptions.cpp
+            SteelCalcDatabaseViewer.cpp
             CustomGridCellEditor.cpp
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
@@ -21,7 +22,7 @@ cmake_minimum_required(VERSION 3.20)
             SQLiteCpp
             sqlite3
       )
-      set(localCPPDevRoot "C:/cpp")
+      set(localCPPDevRoot "C:/dev/cpp")
 ### end project config
 
 ### wxWidgets config - have you set Environment variable WXWIN? If not, do it now.
