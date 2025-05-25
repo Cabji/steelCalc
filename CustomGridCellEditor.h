@@ -17,9 +17,9 @@ public:
     };
 
     CustomGridCellEditor() : wxGridCellTextEditor() {};
-    virtual void ApplyEdit(int row, int col, wxGrid* grid) override;
-    virtual bool EndEdit(int row, int col, const wxGrid* grid, const wxString& oldval, wxString* newval) override;
-    void SetValidationType(ValidationType type) { m_validationType = type; }
+    virtual void    ApplyEdit(int row, int col, wxGrid* grid) override;
+    virtual bool    EndEdit(int row, int col, const wxGrid* grid, const wxString& oldval, wxString* newval) override;
+    void            SetValidationType(CustomGridCellEditor::ValidationType type);
 
 private:
     // create a function for each data type to validate the input value
@@ -28,10 +28,20 @@ private:
 	bool ValidateString(wxString& value);
     bool ValidateValue(wxString& value);
 
-    wxString m_sanitizedValue; 
-    int m_row, m_col; 
-    ValidationType m_validationType;
-    wxGrid* m_grid;
+    wxString								m_sanitizedValue; 
+    int										m_row, m_col; 
+    CustomGridCellEditor::ValidationType	m_validationType;
+    wxGrid*									m_grid;
 };
+
+inline std::ostream& operator<<(std::ostream& os, CustomGridCellEditor::ValidationType type) {
+    switch (type) {
+        case CustomGridCellEditor::ValidationType::FLOAT:   os << "FLOAT"; break;
+        case CustomGridCellEditor::ValidationType::INTEGER: os << "INTEGER"; break;
+        case CustomGridCellEditor::ValidationType::STRING:  os << "STRING"; break;
+        default: os << "UNKNOWN"; break;
+    }
+    return os;
+}
 
 #endif // CUSTOMGRIDCELLEDITOR_H

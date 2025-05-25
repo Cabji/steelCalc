@@ -31,6 +31,12 @@ bool CustomGridCellEditor::EndEdit(int row, int col, const wxGrid* grid, const w
     }
 }
 
+void CustomGridCellEditor::SetValidationType(CustomGridCellEditor::ValidationType type) 
+{
+    m_validationType = type;
+    std::cout << "CellEditor ValidationType set to " << type << std::endl;
+}
+
 bool CustomGridCellEditor::ValidateFloat(wxString& value)
 {
     // In here we need to sanitize the cell input value to ensure it can be converted to double type
@@ -53,7 +59,10 @@ bool CustomGridCellEditor::ValidateFloat(wxString& value)
     }
 
     // Remove the locale-specific thousand separator
-    sanitizedInput.Replace(wxString(localeThousand), wxEmptyString);
+    if (wxString(localeThousand) != wxEmptyString)
+    {
+        sanitizedInput.Replace(wxString(localeThousand), wxEmptyString);
+    }
 
     // Allow empty cell values
     if (sanitizedInput.IsEmpty())
