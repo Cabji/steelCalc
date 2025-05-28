@@ -1,4 +1,6 @@
 #include "SteelCalcDatabaseViewer.h"
+#include <set>
+#include <string>
 
 SteelCalcDatabaseViewer::SteelCalcDatabaseViewer( wxWindow* parent )
 :
@@ -35,7 +37,7 @@ DatabaseViewer(parent)
 	}
 
 	std::cout << "	Active Table Name: " << m_dbActiveTableName << std::endl;
-	m_dbQuery = std::make_unique<SQLite::Statement>(*m_dbConnection, "SELECT * FROM " + m_dbActiveTableName);
+	m_dbQuery = std::make_unique<SQLite::Statement>(*m_dbConnection, "SELECT name FROM sqlite_master WHERE type='table';");
 
 	// Loop through the results and print each row
 	while (m_dbQuery->executeStep())
@@ -47,4 +49,22 @@ DatabaseViewer(parent)
 		}
 		std::cout << std::endl;
 	}    
+}
+
+std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQLite::Database& dbConnection)
+{
+	// get table names from a SQLite database connection
+	std::set<std::string> l_setTableNames;
+	m_dbQuery = std::make_unique<SQLite::Statement>(dbConnection, "SELECT name FROM sqlite_master WHERE type='table';");
+	while (m_dbQuery->executeStep())
+	{
+		for (int i = 0; i < m_dbQuery->getColumnCount(); ++i)
+		{
+			if (m_dbQuery->getColumn(i).getName() == "name")
+			{
+				l_setTableNames.insert(m_dbQuery->getColumn(i).getText());
+			}
+		}
+	}
+	return l_setTableNames;
 }
