@@ -19,7 +19,7 @@
     <property name="lua_skip_events">1</property>
     <property name="lua_ui_table">UI</property>
     <property name="name">SteelCalc</property>
-    <property name="path">C:\cpp\github\steelCalc</property>
+    <property name="path">C:\dev\cpp\github\steelCalc</property>
     <property name="php_disconnect_events">0</property>
     <property name="php_disconnect_mode">source_name</property>
     <property name="php_skip_events">1</property>
@@ -3233,7 +3233,7 @@
         </object>
       </object>
     </object>
-    <object class="Frame" expanded="false">
+    <object class="Frame" expanded="true">
       <property name="aui_managed">0</property>
       <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
       <property name="bg"></property>
@@ -3329,20 +3329,20 @@
           </object>
         </object>
       </object>
-      <object class="wxBoxSizer" expanded="false">
+      <object class="wxBoxSizer" expanded="true">
         <property name="minimum_size"></property>
         <property name="name">m_sizer0</property>
         <property name="orient">wxVERTICAL</property>
         <property name="permission">none</property>
-        <object class="sizeritem" expanded="false">
+        <object class="sizeritem" expanded="true">
           <property name="border">5</property>
           <property name="flag">wxEXPAND</property>
           <property name="proportion">1</property>
-          <object class="wxGridBagSizer" expanded="false">
+          <object class="wxGridBagSizer" expanded="true">
             <property name="empty_cell_size"></property>
             <property name="flexible_direction">wxBOTH</property>
             <property name="growablecols">1</property>
-            <property name="growablerows"></property>
+            <property name="growablerows">1</property>
             <property name="hgap">0</property>
             <property name="minimum_size"></property>
             <property name="name">m_uiGBSizer</property>

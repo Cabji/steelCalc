@@ -470,6 +470,7 @@ DatabaseViewer::DatabaseViewer( wxWindow* parent, wxWindowID id, const wxString&
 
 
 	m_uiGBSizer->AddGrowableCol( 1 );
+	m_uiGBSizer->AddGrowableRow( 1 );
 
 	m_sizer0->Add( m_uiGBSizer, 1, wxEXPAND, 5 );
 
