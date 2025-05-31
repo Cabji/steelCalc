@@ -23,13 +23,15 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 		SteelCalcDatabaseViewer( wxWindow* parent );
 	//// end generated class members
 	SteelCalcDatabaseViewer( wxWindow* parent, const std::string& dbFilename, const std::string& tableName);
+	void								UpdateUI(const std::string& sectionName);
 
 	private: 
 	std::set<std::string> 				DatabaseFetchTableNames(const SQLite::Database& dbConnection);
 
-	std::string							m_dbFilename;
-	std::unique_ptr <SQLite::Database>	m_dbConnection;
 	std::string							m_dbActiveTableName;
+	std::set<std::string>				m_dbAvailableTableNames;
+	std::unique_ptr <SQLite::Database>	m_dbConnection;
+	std::string							m_dbFilename;
 	std::unique_ptr <SQLite::Statement>	m_dbQuery;
 };
 
