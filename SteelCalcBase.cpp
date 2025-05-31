@@ -477,6 +477,7 @@ DatabaseViewer::DatabaseViewer( wxWindow* parent, wxWindowID id, const wxString&
 
 	this->SetSizer( m_sizer0 );
 	this->Layout();
+	m_statusBar = this->CreateStatusBar( 1, wxSTB_SIZEGRIP, wxID_ANY );
 
 	this->Centre( wxBOTH );
 }

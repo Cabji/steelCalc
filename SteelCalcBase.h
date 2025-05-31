@@ -147,6 +147,7 @@ class DatabaseViewer : public wxFrame
 		wxStaticText* m_uiChoiceDBTablesLabel;
 		wxChoice* m_uiChoicesDBTables;
 		wxGrid* m_uiTableGrid;
+		wxStatusBar* m_statusBar;
 
 	public:
 
