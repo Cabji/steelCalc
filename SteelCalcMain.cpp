@@ -27,21 +27,14 @@ SteelCalcMain::SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &ti
 void SteelCalcMain::Init()
 {
     std::cout << "We are in SteelCalcMain ctr (OnInit)" << std::endl;
-    // point to the Helper frame instances
-    m_optionsFrame = new SteelCalcOptions(this);
-    m_dbViewerFrame = new SteelCalcDatabaseViewer(this, "", "inventory");
 
-    std::cout << "Default config file is: "     << DEFAULT_CONFIG_FILENAME      << std::endl
-              << "Default database file is: "   << DEFAULT_DATABASE_FILENAME    << std::endl;
-   
     // class data acquisition
-
-    // dev-note: database object will be handled in the SteelCalcDatabaseViewer class
-	// m_dbMain		= std::make_unique<SQLite::Database>    (DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    // m_dbQuery		= std::make_unique<SQLite::Statement>   (*m_dbMain, "SELECT * FROM inventory");
+    m_optionsFrame = new SteelCalcOptions(this);
+    m_dbViewerFrame = new SteelCalcDatabaseViewer(this, DEFAULT_DATABASE_FILENAME, "inventory");
 
     // local data acquisition
     auto specNames	= m_specsGandD->GetStrings();
+
     // Set the custom cell editor for grid cells and set their validation type
     m_gridLValues->SetDefaultEditor(new CustomGridCellEditor());
     CustomGridCellEditor* lValuesEditor = dynamic_cast<CustomGridCellEditor*>(m_gridLValues->GetCellEditor(0,0));
@@ -53,13 +46,6 @@ void SteelCalcMain::Init()
     
     // load settings from config file 
     SettingsLoadAllFromDisk();
-
-    // temoporary database testing code
-    // while (m_dbQuery->executeStep())
-    // {
-    //     auto output = m_dbQuery->getColumn("itemName").getString() + " from: " + m_dbQuery->getColumn("supplierName").getString();
-    //     std::cout << output << std::endl;
-    // }
     
     // Bind event handlers
     Bind(wxEVT_CLOSE_WINDOW, &SteelCalcMain::OnClose, this);
