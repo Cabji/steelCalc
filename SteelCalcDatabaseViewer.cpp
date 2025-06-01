@@ -14,7 +14,8 @@ SteelCalcDatabaseViewer::SteelCalcDatabaseViewer( wxWindow* parent, const std::s
 DatabaseViewer(parent)
 {
 	// dev-note: the SteelCalcDatabaseViewer default ctr delegates to here
-	// use default filename if none given
+
+	// connect to/create SQLite3 database file - use default filename if none given
     if (dbFilename.empty()) 
 	{
 		m_dbFilename	= DEFAULT_DATABASE_FILENAME;
@@ -39,7 +40,11 @@ DatabaseViewer(parent)
 	m_dbAvailableTableNames = DatabaseFetchTableNames(*m_dbConnection);
 
 	// update UI
+	m_uiTableGrid->EnableEditing(false);
 	UpdateUI("databaseViewerTables");
+
+	// bind event handlers
+	m_uiChoicesDBTables->Bind(wxEVT_CHOICE, &SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged, this);
 }
 
 std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQLite::Database& dbConnection)
@@ -60,20 +65,91 @@ std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQL
 	return l_setTableNames;
 }
 
+void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
+{
+	// handle when user chooses which datbase table to view
+	// get tablename from m_uiChoicesDBTables
+	// clear out db viewer grid
+	// select data from active table to display in grid
+	
+	// 1. Get the selected table name from the wxChoice widget
+    int selectionIndex = m_uiChoicesDBTables->GetSelection();
+    if (selectionIndex == wxNOT_FOUND) {
+        std::cerr << "No table selected." << std::endl;
+        return;
+    }
+    wxString selectedTable = m_uiChoicesDBTables->GetString(selectionIndex);
+    m_dbActiveTableName = selectedTable.ToStdString();
+
+    // 2. Clear out m_uiTableGrid
+    m_uiTableGrid->ClearGrid();
+
+    // 3. Query the selected table and display its contents
+    std::string query = "SELECT * FROM " + m_dbActiveTableName;
+    m_dbQuery = std::make_unique<SQLite::Statement>(*m_dbConnection, query);
+
+	// 3.5 Set the Column Title Names
+	int colCount = m_dbQuery->getColumnCount();
+    if (m_uiTableGrid->GetNumberCols() != colCount)
+    {
+        m_uiTableGrid->ClearGrid();
+        if (m_uiTableGrid->GetNumberCols() < colCount)
+            m_uiTableGrid->AppendCols(colCount - m_uiTableGrid->GetNumberCols());
+        else if (m_uiTableGrid->GetNumberCols() > colCount)
+            m_uiTableGrid->DeleteCols(0, m_uiTableGrid->GetNumberCols() - colCount);
+    }
+
+    bool columnsSet = false;
+    int row = 0;
+    while (m_dbQuery->executeStep()) 
+	{
+        // Set column headers only once
+        if (!columnsSet)
+        {
+            for (int col = 0; col < colCount; ++col)
+            {
+                wxString colName = m_dbQuery->getColumn(col).getName();
+                m_uiTableGrid->SetColLabelValue(col, colName);
+            }
+            columnsSet = true;
+        }
+
+        // Ensure the grid has enough rows
+        if (row >= m_uiTableGrid->GetNumberRows())
+            m_uiTableGrid->AppendRows(1);
+
+        for (int col = 0; col < colCount; ++col)
+        {
+            wxString value = m_dbQuery->getColumn(col).getText();
+            m_uiTableGrid->SetCellValue(row, col, value);
+        }
+        ++row;
+    }
+
+    // Remove any extra rows if the new result set is smaller than the previous
+    int extraRows = m_uiTableGrid->GetNumberRows() - row;
+    if (extraRows > 0)
+        m_uiTableGrid->DeleteRows(row, extraRows);
+	
+}
+
 void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
 {
 	// dev-note: you can refresh UI elements by specific section name
 	// or all UI elements by using section name "all" (or empty sectionName)
+
+	std::cout << "Updating UI: " << std::endl;
 	if (sectionName == "databaseViewerTables" || sectionName == "dbvt" || sectionName == "all" || sectionName.empty())
 	{
-		std::cout << "Number of tables availalbe: " << m_dbAvailableTableNames.size() << std::endl;
-		// dev-note: std::set should automatically sort the table names for us
+		std::cout << "	Database Viewer" << std::endl;
+		// dev-note: std::set will automatically sort the table names alphanumeric for us
+		if (m_dbAvailableTableNames.size() > 0) { m_statusBar->SetStatusText("View only"); }
 		for (const std::string tableName : m_dbAvailableTableNames)
 		{
 			m_uiChoicesDBTables->Append(wxString(tableName));
 		}
-		std::cout << "We made it to here" << std::endl;
 	}
 	Layout();
 	Refresh();
+	std::cout << "Updating UI done." << std::endl;
 }
