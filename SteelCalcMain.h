@@ -43,6 +43,10 @@ class SteelCalcMain : public Main
 		void			TriggerSaveConfig()		{ SettingsSaveAllToDisk(); }
 		wxArrayString	GetBarClassifications()	{ return m_specsGandD->GetStrings(); }
 
+		// pointers to other program frames
+		SteelCalcOptions* 				m_optionsFrame		= nullptr;
+		SteelCalcDatabaseViewer*		m_dbViewerFrame		= nullptr;
+
 	private:
 		void 			Init();
 		double			GetBarArea(const wxString& barSpec);
@@ -71,10 +75,6 @@ class SteelCalcMain : public Main
 		wxString							m_processingCurrentBarSize	= wxEmptyString;
 		wxArrayString						m_processingTypes			= {_("Enter bar information"), _("Stock"), _("C&&B"), _("Complex Shape")};
 		double								m_costPerMg					= 2200.0; // Cost per Mg placeholder value
-
-		// pointer to the Options frame instance
-		SteelCalcOptions* 				m_optionsFrame		= nullptr;
-		SteelCalcDatabaseViewer*		m_dbViewerFrame		= nullptr;
 };
 
 #endif // __SteelCalcMain__

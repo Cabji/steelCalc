@@ -40,6 +40,8 @@ DatabaseViewer(parent)
 	m_dbAvailableTableNames = DatabaseFetchTableNames(*m_dbConnection);
 
 	// update UI
+
+	// default DV to view only mode
 	m_uiTableGrid->EnableEditing(false);
 	UpdateUI("databaseViewerTables");
 
@@ -152,4 +154,36 @@ void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
 	Layout();
 	Refresh();
 	std::cout << "Updating UI done." << std::endl;
+}
+
+std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseViewer::RequestDatabaseData(std::string query)
+{
+	std::vector<
+		std::vector<
+			std::pair<
+				std::string, 
+				std::string
+			>
+		>
+	>						l_result;
+	std::vector<
+		std::pair<
+			std::string, 
+			std::string
+		>
+	>						l_row;
+							m_dbQuery	= std::make_unique<SQLite::Statement>(*m_dbConnection, query);
+	
+	// convert the result into std vector<vector<pair<string, string>>> data type and return
+	 while (m_dbQuery->executeStep()) 
+	{
+        for (int col = 0; col < m_dbQuery->getColumnCount(); ++col)
+        {
+			std::string colName	= m_dbQuery->getColumnName(col);
+            std::string value = m_dbQuery->getColumn(col).getText();
+			l_row.emplace_back(colName, value);
+        }
+		l_result.push_back(std::move(l_row));
+    }
+	return l_result;
 }

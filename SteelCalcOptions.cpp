@@ -1,6 +1,8 @@
 #include "SteelCalcMain.h"
 #include "SteelCalcOptions.h"
 #include <algorithm>
+#include <vector>
+#include <string>
 #include <wx/msgdlg.h>
 
 SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
@@ -8,7 +10,7 @@ SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
 Options( parent )
 {
     m_mainFrame = dynamic_cast<SteelCalcMain*>(parent);
-    
+
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
     m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &SteelCalcOptions::GridSort, this);
@@ -276,6 +278,9 @@ void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxStrin
 
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
+    std::vector<std::vector<std::pair<std::string, std::string>>> dbResults;
+    dbResults = m_mainFrame->m_dbViewerFrame->RequestDatabaseData("SELECT * FROM inventory");
+    std::cout << "Number of results from Requested Database Data: " << dbResults.size() << std::endl;
     // dev-note: perhaps save the options to disk here at some stage?
     this->Hide();
     if (m_mainFrame)

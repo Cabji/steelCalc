@@ -2,6 +2,7 @@
 #define __SteelCalcOptions__
 
 #include "CustomGridCellEditor.h"
+#include "SteelCalcDatabaseViewer.h"
 
 /**
 @file
