@@ -35,7 +35,9 @@ DatabaseViewer(parent)
 		return;		
 	}
 
-	std::cout << "we reckon we got here with a successful connection to db. filename used was: " << m_dbFilename << std::endl;
+	// todo: create required tables if needed
+	m_dbQuery = std::make_unique<SQLite::Statement> (m_dbConnection, "CREATE TABLE inventory");
+
 	// data acquisition
 	m_dbAvailableTableNames = DatabaseFetchTableNames(*m_dbConnection);
 
@@ -186,4 +188,66 @@ std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseV
 		l_result.push_back(std::move(l_row));
     }
 	return l_result;
+}
+
+#include <wx/msgdlg.h>
+// ...existing code...
+
+void CheckAndCreateTables(SQLite::Database& dbConnection, std::set<std::string>& availableTableNames, const DatabaseSchema& expectedSchema)
+{
+    for (const auto& [tableName, tableSpec] : expectedSchema)
+    {
+        bool tableExists = availableTableNames.count(tableName) > 0;
+        if (!tableExists)
+        {
+            // Table does not exist, create it
+            std::string createSQL = "CREATE TABLE " + tableName + " (";
+            for (size_t i = 0; i < tableSpec.columns.size(); ++i)
+            {
+                createSQL += tableSpec.columns[i].name + " " + tableSpec.columns[i].type;
+                if (i < tableSpec.columns.size() - 1)
+                    createSQL += ", ";
+            }
+            createSQL += ")";
+            try {
+                SQLite::Statement createStmt(dbConnection, createSQL);
+                createStmt.exec();
+                availableTableNames.insert(tableName);
+                wxMessageBox("Created missing table: " + wxString(tableName), "Database", wxOK | wxICON_INFORMATION);
+            } catch (const std::exception& e) {
+                wxMessageBox("Failed to create table " + wxString(tableName) + ": " + wxString(e.what()), "Database Error", wxOK | wxICON_ERROR);
+            }
+            continue;
+        }
+
+        // Table exists, check columns
+        std::vector<ColumnSpec> actualColumns;
+        std::string pragmaSQL = "PRAGMA table_info(" + tableName + ")";
+        SQLite::Statement pragmaStmt(dbConnection, pragmaSQL);
+        while (pragmaStmt.executeStep())
+        {
+            std::string colName = pragmaStmt.getColumn("name");
+            std::string colType = pragmaStmt.getColumn("type");
+            actualColumns.push_back({colName, colType});
+        }
+
+        // Compare column count
+        if (actualColumns.size() != tableSpec.columns.size())
+        {
+            wxMessageBox("Table '" + wxString(tableName) + "' exists but column count does not match expected schema.", "Schema Warning", wxOK | wxICON_WARNING);
+            continue;
+        }
+
+        // Compare column names and types
+        for (size_t i = 0; i < tableSpec.columns.size(); ++i)
+        {
+            if (actualColumns[i].name != tableSpec.columns[i].name ||
+                actualColumns[i].type != tableSpec.columns[i].type)
+            {
+                wxMessageBox("Table '" + wxString(tableName) + "' exists but column '" +
+                    wxString(actualColumns[i].name) + "' does not match expected schema.", "Schema Warning", wxOK | wxICON_WARNING);
+                break;
+            }
+        }
+    }
 }
