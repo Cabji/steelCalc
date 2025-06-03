@@ -38,12 +38,24 @@ There is no estimated completion date for the project.
 
 # Current Development Aims
 
+- Create & implement multi-purpose SQLite3 database read/write functionality
+  ✔ General SQLite3 connection
+  ✔ Create empty default database file if non-existant
+  - Check existing table name(s) and structure(s) to ensure fit-for-purpose
+    - Return meaningful warning data if existing database structures do not comply with expectations
+  - Create default table(s) and structure(s) if non-existant
+    - Return failure if default tables cannot be created
+  
+- Locale aware programming
+  - Learn and add locale aware (wx supports it) code to allow for translations down the line
+
 - Configuration options
-  - Redo using wxGrid for Cost per Mg for each grade/diameter of steel bar
+  ✔ Redo using wxGrid for Cost per Mg for each grade/diameter of steel bar
     - Sanitization/formatting of input data (no c&b emoji strings thx!)
   - Steel mass
   - Unit of measure to use
   - Unit of currency to use
+  
 - Array of Items (Steel Scheduling)
   - Create a data structure to build a group of Items
 - When grid cell enters edit mode, select all text in the cell
