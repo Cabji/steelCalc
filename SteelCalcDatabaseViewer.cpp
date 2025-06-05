@@ -73,11 +73,8 @@ std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQL
 
 void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
 {
-	// handle when user chooses which datbase table to view
-	// get tablename from m_uiChoicesDBTables
-	// clear out db viewer grid
-	// select data from active table to display in grid
-	
+	// handle when user chooses which database table to view
+
 	// 1. Get the selected table name from the wxChoice widget
     int selectionIndex = m_uiChoicesDBTables->GetSelection();
     if (selectionIndex == wxNOT_FOUND) {
@@ -105,19 +102,37 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
             m_uiTableGrid->DeleteCols(0, m_uiTableGrid->GetNumberCols() - colCount);
     }
 
-    bool columnsSet = false;
-    int row = 0;
+    // create the filter row at the top
+    if (m_uiTableGrid->GetNumberRows() == 0) { m_uiTableGrid->AppendRows(1); }
+    m_uiTableGrid->SetRowLabelValue(0, "Filter");
+    // the filter row's background colour
+    wxColour filterBg(220, 240, 255);
+
+    // make the filter row editable & set background colour
+    for (int col = 0; col < m_uiTableGrid->GetNumberCols(); ++col) 
+    {
+        m_uiTableGrid->SetCellBackgroundColour(0, col, filterBg);
+        m_uiTableGrid->SetReadOnly(0, col, false);
+        m_uiTableGrid->SetCellValue(0, col, "test");
+    }
+
+    bool columnHeadersSet = false;
+    // dev-note: we set row to 1 here to prevent the filter row at the top from having table data written into it
+    int row = 1;
+
+    // populate the grid with the data from the result set
     while (m_dbQuery->executeStep()) 
 	{
         // Set column headers only once
-        if (!columnsSet)
+        if (!columnHeadersSet)
         {
             for (int col = 0; col < colCount; ++col)
             {
                 wxString colName = m_dbQuery->getColumn(col).getName();
                 m_uiTableGrid->SetColLabelValue(col, colName);
+                m_uiTableGrid->AutoSizeColLabelSize(col);
             }
-            columnsSet = true;
+            columnHeadersSet = true;
         }
 
         // Ensure the grid has enough rows
@@ -128,10 +143,12 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
         {
             wxString value = m_dbQuery->getColumn(col).getText();
             m_uiTableGrid->SetCellValue(row, col, value);
+            m_uiTableGrid->SetReadOnly(row, col, true);
         }
+        m_uiTableGrid->SetRowLabelValue(row, wxString::Format("%d", row));
+        std::cout << "row: " << row << std::endl;
         ++row;
     }
-
     // Remove any extra rows if the new result set is smaller than the previous
     int extraRows = m_uiTableGrid->GetNumberRows() - row;
     if (extraRows > 0)
@@ -197,18 +214,20 @@ void SteelCalcDatabaseViewer::CheckAndCreateTables(SQLite::Database& dbConnectio
 {
     bool success = true;
     std::set<std::string> availableTableNames;
-    // Query the database for existing table names
+    // query the database for existing table names
     SQLite::Statement tableQuery(dbConnection, "SELECT name FROM sqlite_master WHERE type='table'");
     while (tableQuery.executeStep()) {
         availableTableNames.insert(tableQuery.getColumn(0).getText());
     }
 
+    // loop through the expectedSchema
     for (const auto& [tableName, tableSpec] : expectedSchema)
     {
+        // check if tableName exists in the database already
         bool tableExists = availableTableNames.count(tableName) > 0;
         if (!tableExists)
         {
-            // Table does not exist, create it
+            // table does not exist, create it
             std::string createSQL = "CREATE TABLE " + tableName + " (";
             for (size_t i = 0; i < tableSpec.columns.size(); ++i)
             {
@@ -222,14 +241,15 @@ void SteelCalcDatabaseViewer::CheckAndCreateTables(SQLite::Database& dbConnectio
                 createStmt.exec();
                 wxMessageBox("Created missing table: " + wxString(tableName), "Database", wxOK | wxICON_INFORMATION, this);
             } catch (const std::exception& e) {
-                wxMessageBox("Failed to create table " + wxString(tableName) + ": " + wxString(e.what()), "Database Error", wxOK | wxICON_ERROR), this;
+                wxMessageBox("Failed to create table " + wxString(tableName) + ": " + wxString(e.what()), "Database Error", wxOK | wxICON_ERROR, this);
                 success = false;
             }
             continue;
         }
 
-        // Table exists, check columns
+        // table exists, check the columns match the expectedSchema
         std::vector<ColumnSpec> actualColumns;
+        // get table info from database
         std::string pragmaSQL = "PRAGMA table_info(" + tableName + ")";
         SQLite::Statement pragmaStmt(dbConnection, pragmaSQL);
         while (pragmaStmt.executeStep())
