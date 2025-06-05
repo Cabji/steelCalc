@@ -1,3 +1,6 @@
+# added by cabji 20250606 allow build/database.sq3
+!build/database.sq3
+
 # copilot generated gitignore
 # Compiled object files
 *.o
