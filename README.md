@@ -38,13 +38,17 @@ There is no estimated completion date for the project.
 
 # Current Development Aims
 
-- Create & implement multi-purpose SQLite3 database read/write functionality
+- ✔ Create & implement multi-purpose SQLite3 database read/write functionality
   - ✔ General SQLite3 connection
   - ✔ Create empty default database file if non-existant
-  - Check existing table name(s) and structure(s) to ensure fit-for-purpose
-    - Return meaningful warning data if existing database structures do not comply with expectations
-  - Create default table(s) and structure(s) if non-existant
-    - Return failure if default tables cannot be created
+  - ✔ Check existing table name(s) and structure(s) to ensure fit-for-purpose
+    - ✔ Return meaningful warning data if existing database structures do not comply with expectations
+  - ✔ Create default table(s) and structure(s) if non-existant
+    - ✔ Return failure if default tables cannot be created
+  
+- Database Viewer
+  - Add a way to filter viewed data (a row at the top that will let you filter by any column?)
+  - Add toolbar? to switch to Edit mode
   
 - Locale aware programming
   - Learn and add locale aware (wx supports it) code to allow for translations down the line

@@ -45,8 +45,8 @@ DatabaseViewer(parent)
 
 	// update UI
 
-	// default DV to view only mode
-	m_uiTableGrid->EnableEditing(false);
+	// set the grid mode to editable (because wx is freaking painful, we can't set it to read-only and make whichever rows we want to be editable)
+	m_uiTableGrid->EnableEditing(true);
 	UpdateUI("databaseViewerTables");
 
 	// bind event handlers
@@ -108,12 +108,12 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
     // the filter row's background colour
     wxColour filterBg(220, 240, 255);
 
-    // make the filter row editable & set background colour
+    // set the filter row's cells attributes here
     for (int col = 0; col < m_uiTableGrid->GetNumberCols(); ++col) 
     {
+        // dev-note: wx f0rces us to make the entire grid editable by default and then enf0rce read-only to cells that shouldn't be edited.
+        // we can't do it the other way around, so we don't need to make the filter row editable.
         m_uiTableGrid->SetCellBackgroundColour(0, col, filterBg);
-        m_uiTableGrid->SetReadOnly(0, col, false);
-        m_uiTableGrid->SetCellValue(0, col, "test");
     }
 
     bool columnHeadersSet = false;
@@ -153,7 +153,7 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
     int extraRows = m_uiTableGrid->GetNumberRows() - row;
     if (extraRows > 0)
         m_uiTableGrid->DeleteRows(row, extraRows);
-	
+	event.Skip();
 }
 
 void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
@@ -208,7 +208,6 @@ std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseV
     }
 	return l_result;
 }
-
 
 void SteelCalcDatabaseViewer::CheckAndCreateTables(SQLite::Database& dbConnection, const DatabaseSchema& expectedSchema)
 {
