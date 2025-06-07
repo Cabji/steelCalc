@@ -50,7 +50,8 @@ DatabaseViewer(parent)
 	UpdateUI("databaseViewerTables");
 
 	// bind event handlers
-	m_uiChoicesDBTables->Bind(wxEVT_CHOICE, &SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged, this);
+	m_uiChoicesDBTables->Bind   (wxEVT_CHOICE,              &SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged, this);
+    m_uiTableGrid->Bind         (wxEVT_GRID_CELL_CHANGED,   &SteelCalcDatabaseViewer::OnGridCellChanged, this);
 }
 
 std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQLite::Database& dbConnection)
@@ -156,6 +157,48 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
 	event.Skip();
 }
 
+void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
+{
+    int row = event.GetRow();
+    if (row == 0) 
+    {
+        // handle filter row
+        wxObject*   tripperObj  = event.GetEventObject();
+        wxGrid*     grid        = dynamic_cast<wxGrid*>(tripperObj);
+        if (!grid)
+        {
+            std::cerr << "OnGridCellChanged: grid object was not available? returning.";
+            return;
+        }
+        std::string query       = "SELECT * FROM " + m_dbActiveTableName + " WHERE ";
+            // build SQL query
+        for (int col = 0; col < grid->GetNumberCols(); col++)
+        {
+            std::string cellValue   = grid->GetCellValue(0, col);
+            if (cellValue != wxEmptyString)
+            {
+                // get the column Name
+                std::string colName = grid->GetColLabelValue(col);
+                // append the query string firstly with "AND" if this is not the first appendation
+                if (!query.ends_with(" WHERE ")) { query += " AND "; }
+                query +=  colName + " = '" + cellValue + "'";
+            }
+        }
+        std::cout << "Filtration query is: " << query << std::endl;
+                    // get values from cells, they are the values for the WHERE clause in the SQL query
+            // send query to database, get result set - use RequestDatabaseData
+            // update results into grid
+                // consider taking code from OnDatabaseActiveTableChanged() and refactoring into a new function that handles updating the grid with the result set
+                // update existing grid cell values
+                    // check if there are enough rows, add row if needed
+                // if there are excessive rows in the grid, remove unneeded rows at the end
+    } 
+    else 
+    {
+        event.Skip();
+        // Handle data row edits (future)
+    }
+}
 void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
 {
 	// dev-note: you can refresh UI elements by specific section name
@@ -177,6 +220,7 @@ void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
 	std::cout << "Updating UI done." << std::endl;
 }
 
+// send a std::string query to the current database connection and retrieve the result set in a std::vector format
 std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseViewer::RequestDatabaseData(std::string query)
 {
 	std::vector<

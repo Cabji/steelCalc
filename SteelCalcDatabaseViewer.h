@@ -65,6 +65,7 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 	private: 
 	std::set<std::string> 				DatabaseFetchTableNames(const SQLite::Database& dbConnection);
 	void								OnDatabaseActiveTableChoiceChanged(wxEvent& event);
+	void								OnGridCellChanged(wxGridEvent& event);
 
 	std::string							m_dbActiveTableName;
 	std::set<std::string>				m_dbAvailableTableNames;
