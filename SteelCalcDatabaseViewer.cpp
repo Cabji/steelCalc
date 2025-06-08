@@ -72,89 +72,123 @@ std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQL
 	return l_setTableNames;
 }
 
+// update a wxGrid's structure/size to match a result set's size
+void SteelCalcDatabaseViewer::GridAdjustStructure(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet)
+{
+    int resultSetColCount = 0;
+    int resultSetRowCount = static_cast<int>(resultSet.size());
+    std::vector<std::string> colNames;
+
+    if (!resultSet.empty()) 
+    {
+        resultSetColCount = static_cast<int>(resultSet[0].size());
+        for (int col = 0; col < resultSetColCount; ++col) 
+        {
+            colNames.push_back(resultSet[0][col].first);
+        }
+    } else if (!m_dbActiveTableName.empty()) 
+    {
+        // resultSet is empty, get column names from schema
+        std::string pragmaSQL = "PRAGMA table_info(" + m_dbActiveTableName + ")";
+        try {
+            SQLite::Statement pragmaStmt(*m_dbConnection, pragmaSQL);
+            while (pragmaStmt.executeStep()) {
+                colNames.push_back(pragmaStmt.getColumn("name").getString());
+            }
+            resultSetColCount = static_cast<int>(colNames.size());
+        } catch (...) {
+            resultSetColCount = 0;
+        }
+    }
+
+    // ensure the grid has the correct number of columns
+    if (grid.GetNumberCols() != resultSetColCount) 
+    {
+        if (grid.GetNumberCols() < resultSetColCount)
+            grid.AppendCols(resultSetColCount - grid.GetNumberCols());
+        else
+            grid.DeleteCols(0, grid.GetNumberCols() - resultSetColCount);
+    }
+
+    // set column labels
+    for (int col = 0; col < resultSetColCount; ++col) 
+    {
+        grid.SetColLabelValue(col, wxString(colNames[col]));
+        grid.AutoSizeColLabelSize(col);
+    }
+
+    // ensure the grid has the correct number of rows
+    if (grid.GetNumberRows() != resultSetRowCount) 
+    {
+        if (grid.GetNumberRows() < resultSetRowCount)
+            grid.AppendRows(resultSetRowCount - grid.GetNumberRows());
+        else
+            grid.DeleteRows(0, grid.GetNumberRows() - resultSetRowCount);
+    }
+}
+void SteelCalcDatabaseViewer::GridInsertFilterRow(wxGrid &grid)
+{
+    // create the filter row at the top
+    if (grid.GetNumberRows() == 0) { grid.AppendRows(1); }
+    grid.SetRowLabelValue(0, "Filter");
+    // the filter row's background colour
+    wxColour filterBg(220, 240, 255);
+
+    // set the filter row's cells attributes here
+    for (int col = 0; col < grid.GetNumberCols(); ++col) 
+    {
+        // dev-note: wx f0rces us to make the entire grid editable by default and then enf0rce read-only to cells that shouldn't be edited.
+        // we can't do it the other way around, so we don't need to make the filter row editable.
+        grid.SetCellBackgroundColour(0, col, filterBg);
+    }
+}
+
+// update a wxGrid with result set data - this method does NOT alter the grid's structure, only changes the cell data
+void SteelCalcDatabaseViewer::GridUpdateContent(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet, const bool cellsReadOnly)
+{
+    grid.ClearGrid();
+    if (resultSet.empty())
+    {
+        std::cout << "SteelCalcDV::GridUpdateContent(): There were no results returned for this table." << std::endl;
+        return;    
+    }
+ 
+    int resultSetColCount = static_cast<int>(resultSet[0].size());
+    int resultSetRowCount = static_cast<int>(resultSet.size());
+
+    // fill grid with data, set the cells to read-only/editable depending on cellsReadOnly argument
+    for (int row = 0; row < resultSetRowCount; ++row) 
+    {
+        for (int col = 0; col < resultSetColCount; ++col) 
+        {
+            grid.SetCellValue(row, col, wxString(resultSet[row][col].second));
+            grid.SetReadOnly(row, col, cellsReadOnly);
+        }
+    }
+}
+
 void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
 {
 	// handle when user chooses which database table to view
 
-	// 1. Get the selected table name from the wxChoice widget
+	// 1. get the selected table name from the wxChoice widget
     int selectionIndex = m_uiChoicesDBTables->GetSelection();
     if (selectionIndex == wxNOT_FOUND) {
         std::cerr << "No table selected." << std::endl;
         return;
     }
-    wxString selectedTable = m_uiChoicesDBTables->GetString(selectionIndex);
-    m_dbActiveTableName = selectedTable.ToStdString();
 
-    // 2. Clear out m_uiTableGrid
-    m_uiTableGrid->ClearGrid();
+    m_dbActiveTableName = m_uiChoicesDBTables->GetString(selectionIndex).ToStdString();
 
-    // 3. Query the selected table and display its contents
+    // 2. Query the selected table
     std::string query = "SELECT * FROM " + m_dbActiveTableName;
-    m_dbQuery = std::make_unique<SQLite::Statement>(*m_dbConnection, query);
+    m_dbResult = RequestDatabaseData(query);
 
-	// 3.5 Set the Column Title Names
-	int colCount = m_dbQuery->getColumnCount();
-    if (m_uiTableGrid->GetNumberCols() != colCount)
-    {
-        m_uiTableGrid->ClearGrid();
-        if (m_uiTableGrid->GetNumberCols() < colCount)
-            m_uiTableGrid->AppendCols(colCount - m_uiTableGrid->GetNumberCols());
-        else if (m_uiTableGrid->GetNumberCols() > colCount)
-            m_uiTableGrid->DeleteCols(0, m_uiTableGrid->GetNumberCols() - colCount);
-    }
+    // 3. update the grid's structure
+    GridAdjustStructure(*m_uiTableGrid, m_dbResult);
 
-    // create the filter row at the top
-    if (m_uiTableGrid->GetNumberRows() == 0) { m_uiTableGrid->AppendRows(1); }
-    m_uiTableGrid->SetRowLabelValue(0, "Filter");
-    // the filter row's background colour
-    wxColour filterBg(220, 240, 255);
-
-    // set the filter row's cells attributes here
-    for (int col = 0; col < m_uiTableGrid->GetNumberCols(); ++col) 
-    {
-        // dev-note: wx f0rces us to make the entire grid editable by default and then enf0rce read-only to cells that shouldn't be edited.
-        // we can't do it the other way around, so we don't need to make the filter row editable.
-        m_uiTableGrid->SetCellBackgroundColour(0, col, filterBg);
-    }
-
-    bool columnHeadersSet = false;
-    // dev-note: we set row to 1 here to prevent the filter row at the top from having table data written into it
-    int row = 1;
-
-    // populate the grid with the data from the result set
-    while (m_dbQuery->executeStep()) 
-	{
-        // Set column headers only once
-        if (!columnHeadersSet)
-        {
-            for (int col = 0; col < colCount; ++col)
-            {
-                wxString colName = m_dbQuery->getColumn(col).getName();
-                m_uiTableGrid->SetColLabelValue(col, colName);
-                m_uiTableGrid->AutoSizeColLabelSize(col);
-            }
-            columnHeadersSet = true;
-        }
-
-        // Ensure the grid has enough rows
-        if (row >= m_uiTableGrid->GetNumberRows())
-            m_uiTableGrid->AppendRows(1);
-
-        for (int col = 0; col < colCount; ++col)
-        {
-            wxString value = m_dbQuery->getColumn(col).getText();
-            m_uiTableGrid->SetCellValue(row, col, value);
-            m_uiTableGrid->SetReadOnly(row, col, true);
-        }
-        m_uiTableGrid->SetRowLabelValue(row, wxString::Format("%d", row));
-        std::cout << "row: " << row << std::endl;
-        ++row;
-    }
-    // Remove any extra rows if the new result set is smaller than the previous
-    int extraRows = m_uiTableGrid->GetNumberRows() - row;
-    if (extraRows > 0)
-        m_uiTableGrid->DeleteRows(row, extraRows);
-	event.Skip();
+    // 4. update the grid's content
+    GridUpdateContent(*m_uiTableGrid, m_dbResult);
 }
 
 void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
@@ -224,27 +258,15 @@ void SteelCalcDatabaseViewer::UpdateUI(const std::string &sectionName)
 // send a std::string query to the current database connection and retrieve the result set in a std::vector format
 std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseViewer::RequestDatabaseData(std::string query)
 {
-	std::vector<
-		std::vector<
-			std::pair<
-				std::string, 
-				std::string
-			>
-		>
-	>						l_result;
-	std::vector<
-		std::pair<
-			std::string, 
-			std::string
-		>
-	>						l_row;
+	std::vector<std::vector<std::pair<std::string, std::string>>>   l_result;
 
     try
     {
 		m_dbQuery	= std::make_unique<SQLite::Statement>(*m_dbConnection, query);
-        	// convert the result into std vector<vector<pair<string, string>>> data type and return
+        // convert the result into std vector<vector<pair<string, string>>> data type and return
         while (m_dbQuery->executeStep()) 
         {
+            std::vector<std::pair<std::string, std::string>>    l_row;
             for (int col = 0; col < m_dbQuery->getColumnCount(); ++col)
             {
                 std::string colName	= m_dbQuery->getColumnName(col);
