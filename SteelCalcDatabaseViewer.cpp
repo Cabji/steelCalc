@@ -129,9 +129,9 @@ void SteelCalcDatabaseViewer::GridAdjustStructure(wxGrid& grid, const std::vecto
 void SteelCalcDatabaseViewer::GridInsertFilterRow(wxGrid &grid)
 {
     // create the filter row at the top
-    if (grid.GetNumberRows() == 0) { grid.AppendRows(1); }
+    grid.InsertRows(0,1);
     grid.SetRowLabelValue(0, "Filter");
-    // the filter row's background colour
+    // create filter row's background colour
     wxColour filterBg(220, 240, 255);
 
     // set the filter row's cells attributes here
@@ -140,6 +140,7 @@ void SteelCalcDatabaseViewer::GridInsertFilterRow(wxGrid &grid)
         // dev-note: wx f0rces us to make the entire grid editable by default and then enf0rce read-only to cells that shouldn't be edited.
         // we can't do it the other way around, so we don't need to make the filter row editable.
         grid.SetCellBackgroundColour(0, col, filterBg);
+        grid.SetCellBackgroundColour(1, col, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     }
 }
 
@@ -184,11 +185,10 @@ void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
     std::string query = "SELECT * FROM " + m_dbActiveTableName;
     m_dbResult = RequestDatabaseData(query);
 
-    // 3. update the grid's structure
+    // 3. up grid's structure and content
     GridAdjustStructure(*m_uiTableGrid, m_dbResult);
-
-    // 4. update the grid's content
     GridUpdateContent(*m_uiTableGrid, m_dbResult);
+    GridInsertFilterRow(*m_uiTableGrid);
 }
 
 void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
