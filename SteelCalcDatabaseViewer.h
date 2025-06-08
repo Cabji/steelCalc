@@ -79,12 +79,12 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 		>
 	>									RequestDatabaseData(std::string query);
 	void 								CheckAndCreateTables(SQLite::Database& dbConnection, const DatabaseSchema& expectedSchema);
-
-	private: 
-	std::set<std::string> 				DatabaseFetchTableNames(const SQLite::Database& dbConnection);
 	void								GridAdjustStructure(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet);
 	void								GridInsertFilterRow(wxGrid& grid);
 	void								GridUpdateContent(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet, const bool cellsReadOnly = true);
+
+	private: 
+	std::set<std::string> 				DatabaseFetchTableNames(const SQLite::Database& dbConnection);
 	void								OnClose(wxCloseEvent& event);
 	void								OnDatabaseActiveTableChoiceChanged(wxEvent& event);
 	void								OnGridCellChanged(wxGridEvent& event);
