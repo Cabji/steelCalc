@@ -67,11 +67,12 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 	void								OnDatabaseActiveTableChoiceChanged(wxEvent& event);
 	void								OnGridCellChanged(wxGridEvent& event);
 
-	std::string							m_dbActiveTableName;
-	std::set<std::string>				m_dbAvailableTableNames;
-	std::unique_ptr <SQLite::Database>	m_dbConnection;
-	std::string							m_dbFilename;
-	std::unique_ptr <SQLite::Statement>	m_dbQuery;
+	std::string														m_dbActiveTableName;
+	std::set<std::string>											m_dbAvailableTableNames;
+	std::unique_ptr <SQLite::Database>								m_dbConnection;
+	std::string														m_dbFilename;
+	std::unique_ptr <SQLite::Statement>								m_dbQuery;
+	std::vector<std::vector<std::pair<std::string, std::string>>>	m_dbResult;
 };
 
 #endif // __SteelCalcDatabaseViewer__

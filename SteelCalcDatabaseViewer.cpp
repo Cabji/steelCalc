@@ -181,11 +181,12 @@ void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
                 std::string colName = grid->GetColLabelValue(col);
                 // append the query string firstly with "AND" if this is not the first appendation
                 if (!query.ends_with(" WHERE ")) { query += " AND "; }
-                query +=  colName + " = '" + cellValue + "'";
+                query +=  colName + " LIKE '%" + cellValue + "%'";
             }
         }
         std::cout << "Filtration query is: " << query << std::endl;
-                    // get values from cells, they are the values for the WHERE clause in the SQL query
+        m_dbResult = RequestDatabaseData(query);
+        std::cout << "Result set size: " << m_dbResult.size() << std::endl;
             // send query to database, get result set - use RequestDatabaseData
             // update results into grid
                 // consider taking code from OnDatabaseActiveTableChanged() and refactoring into a new function that handles updating the grid with the result set
@@ -237,20 +238,28 @@ std::vector<std::vector<std::pair<std::string, std::string>>> SteelCalcDatabaseV
 			std::string
 		>
 	>						l_row;
-							m_dbQuery	= std::make_unique<SQLite::Statement>(*m_dbConnection, query);
-	
-	// convert the result into std vector<vector<pair<string, string>>> data type and return
-	 while (m_dbQuery->executeStep()) 
-	{
-        for (int col = 0; col < m_dbQuery->getColumnCount(); ++col)
+
+    try
+    {
+		m_dbQuery	= std::make_unique<SQLite::Statement>(*m_dbConnection, query);
+        	// convert the result into std vector<vector<pair<string, string>>> data type and return
+        while (m_dbQuery->executeStep()) 
         {
-			std::string colName	= m_dbQuery->getColumnName(col);
-            std::string value = m_dbQuery->getColumn(col).getText();
-			l_row.emplace_back(colName, value);
+            for (int col = 0; col < m_dbQuery->getColumnCount(); ++col)
+            {
+                std::string colName	= m_dbQuery->getColumnName(col);
+                std::string value = m_dbQuery->getColumn(col).getText();
+                l_row.emplace_back(colName, value);
+            }
+            l_result.push_back(std::move(l_row));
         }
-		l_result.push_back(std::move(l_row));
     }
-	return l_result;
+    catch(const std::exception& e)
+    {
+        std::cerr << "SQL Query failed, error: " << e.what() << '\n';
+    }
+
+    return l_result;
 }
 
 void SteelCalcDatabaseViewer::CheckAndCreateTables(SQLite::Database& dbConnection, const DatabaseSchema& expectedSchema)
