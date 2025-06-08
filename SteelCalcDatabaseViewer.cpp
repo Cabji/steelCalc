@@ -212,6 +212,15 @@ void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
             std::cerr << "OnGridCellChanged: grid object was not available? returning.";
             return;
         }
+
+		// save filter row values
+		// holds the values currently found in the filter row
+		std::vector<wxString> filterValues;
+        for (int col = 0; col < grid->GetNumberCols(); ++col)
+            filterValues.push_back(grid->GetCellValue(0, col));
+		// dev-note: please note - filterValues holds the value of each cell in the filter row, even if there is no value in a cell
+
+
         std::string query       = "SELECT * FROM " + m_dbActiveTableName + " WHERE ";
             // build SQL query
         for (int col = 0; col < grid->GetNumberCols(); col++)
@@ -234,9 +243,14 @@ void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
         GridAdjustStructure(*m_uiTableGrid, m_dbResult);
         GridUpdateContent(*m_uiTableGrid, m_dbResult);
         GridInsertFilterRow(*m_uiTableGrid);
+
+		// restore the filter row's filter values
+		for (int col = 0; col < static_cast<int>(filterValues.size()); ++col)
+            m_uiTableGrid->SetCellValue(0, col, filterValues[col]);
     } 
     else 
     {
+		// for now, just skip the event if not row index 0
         event.Skip();
         // Handle data row edits (future)
     }

@@ -36,14 +36,32 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 
 	// expectedSchema defines the names and column properties for required tables in the sqlite3 database
 	const DatabaseSchema expectedSchema = {
-        { "inventory", { { 
-			{ "itemName", "TEXT" }, { "category", "TEXT" }, { "supplierName", "TEXT" }, { "supplierItemSKU", "TEXT" }, 
-			{ "supplierItemDescription", "TEXT" }, { "itemCost", "NUMERIC" }, { "itemUnit", "TEXT" }, 
-			{ "itemMaterialUnitFormula", "TEXT" }, { "itemAutoLabourFormula", "TEXT" }, { "itemMaterialRoundUp", "NUMERIC" }, 
-			{ "itemWasteAllowance", "NUMERIC" }, { "itemSpecificProfit", "NUMERIC" }, { "itemExcludeFromClientView", "NUMERIC" }, 
-			{ "itemClientViewDescription", "TEXT" }, { "itemSWMSRelationship", "TEXT" }, { "itemLastUpdated", "NUMERIC" }
-		 } } },
-        { "settings",  { { { "key", "TEXT" }, { "value", "TEXT" }, { "updated_at", "TEXT" } } } }
+        { "inventory", 
+			{ { 
+				{ "itemName", "TEXT" }, 
+				{ "category", "TEXT" }, 
+				{ "supplierName", "TEXT" }, 
+				{ "supplierItemSKU", "TEXT" }, 
+				{ "supplierItemDescription", "TEXT" }, 
+				{ "itemCost", "NUMERIC" }, 
+				{ "itemUnit", "TEXT" }, 
+				{ "itemMaterialUnitFormula", "TEXT" }, 
+				{ "itemAutoLabourFormula", "TEXT" }, 
+				{ "itemMaterialRoundUp", "NUMERIC" }, 
+				{ "itemSpecificWasteAllowance", "NUMERIC" }, 
+				{ "itemSpecificProfit", "NUMERIC" }, 
+				{ "itemExcludeFromClientView", "NUMERIC" }, 
+				{ "itemClientViewDescription", "TEXT" }, 
+				{ "itemSWMSRelationship", "TEXT" }, 
+				{ "itemLastUpdated", "NUMERIC" }
+			} } 
+		},
+        { "settings",  
+			{ { 
+				{ "key", "TEXT" }, 
+				{ "value", "TEXT" }, 
+				{ "updated_at", "TEXT" } 
+		}	} }
     };
 
 	public:
