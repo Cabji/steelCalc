@@ -234,6 +234,7 @@ void SteelCalcMain::OnMenuFileDatabaseViewer(wxCommandEvent &event)
     {
         std::cerr << "Database Viewer frame does not exist!" << std::endl;
     }
+    else
     {
         std::cout << "Showing Database Viewer..." << std::endl;
         m_dbViewerFrame->Show(true);

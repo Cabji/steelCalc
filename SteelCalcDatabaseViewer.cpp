@@ -52,6 +52,7 @@ DatabaseViewer(parent)
 	// bind event handlers
 	m_uiChoicesDBTables->Bind   (wxEVT_CHOICE,              &SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged, this);
     m_uiTableGrid->Bind         (wxEVT_GRID_CELL_CHANGED,   &SteelCalcDatabaseViewer::OnGridCellChanged, this);
+    this->Bind                  (wxEVT_CLOSE_WINDOW,		&SteelCalcDatabaseViewer::OnClose, this);
 }
 
 std::set<std::string> SteelCalcDatabaseViewer::DatabaseFetchTableNames(const SQLite::Database& dbConnection)
@@ -168,6 +169,13 @@ void SteelCalcDatabaseViewer::GridUpdateContent(wxGrid& grid, const std::vector<
     }
 }
 
+void SteelCalcDatabaseViewer::OnClose(wxCloseEvent& event)
+{
+    this->Hide();
+    // prevent automatic destruction of this by using Veto()
+    event.Veto();
+}
+
 void SteelCalcDatabaseViewer::OnDatabaseActiveTableChoiceChanged(wxEvent &event)
 {
 	// handle when user chooses which database table to view
@@ -219,14 +227,13 @@ void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
             }
         }
         std::cout << "Filtration query is: " << query << std::endl;
+        // send query to database, get result set - use RequestDatabaseData
         m_dbResult = RequestDatabaseData(query);
         std::cout << "Result set size: " << m_dbResult.size() << std::endl;
-            // send query to database, get result set - use RequestDatabaseData
-            // update results into grid
-                // consider taking code from OnDatabaseActiveTableChanged() and refactoring into a new function that handles updating the grid with the result set
-                // update existing grid cell values
-                    // check if there are enough rows, add row if needed
-                // if there are excessive rows in the grid, remove unneeded rows at the end
+        // update results into grid
+        GridAdjustStructure(*m_uiTableGrid, m_dbResult);
+        GridUpdateContent(*m_uiTableGrid, m_dbResult);
+        GridInsertFilterRow(*m_uiTableGrid);
     } 
     else 
     {

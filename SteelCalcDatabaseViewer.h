@@ -67,6 +67,7 @@ class SteelCalcDatabaseViewer : public DatabaseViewer
 	void								GridAdjustStructure(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet);
 	void								GridInsertFilterRow(wxGrid& grid);
 	void								GridUpdateContent(wxGrid& grid, const std::vector<std::vector<std::pair<std::string, std::string>>>& resultSet, const bool cellsReadOnly = true);
+	void								OnClose(wxCloseEvent& event);
 	void								OnDatabaseActiveTableChoiceChanged(wxEvent& event);
 	void								OnGridCellChanged(wxGridEvent& event);
 
