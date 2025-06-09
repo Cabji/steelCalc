@@ -38,6 +38,17 @@ There is no estimated completion date for the project.
 
 # Current Development Aims
 
+- Create class: ResultSetGrid
+  - This class should Extend wxGrid class. Its aim is to bridge between the SQLiteCpp class and wxGrid to create a grid that automagically handles SQL result data.
+  - Can we make it provide a Struct for the Result Set, so that when its reused we don't need to know the format of the Result Set data we just use a StdResultSet object?
+  - Handles sizing/resizing the grid to suit the result set
+  - Handles updating the grid's appearance
+  - Allow for adding/toggling optional extras like: 
+    - Filter row
+    - Cell data sanitization/data type formatting or enforcement
+    - Anything else?
+  - Export/import of grid data
+  
 - ✔ Create & implement multi-purpose SQLite3 database read/write functionality
   - ✔ General SQLite3 connection
   - ✔ Create empty default database file if non-existant
@@ -47,7 +58,7 @@ There is no estimated completion date for the project.
     - ✔ Return failure if default tables cannot be created
   
 - Database Viewer
-  - Add a way to filter viewed data (a row at the top that will let you filter by any column?)
+  - ✔ Add a way to filter viewed data (a row at the top that will let you filter by any column?)
   - Add toolbar? to switch to Edit mode
   
 - Locale aware programming
