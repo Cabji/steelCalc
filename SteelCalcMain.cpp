@@ -29,8 +29,8 @@ void SteelCalcMain::Init()
     std::cout << "We are in SteelCalcMain ctr (OnInit)" << std::endl;
 
     // class data acquisition
-    m_optionsFrame = new SteelCalcOptions(this);
     m_dbViewerFrame = new SteelCalcDatabaseViewer(this, DEFAULT_DATABASE_FILENAME, "inventory");
+    m_optionsFrame = new SteelCalcOptions(this);
 
     // local data acquisition
     auto specNames	= m_specsGandD->GetStrings();
@@ -303,7 +303,11 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
             while(configObj.GetNextEntry(barGrade, index));
         }
         std::cout << "Processed " << counter << " bar grades from config file." << std::endl;
-        m_optionsFrame->SetBarClassificationData(barData);
+
+        // dev-note: commented out by cabji 20250610 - populating the Option frame grid's this way has been deprecated. 
+        // you should instead use the SteelCalcDatabaseViewer class methods for getting values from the inventory table and 
+        // use the SteelCalcDatabaseViewer::Grid*() methods to update the grid in the UI
+        //m_optionsFrame->SetBarClassificationData(barData);
     }
     std::cout << "Settings loaded from config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
 }

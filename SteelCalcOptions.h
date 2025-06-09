@@ -32,13 +32,20 @@ class SteelCalcOptions : public Options
 		void 									SetBarClassificationData(const wxVector<std::pair<wxString, wxString>>& barData);
 	private: 
 		// Handlers for Options events.
-		void 	OnGridKeyDown( wxKeyEvent& event );
-		void	GridSort( wxGridEvent& event );
-		void	OnClose( wxCloseEvent& event );
+		void 	OnGridKeyDown(wxKeyEvent& event);
+		void	GridSort(wxGridEvent& event);
+		void	OnClose(wxCloseEvent& event);
+		void	OnShow(wxShowEvent& event);
 
 		// private members
 		wxVector<std::pair<wxString, wxString>>		m_barGradeAndCostData;
 		SteelCalcMain*								m_mainFrame;
+		std::string             					m_queryBarRates   = "SELECT itemName AS 'Bar Grade', itemCost AS 'Cost per Mg' FROM inventory "
+																		"WHERE itemName LIKE '%C&B%' "
+																		"OR itemName LIKE '%Complex Shape%' "
+																		"OR itemName LIKE '%Fabrication%' "
+																		"OR itemName LIKE '%Stock%'";
+		std::vector<std::vector<std::pair<std::string, std::string>>>	m_resultSet;
 };
 
 #endif // __SteelCalcOptions__
