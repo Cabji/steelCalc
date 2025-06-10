@@ -312,7 +312,7 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
         m_resultSet = m_mainFrame->m_dbViewerFrame->RequestDatabaseData(m_queryBarRates);
         std::cout << "      Result size: " << m_resultSet.size() << std::endl;
         m_mainFrame->m_dbViewerFrame->GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_resultSet);
-        m_mainFrame->m_dbViewerFrame->GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_resultSet);
+        m_mainFrame->m_dbViewerFrame->GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_resultSet, false);
     }
     event.Skip();
 }
