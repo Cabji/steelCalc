@@ -10,6 +10,7 @@ cmake_minimum_required(VERSION 3.20)
       # names of source files in your project here (.cpp only)
       set(SOURCES 
             MyApp.cpp
+            ResultSetGrid.cpp
             SteelCalcBase.cpp 
             SteelCalcMain.cpp
             SteelCalcOptions.cpp

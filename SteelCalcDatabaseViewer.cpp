@@ -127,6 +127,7 @@ void SteelCalcDatabaseViewer::GridAdjustStructure(wxGrid& grid, const std::vecto
             grid.DeleteRows(0, grid.GetNumberRows() - resultSetRowCount);
     }
 }
+
 void SteelCalcDatabaseViewer::GridInsertFilterRow(wxGrid &grid)
 {
     // create the filter row at the top
