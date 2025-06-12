@@ -32,8 +32,10 @@ class ResultSetGrid : public wxGrid
 			std::string		ClassName();
 	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
 	static	void			GridInsertFilterRow(wxGrid& grid);
+	static	void			GridSort(wxGridEvent& event);
 	static	void			GridUpdateContent(wxGrid& grid, const ResultSet& resultSet, const bool cellsReadOnly = true);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
+	
 
 	private: 
 };

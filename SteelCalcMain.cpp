@@ -118,6 +118,16 @@ double SteelCalcMain::GetBarRadius(const wxString &barSpec)
     return wxAtof(numericValue) / 2 / 1000;
 }
 
+wxString SteelCalcMain::GetGlobalDefaultConfigFilename()
+{
+    // returns a platform-customised absolute path to the default config filename
+	return wxString(wxFileName(wxStandardPaths::Get()
+                    .GetExecutablePath())
+                    .GetPath() 
+                    + wxFileName::GetPathSeparator() 
+                    + "SteelCalc.conf");
+}
+
 void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
 {
     // Get the selected bar specification
@@ -264,14 +274,14 @@ void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
 void SteelCalcMain::SettingsLoadAllFromDisk()
 {
     // check for conf file existence
-    if (!wxFileName::FileExists(DEFAULT_CONFIG_FILENAME))
+    if (!wxFileName::FileExists(GetGlobalDefaultConfigFilename()))
     {
         std::cout << "Config file does not exist. Using default settings." << std::endl;
         return;
     }
 
     // local data acquisition
-    wxFileConfig    configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
+    wxFileConfig    configObj("SteelCalc", wxEmptyString, GetGlobalDefaultConfigFilename());
     bool            tempValue;
     int             counter = 0;
 
@@ -309,13 +319,13 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
         // use the SteelCalcDatabaseViewer::Grid*() methods to update the grid in the UI
         //m_optionsFrame->SetBarClassificationData(barData);
     }
-    std::cout << "Settings loaded from config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+    std::cout << "Settings loaded from config file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
 }
 
 void SteelCalcMain::SettingsSaveAllToDisk()
 {
 
-    wxFileConfig configObj("SteelCalc", wxEmptyString, DEFAULT_CONFIG_FILENAME);
+    wxFileConfig configObj("SteelCalc", wxEmptyString, GetGlobalDefaultConfigFilename());
     // add the values that you want to save below here
     configObj.Write("LabourAddLapTies", m_optionsFrame->GetAddLapTies());
     configObj.Write("LabourAddPerimeterTies", m_optionsFrame->GetAddPerimeterTies());
@@ -324,11 +334,11 @@ void SteelCalcMain::SettingsSaveAllToDisk()
     configObj.Flush();
     if (configObj.Flush())
     {
-        std::cout << "Settings saved to config file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+        std::cout << "Settings saved to config file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
     }
     else
     {
-        std::cerr << "!!! Settings failed to save to file '" << DEFAULT_CONFIG_FILENAME << "'" << std::endl;
+        std::cerr << "!!! Settings failed to save to file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
     }
 }
 

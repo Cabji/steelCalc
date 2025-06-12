@@ -14,7 +14,7 @@ Options( parent )
     // Bind event handlers
     this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
     this->Bind(wxEVT_SHOW, &SteelCalcOptions::OnShow, this);
-    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &SteelCalcOptions::GridSort, this);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &ResultSetGrid::GridSort);
     m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_KEY_DOWN, &SteelCalcOptions::OnGridKeyDown, this);
     
     // m_optionsCalculationFactorBarGradeCosts is the wxGrid object
@@ -50,22 +50,6 @@ Options( parent )
         m_optionsCalculationFactorsBarGradeCosts->SetColAttr(1, rightAlignAttr);
         m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
         m_optionsCalculationFactorsBarGradeCosts->SetSortingColumn(0);
-        
-        // Populate rows with bar classifications and costs
-        // dev-note: be aware that this is to populate with a default set of values only (0.0 for cost)
-        // int row = 0;
-        // for (const wxString& barType : barClassifications)
-        // {
-        //     // ensure there are enough rows on the grid
-        //     if (m_optionsCalculationFactorsBarGradeCosts->GetNumberRows() <= row)
-        //     {
-        //         m_optionsCalculationFactorsBarGradeCosts->AppendRows(1);
-        //     }
-
-        //     m_optionsCalculationFactorsBarGradeCosts->SetCellValue(row, 0, barType);
-        //     m_optionsCalculationFactorsBarGradeCosts->SetCellValue(row, 1, "0");
-        //     row++;
-        // }
 
         // set grid's size and scroll behaviour
         wxSize uiSize = m_optionsCalculationFactorsBarGradeCosts->GetSize();
@@ -190,61 +174,6 @@ void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 	event.Skip();
 }
 
-void SteelCalcOptions::GridSort(wxGridEvent &event)
-{
-    // dev-note: we are sorting based on col 0 atm but if user clicks on col 1
-    // it is breaking the data. implement support for sort by any col.
-    
-    wxGrid* triggerGrid = dynamic_cast<wxGrid*>(event.GetEventObject());
-    if (triggerGrid)
-    {
-        // local data acquisition
-        int colToSort = event.GetCol();
-        int rowCount = triggerGrid->GetNumberRows();
-        int colCount = triggerGrid->GetNumberCols();
-        
-        if (rowCount <= 1)
-        {
-            // only 1 row, no sorting needed.
-            return;
-        }
-
-        // extract data from grid into vector of pairs
-        std::vector<std::vector<wxString>> gridData;
-        for (int i = 0; i < rowCount; ++i)
-        {
-            std::vector<wxString> rowData;
-            for (int j = 0; j < colCount; ++j)
-            {
-                rowData.push_back(triggerGrid->GetCellValue(i,j));
-            }
-            gridData.push_back(rowData);
-        }
-
-        // sort the data in ascending order (alphanumerical) based on the key
-        std::sort(gridData.begin(), gridData.end(), [colToSort](const std::vector<wxString>& a, const std::vector<wxString>& b) {
-            return a[colToSort].Cmp(b[colToSort]) < 0; // using wxString::Cmp for comparison
-        });
-
-        // repopulate the grid with sorted data
-        for (int i = 0; i < rowCount; ++i)
-        {
-            for (int j = 0; j < colCount; ++j)
-            {
-                triggerGrid->SetCellValue(i, j, gridData[i][j]);
-            }
-        }
-
-        std::cout << "Grid sorted by column " << colToSort << std::endl;
-        triggerGrid->DeselectCol(colToSort);
-    }
-    else 
-    {
-        std::cout << "!! Grid sort event triggered, but wxGrid object was not the trigger object." << std::endl;
-    }
-    event.Skip();
-}
-
 void SteelCalcOptions::SetAddLapTies(const bool &value)
 {
     m_optionsLabourAddLapTies->SetValue(value);
@@ -309,7 +238,7 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     if (m_optionsCalculationFactorsBarGradeCosts->GetNumberRows() == 0) 
     {
         std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
-        m_newResultSet = ResultSetGrid::RequestDatabaseData("database.sq3", m_queryBarRates);
+        m_newResultSet = ResultSetGrid::RequestDatabaseData(DEFAULT_DATABASE_FILENAME, m_queryBarRates);
         std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
         ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
         ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false);

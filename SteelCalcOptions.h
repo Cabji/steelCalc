@@ -34,7 +34,7 @@ class SteelCalcOptions : public Options
 	private: 
 		// Handlers for Options events.
 		void 	OnGridKeyDown(wxKeyEvent& event);
-		void	GridSort(wxGridEvent& event);
+		// void	GridSort(wxGridEvent& event);
 		void	OnClose(wxCloseEvent& event);
 		void	OnShow(wxShowEvent& event);
 

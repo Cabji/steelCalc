@@ -58,6 +58,61 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 	return;
 }
 
+void ResultSetGrid::GridSort(wxGridEvent &event)
+{
+    // dev-note: we are sorting based on col 0 atm but if user clicks on col 1
+    // it is breaking the data. implement support for sort by any col.
+    
+    wxGrid* triggerGrid = dynamic_cast<wxGrid*>(event.GetEventObject());
+    if (!triggerGrid)
+    {
+        std::cerr << CLASS_NAME << "::" << __func__ << "(): Grid sort event triggered, but wxGrid object was not the trigger object." << std::endl;
+        event.Skip();
+        return;
+    }
+
+    // local data acquisition
+    int colToSort = event.GetCol();
+    int rowCount = triggerGrid->GetNumberRows();
+    int colCount = triggerGrid->GetNumberCols();
+    
+    if (rowCount <= 1)
+    {
+        // only 1 row, no sorting needed.
+        return;
+    }
+
+    // extract data from grid into vector of pairs
+    std::vector<std::vector<wxString>> gridData;
+    for (int i = 0; i < rowCount; ++i)
+    {
+        std::vector<wxString> rowData;
+        for (int j = 0; j < colCount; ++j)
+        {
+            rowData.push_back(triggerGrid->GetCellValue(i,j));
+        }
+        gridData.push_back(rowData);
+    }
+
+    // sort the data in ascending order (alphanumerical) based on the key
+    std::sort(gridData.begin(), gridData.end(), [colToSort](const std::vector<wxString>& a, const std::vector<wxString>& b) {
+        return a[colToSort].Cmp(b[colToSort]) < 0; // using wxString::Cmp for comparison
+    });
+
+    // repopulate the grid with sorted data
+    for (int i = 0; i < rowCount; ++i)
+    {
+        for (int j = 0; j < colCount; ++j)
+        {
+            triggerGrid->SetCellValue(i, j, gridData[i][j]);
+        }
+    }
+
+    std::cout << CLASS_NAME << "::" << __func__ << "(): Grid sorted by column " << colToSort << std::endl;
+    triggerGrid->DeselectCol(colToSort);
+}
+
+
 void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, const bool cellsReadOnly)
 {
 	grid.ClearGrid();
@@ -104,7 +159,7 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     }
     catch(const std::exception& e)
     {
-        std::cerr << "SQL Query failed, error: " << e.what() << '\n';
+        std::cerr << CLASS_NAME << "::" << __func__ << "(): SQL Query failed, error: " << e.what() << '\n';
     }
 
     return l_result;
