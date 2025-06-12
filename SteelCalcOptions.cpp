@@ -19,10 +19,7 @@ Options( parent )
     
     // m_optionsCalculationFactorBarGradeCosts is the wxGrid object
     // to populate the grid, we need to have: 
-        // 1. SQL query to select the desired data from the inventory table in the database
-        // 2. calls to SteelCalcDatabaseViewer class' Grid*() methods to design the grid structure and update the grid's content
-        // 3. manually update the grid's column labels because it is "End User Seen" so has to look nice
-
+        // 
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
     {
@@ -39,14 +36,12 @@ Options( parent )
         
 
 
-        // ensure grid has 2 columns
+        // // ensure grid has 2 columns
         if (colCount < 2) { m_optionsCalculationFactorsBarGradeCosts->AppendCols((2 - colCount)); }
         
-		// set grid/column attributes
-        m_optionsCalculationFactorsBarGradeCosts->DeleteRows(0, m_optionsCalculationFactorsBarGradeCosts->GetNumberRows());
+		// // set grid/column attributes
+        // m_optionsCalculationFactorsBarGradeCosts->DeleteRows(0, m_optionsCalculationFactorsBarGradeCosts->GetNumberRows());
 		m_optionsCalculationFactorsBarGradeCosts->SetDefaultEditor(stringEditor);
-		m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(0, "Bar Name");
-        m_optionsCalculationFactorsBarGradeCosts->SetColLabelValue(1, "Cost per Mg");
         m_optionsCalculationFactorsBarGradeCosts->SetColAttr(1, rightAlignAttr);
         m_optionsCalculationFactorsBarGradeCosts->SetColFormatFloat(1, 0, 2);
         m_optionsCalculationFactorsBarGradeCosts->SetSortingColumn(0);
@@ -92,6 +87,9 @@ wxVector<std::pair<wxString, wxString>> SteelCalcOptions::GetBarClassificationDa
     return barData;
 }
 
+// this function handles if the user presses Enter or Down Arrow key while at the bottom row of a wxGrid
+// it will add a new row to the grid
+//      this code should be improved to check if the grid is allowing editing or not. if read-only, it should NOT add a new row.
 void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 {
 	std::cout << "OnGridKeyDown event handler is happening." << std::endl;
@@ -235,13 +233,10 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
 {
     // ensure the Bar Grade Costs grid is updated/populated
     // dev-note: the values for the Bar Costs are being pulled from the inventory table in the database!
-    if (m_optionsCalculationFactorsBarGradeCosts->GetNumberRows() == 0) 
-    {
-        std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
-        m_newResultSet = ResultSetGrid::RequestDatabaseData(DEFAULT_DATABASE_FILENAME, m_queryBarRates);
-        std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
-        ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
-        ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false);
-    }
+    std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
+    m_newResultSet = ResultSetGrid::RequestDatabaseData(DEFAULT_DATABASE_FILENAME, m_queryBarRates);
+    std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
+    ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
+    ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);
     event.Skip();
 }

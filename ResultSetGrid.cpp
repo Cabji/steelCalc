@@ -21,7 +21,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
     std::vector<std::string> colNames;
 	resultSetColCount = static_cast<int>(resultSet.rows[0].columns.size());
 
-	// create vector of column names (colNames)
+	// create vector of column *names* (colNames)
 	for (int col = 0; col < resultSetColCount; ++col) 
 	{
 		colNames.push_back(resultSet.rows[0].columns[col].colName);
@@ -113,7 +113,7 @@ void ResultSetGrid::GridSort(wxGridEvent &event)
 }
 
 
-void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, const bool cellsReadOnly)
+void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, const bool& cellsReadOnly, const bool& adjustWidthToCellValues)
 {
 	grid.ClearGrid();
     if (resultSet.rows.empty())
@@ -134,6 +134,7 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
             grid.SetReadOnly(row, col, cellsReadOnly);
         }
     }
+    grid.AutoSizeColumns(adjustWidthToCellValues);
 }
 
 // send a std::string query to the current database connection and retrieve the result set in a std::vector format
