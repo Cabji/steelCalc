@@ -3,6 +3,7 @@
 
 #include "CustomGridCellEditor.h"
 #include "SteelCalcDatabaseViewer.h"
+#include "ResultSetGrid.h"
 
 /**
 @file
@@ -46,6 +47,7 @@ class SteelCalcOptions : public Options
 																		"OR itemName LIKE '%Fabrication%' "
 																		"OR itemName LIKE '%Stock%'";
 		std::vector<std::vector<std::pair<std::string, std::string>>>	m_resultSet;
+		ResultSet	m_newResultSet;
 };
 
 #endif // __SteelCalcOptions__

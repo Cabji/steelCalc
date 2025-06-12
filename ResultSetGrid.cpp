@@ -1,6 +1,11 @@
 #include "ResultSetGrid.h"
 
 
+std::string ResultSetGrid::ClassName()
+{
+	return CLASS_NAME;
+}
+
 void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet)
 {
 	// zero-check
@@ -76,7 +81,31 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
     }
 }
 
-std::string ResultSetGrid::ClassName()
+// send a std::string query to the current database connection and retrieve the result set in a std::vector format
+ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, const std::string& query)
 {
-	return CLASS_NAME;
+	ResultSet   l_result;
+    try
+    {
+		SQLite::Database	dbConnection(dbFilename);
+		SQLite::Statement	dbQuery(dbConnection, query);
+        // convert the result into std vector<vector<pair<string, string>>> data type and return
+        while (dbQuery.executeStep()) 
+        {
+            Row    l_row;
+            for (int col = 0; col < dbQuery.getColumnCount(); ++col)
+            {
+                std::string colName	= dbQuery.getColumnName(col);
+                std::string value = dbQuery.getColumn(col).getText();
+                l_row.columns.emplace_back(colName, value);
+            }
+            l_result.rows.push_back(std::move(l_row));
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "SQL Query failed, error: " << e.what() << '\n';
+    }
+
+    return l_result;
 }

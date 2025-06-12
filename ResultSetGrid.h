@@ -4,6 +4,8 @@
 
 #include <wx/grid.h>
 #include <iostream>
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
 
 struct Column
 {
@@ -27,10 +29,11 @@ class ResultSetGrid : public wxGrid
 	public:
 	// default ctr
 	ResultSetGrid() : wxGrid() { };
-	std::string		ClassName();
-	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
-	void			GridInsertFilterRow(wxGrid& grid);
-	void			GridUpdateContent(wxGrid& grid, const ResultSet& resultSet, const bool cellsReadOnly = true);
+			std::string		ClassName();
+	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
+	static	void			GridInsertFilterRow(wxGrid& grid);
+	static	void			GridUpdateContent(wxGrid& grid, const ResultSet& resultSet, const bool cellsReadOnly = true);
+	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
 
 	private: 
 };

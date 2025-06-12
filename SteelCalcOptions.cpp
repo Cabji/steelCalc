@@ -309,10 +309,10 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     if (m_optionsCalculationFactorsBarGradeCosts->GetNumberRows() == 0) 
     {
         std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
-        m_resultSet = m_mainFrame->m_dbViewerFrame->RequestDatabaseData(m_queryBarRates);
-        std::cout << "      Result size: " << m_resultSet.size() << std::endl;
-        m_mainFrame->m_dbViewerFrame->GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_resultSet);
-        m_mainFrame->m_dbViewerFrame->GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_resultSet, false);
+        m_newResultSet = ResultSetGrid::RequestDatabaseData("database.sq3", m_queryBarRates);
+        std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
+        ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
+        ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false);
     }
     event.Skip();
 }
