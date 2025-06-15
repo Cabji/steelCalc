@@ -16,6 +16,7 @@ cmake_minimum_required(VERSION 3.20)
             SteelCalcOptions.cpp
             SteelCalcDatabaseViewer.cpp
             CustomGridCellEditor.cpp
+            CustomEventScheduler.cpp
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
       # SQLiteCpp depends on sqlite3!
