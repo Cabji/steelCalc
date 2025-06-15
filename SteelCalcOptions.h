@@ -41,10 +41,7 @@ class SteelCalcOptions : public Options
 		wxVector<std::pair<wxString, wxString>>		m_barGradeAndCostData;
 		SteelCalcMain*								m_mainFrame;
 		std::string             					m_queryBarRates   = "SELECT itemName AS 'Bar Grade', itemCost AS 'Cost per Mg' FROM inventory "
-																		"WHERE itemName LIKE '%C&B%' "
-																		"OR itemName LIKE '%Complex Shape%' "
-																		"OR itemName LIKE '%Fabrication%' "
-																		"OR itemName LIKE '%Stock%'";
+																		"WHERE category LIKE '%Steel - per Mg%'";
 		std::vector<std::vector<std::pair<std::string, std::string>>>	m_resultSet;
 		ResultSet	m_newResultSet;
 };
