@@ -4,8 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/cpp/include/wxWidgets-3.2.6-static/include",
-                "C:/cpp/include/wxWidgets-3.2.6-static/lib/gcc_x64_lib/mswu"
+                "C:/dev/cpp/ucrt64/include",
+                "C:/dev/cpp/ucrt64/include/c++/15.1.0",
+                "C:/dev/cpp/include"
             ],
             "defines": [
                 "_DEBUG",
