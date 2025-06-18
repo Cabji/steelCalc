@@ -32,9 +32,10 @@ bool CustomGridCellEditor::EndEdit(int row, int col, const wxGrid* grid, const w
     // schedule a delayed save action with CustomEventScheduler
     // i think we need to change [this] to the parent of grid so that it points to the SteelCalcOptions class instance, 
     // then create a function in SteelCalcOptions that will save the grid's data to database
+    
     CustomEventScheduler::Get().Schedule(
         "Options_BarGradesAndCosts_Save",
-        [this]() { SaveBarGradeCostsToDatabase(); },
+        [grid.GetParent()]() { SaveBarGradeCostsToDatabase(); },
         1000 // delay in ms
     );
 
