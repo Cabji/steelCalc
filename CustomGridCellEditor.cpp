@@ -19,7 +19,6 @@ bool CustomGridCellEditor::EndEdit(int row, int col, const wxGrid* grid, const w
         std::cout << "Valid value: " << value.ToStdString() << std::endl;
         *newval = value;
         m_sanitizedValue = value;
-        return true;
     }
     else
     {
@@ -29,6 +28,17 @@ bool CustomGridCellEditor::EndEdit(int row, int col, const wxGrid* grid, const w
         std::cout << "Invalid value: " << value.ToStdString() << std::endl;
         return false;
     }
+
+    // schedule a delayed save action with CustomEventScheduler
+    // i think we need to change [this] to the parent of grid so that it points to the SteelCalcOptions class instance, 
+    // then create a function in SteelCalcOptions that will save the grid's data to database
+    CustomEventScheduler::Get().Schedule(
+        "Options_BarGradesAndCosts_Save",
+        [this]() { SaveBarGradeCostsToDatabase(); },
+        1000 // delay in ms
+    );
+
+    return true;
 }
 
 void CustomGridCellEditor::SetValidationType(CustomGridCellEditor::ValidationType type) 
