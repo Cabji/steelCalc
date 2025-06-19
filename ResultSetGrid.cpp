@@ -16,15 +16,16 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 	}
 
 	// local data acquisition
-	int resultSetColCount = 0;
-    int resultSetRowCount = static_cast<int>(resultSet.rows.size());
-    std::vector<std::string> colNames;
+	int                         resultSetColCount = 0;
+    int                         resultSetRowCount = static_cast<int>(resultSet.rows.size());
+    std::vector<std::string>    colLabels;
+
 	resultSetColCount = static_cast<int>(resultSet.rows[0].columns.size());
 
-	// create vector of column *names* (colNames)
+	// create vector of column *names* (colLabels)
 	for (int col = 0; col < resultSetColCount; ++col) 
 	{
-		colNames.push_back(resultSet.rows[0].columns[col].colName);
+		colLabels.push_back(resultSet.rows[0].columns[col].colLabel);
 	}
 
 	// dev-note: if the result set is empty, we cannot fallback to showing the column names in the grid because that responsibility 
@@ -43,7 +44,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
     // set column labels
     for (int col = 0; col < resultSetColCount; ++col) 
     {
-        grid.SetColLabelValue(col, wxString(colNames[col]));
+        grid.SetColLabelValue(col, wxString(colLabels[col]));
         grid.AutoSizeColLabelSize(col);
     }
 
@@ -72,9 +73,9 @@ void ResultSetGrid::GridSort(wxGridEvent &event)
     }
 
     // local data acquisition
-    int colToSort = event.GetCol();
-    int rowCount = triggerGrid->GetNumberRows();
-    int colCount = triggerGrid->GetNumberCols();
+    int colToSort   = event.GetCol();
+    int rowCount    = triggerGrid->GetNumberRows();
+    int colCount    = triggerGrid->GetNumberCols();
     
     if (rowCount <= 1)
     {
@@ -151,9 +152,9 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
             Row    l_row;
             for (int col = 0; col < dbQuery.getColumnCount(); ++col)
             {
-                std::string colName	= dbQuery.getColumnName(col);
+                std::string colLabel	= dbQuery.getColumnName(col);
                 std::string value = dbQuery.getColumn(col).getText();
-                l_row.columns.emplace_back(colName, value);
+                l_row.columns.emplace_back(colLabel, value);
             }
             l_result.rows.push_back(std::move(l_row));
         }
@@ -164,4 +165,30 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     }
 
     return l_result;
+}
+
+void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string& tableName, const std::vector<int> &rows, const std::vector<int> &cols)
+{
+    // Determine which rows and columns to use
+    std::vector<int>    rows = rowIndices.empty() ? grid.GetRowSize() : rowIndices;
+    std::vector<int>    cols = colIndices.empty() ? grid.GetColSize() : colIndices;
+
+    for (int row : rows) {
+        // Build SQL: UPDATE table SET col1=?, col2=? WHERE id=?
+        std::string                 query       = "UPDATE " + tableName + " SET ";
+        std::vector<std::string>    setClauses;
+        std::vector<wxString>       values;
+        ResultSet                   saveValues;
+        for (int col : cols) 
+        {
+            std::string colLabel = grid.GetColLabelValue(col);
+            setClauses.push_back(colLabel + "=?");
+            values.push_back(grid.GetCellValue(row, col));
+        }
+        query += Join(setClauses, ", ");
+        query += " WHERE id=?"; // assuming 'id' is your PK
+        values.push_back(GetCellValue(row, idColIndex));
+
+        // Prepare and execute statement with values...
+    }
 }

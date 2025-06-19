@@ -9,7 +9,8 @@
 
 struct Column
 {
-	std::string			colName;
+	std::string			colLabel;	// user-seen column Label
+	std::string			colName;	// column name as found in database table
 	std::string			value;
 };
 
@@ -23,7 +24,10 @@ struct ResultSet
 	std::vector<Row> 	rows;
 };
 
-// this class is a customised wxGrid object that will make displaying result sets easier
+// this class is a customised wxGrid object that will make 
+//		displaying result sets 
+//		interacting with grid <-> database
+// easier
 class ResultSetGrid : public wxGrid
 {
 	public:
@@ -38,9 +42,9 @@ class ResultSetGrid : public wxGrid
 											  const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
-	
+	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
-	private: 
+	private:
 };
 
 #endif // RESULTSETGRID_H
