@@ -2,6 +2,8 @@
 #define RESULTSETGRID_H
 #define CLASS_NAME "ResultSetGrid"
 
+// 
+
 #include <wx/grid.h>
 #include <iostream>
 #include <SQLiteCpp/Database.h>
@@ -35,6 +37,8 @@ class ResultSetGrid : public wxGrid
 	ResultSetGrid() : wxGrid() { };
 			std::string		ClassName();
 	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
+			void			GridAdjustStructure(const ResultSet& resultSet);
+			void			GridAdjustStructure();
 	static	void			GridInsertFilterRow(wxGrid& grid);
 	static	void			GridSort(wxGridEvent& event);
 	static	void			GridUpdateContent(wxGrid& grid, 
@@ -42,9 +46,11 @@ class ResultSetGrid : public wxGrid
 											  const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
+	static	ResultSet		RequestGridData(const wxGrid& grid, const std::vector<int>& rows, const std::vector<int> cols);
 	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
+	ResultSet		m_resultSet;
 };
 
 #endif // RESULTSETGRID_H

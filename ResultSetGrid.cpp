@@ -46,6 +46,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
     {
         grid.SetColLabelValue(col, wxString(colLabels[col]));
         grid.AutoSizeColLabelSize(col);
+        
     }
 
     // ensure the grid has the correct number of rows
@@ -57,6 +58,17 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
             grid.DeleteRows(0, grid.GetNumberRows() - resultSetRowCount);
     }
 	return;
+}
+
+// overload to use [this] as the grid
+void ResultSetGrid::GridAdjustStructure(const ResultSet &resultSet)
+{
+    GridAdjustStructure(*this, resultSet);
+}
+
+void ResultSetGrid::GridAdjustStructure()
+{
+    GridAdjustStructure(m_resultSet);
 }
 
 void ResultSetGrid::GridSort(wxGridEvent &event)
@@ -134,6 +146,7 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
             grid.SetCellValue(row, col, wxString(resultSet.rows[row].columns[col].value));
             grid.SetReadOnly(row, col, cellsReadOnly);
         }
+        // also update the ResultSet to include the colLabel value (user-seen column name in the interface)
     }
     grid.AutoSizeColumns(adjustWidthToCellValues);
 }
@@ -167,11 +180,24 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     return l_result;
 }
 
-void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string& tableName, const std::vector<int> &rows, const std::vector<int> &cols)
+// use this function to pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want)
+ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<int> &rowIndices, const std::vector<int> colIndices)
 {
-    // Determine which rows and columns to use
+    // determine which rows and columns to use
+    rows = rowIndices.empty() ? grid.GetRowSize() : rowIndices;
+    cols = colIndices.empty() ? grid.GetColSize() : colIndices;
+
+	return ResultSet();
+}
+
+// use this function to send data FROM a wxgrid to a SQLite database table
+void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string& tableName, const std::vector<int> &rowIndices, const std::vector<int> &colIndices)
+{
+    // determine which rows and columns to use
     std::vector<int>    rows = rowIndices.empty() ? grid.GetRowSize() : rowIndices;
     std::vector<int>    cols = colIndices.empty() ? grid.GetColSize() : colIndices;
+
+    // create a ResultSet from the grid's data
 
     for (int row : rows) {
         // Build SQL: UPDATE table SET col1=?, col2=? WHERE id=?
