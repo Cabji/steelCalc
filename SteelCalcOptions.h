@@ -43,8 +43,8 @@ class SteelCalcOptions : public Options
 		std::string             					m_queryBarRates   = "SELECT itemName AS 'Bar Grade', itemCost AS 'Cost per Mg', supplierName AS 'Supplier' "
 																		"FROM inventory "
 																		"WHERE category LIKE '%Steel - per Mg%'";
-		std::vector<std::vector<std::pair<std::string, std::string>>>	m_resultSet;
-		ResultSet	m_newResultSet;
+		//std::vector<std::vector<std::pair<std::string, std::string>>>	m_resultSet;
+		ResultSet									m_newResultSet;
 };
 
 #endif // __SteelCalcOptions__

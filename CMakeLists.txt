@@ -12,12 +12,12 @@ cmake_minimum_required(VERSION 3.20)
             resources.rc
             MyApp.cpp
             ResultSetGrid.cpp
+            CustomEventScheduler.cpp
+            CustomGridCellEditor.cpp
             SteelCalcBase.cpp 
             SteelCalcMain.cpp
             SteelCalcOptions.cpp
             SteelCalcDatabaseViewer.cpp
-            CustomGridCellEditor.cpp
-            CustomEventScheduler.cpp
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
       # SQLiteCpp depends on sqlite3!
@@ -53,6 +53,7 @@ set(wxWidgets_INCLUDE_DIRS
    )
 
 include_directories(
+      ${workspaceFolder}
       ${localCPPDevRoot}/include
       $ENV{WXWIN}/lib/${localMachine_WX_LIB_NAME}/${wxWidgets_CONFIGURATION}
       )
@@ -69,7 +70,7 @@ add_executable(${projectName} WIN32 ${SOURCES})
 
 target_include_directories(${projectName} PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(${projectName} ${wxWidgets_LIBRARIES} ${projectLibraries})
-
+target_compile_definitions(${projectName} PRIVATE ${wxWidgets_DEFINITIONS})
 # Handle project resources...
 # Define the source and destination resource directories
 # set(RESOURCE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")

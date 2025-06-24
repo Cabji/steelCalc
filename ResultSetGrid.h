@@ -6,6 +6,8 @@
 
 #include <wx/grid.h>
 #include <iostream>
+#include <unordered_map>
+#include <string>
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Statement.h>
 
@@ -45,12 +47,17 @@ class ResultSetGrid : public wxGrid
 											  const ResultSet& resultSet, 
 											  const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
+			void			GridUpdateContent(const ResultSet& resultSet, 
+											  const bool& cellsReadOnly = true, 
+											  const bool& adjustWidthToCellValues = false);
+			void			GridUpdateContent(const bool& cellsReadOnly = true, 
+											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
 	static	ResultSet		RequestGridData(const wxGrid& grid, const std::vector<int>& rows, const std::vector<int> cols);
 	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
-	ResultSet		m_resultSet;
-};
+	ResultSet										m_resultSet;
+	std::unordered_map<std::string, std::string>	m_columnLabelMap;
 
 #endif // RESULTSETGRID_H

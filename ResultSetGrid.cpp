@@ -22,7 +22,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 
 	resultSetColCount = static_cast<int>(resultSet.rows[0].columns.size());
 
-	// create vector of column *names* (colLabels)
+	// create vector of user-seen column labels (colLabels)
 	for (int col = 0; col < resultSetColCount; ++col) 
 	{
 		colLabels.push_back(resultSet.rows[0].columns[col].colLabel);
@@ -146,9 +146,20 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
             grid.SetCellValue(row, col, wxString(resultSet.rows[row].columns[col].value));
             grid.SetReadOnly(row, col, cellsReadOnly);
         }
-        // also update the ResultSet to include the colLabel value (user-seen column name in the interface)
+        // debug
+        if (col == 0) { std::cout << "  " << CLASS_NAME << "::" << __func__ << "():\n       ColLabel = " << resultSet.rows[row].columns[col].colLabel << "\n       ColName = " << resultSet.rows[row].columns[col].colName << std::endl; }
     }
     grid.AutoSizeColumns(adjustWidthToCellValues);
+}
+
+void ResultSetGrid::GridUpdateContent(const ResultSet &resultSet, const bool &cellsReadOnly, const bool &adjustWidthToCellValues)
+{
+    GridUpdateContent(*this, resultSet, cellsReadOnly, adjustWidthToCellValues);
+}
+
+void ResultSetGrid::GridUpdateContent(const bool &cellsReadOnly, const bool &adjustWidthToCellValues)
+{
+    GridUpdateContent(m_resultSet, cellsReadOnly, adjustWidthToCellValues);
 }
 
 // send a std::string query to the current database connection and retrieve the result set in a std::vector format
@@ -159,15 +170,21 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     {
 		SQLite::Database	dbConnection(dbFilename);
 		SQLite::Statement	dbQuery(dbConnection, query);
-        // convert the result into std vector<vector<pair<string, string>>> data type and return
+
+        // convert the result into std vector<vector<pair<string, string, string>>> data type and return
         while (dbQuery.executeStep()) 
         {
             Row    l_row;
             for (int col = 0; col < dbQuery.getColumnCount(); ++col)
             {
-                std::string colLabel	= dbQuery.getColumnName(col);
+                // dev-note: remember - colLabel = user-seen column Label, colName = name of field (column) in the database table
+                std::string colLabel = dbQuery.getColumnOriginName(col);
+                if (colLabel.empty()) { collabel = colName; }
+                std::string colName	= dbQuery.getColumnName(col);
                 std::string value = dbQuery.getColumn(col).getText();
-                l_row.columns.emplace_back(colLabel, value);
+                l_row.columns.emplace_back(colName, value);
+                // set colLabel => colName association in m_columnLabelMap
+                m_columnLabelMap[colLabel] = colName;
             }
             l_result.rows.push_back(std::move(l_row));
         }
