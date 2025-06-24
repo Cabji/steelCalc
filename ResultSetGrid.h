@@ -2,8 +2,6 @@
 #define RESULTSETGRID_H
 #define CLASS_NAME "ResultSetGrid"
 
-// 
-
 #include <wx/grid.h>
 #include <iostream>
 #include <unordered_map>
@@ -25,7 +23,9 @@ struct Row
 
 struct ResultSet
 {
-	std::vector<Row> 	rows;
+	std::vector<Row> 								rows;
+	// sm_columnLabelMap is a mapping of user-seen column Label Names => field names in database table, specifically for the current ResultSet's values
+	std::unordered_map<std::string, std::string>	sm_columnLabelMap;
 };
 
 // this class is a customised wxGrid object that will make 
@@ -57,7 +57,8 @@ class ResultSetGrid : public wxGrid
 	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
+	static	std::vector<int>		CreateVectorFromInt(const int& i);
 	ResultSet										m_resultSet;
-	std::unordered_map<std::string, std::string>	m_columnLabelMap;
+};
 
 #endif // RESULTSETGRID_H

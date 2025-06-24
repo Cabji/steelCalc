@@ -174,7 +174,7 @@ void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
         m_barProcessSizer->Detach(m_gridLValues);
         m_gridLValues->Hide();
         m_barProcessSizer->Add(m_gridCircularLValues, wxGBPosition(3, 0), wxGBSpan(1, 2), wxALL, 5);
-        m_gridCircularLValues->Show();
+        m_gridCircularLValues->Show(true);
     }
     else
     {
@@ -182,7 +182,7 @@ void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
         m_barProcessSizer->Detach(m_gridCircularLValues);
         m_gridCircularLValues->Hide();
         m_barProcessSizer->Add(m_gridLValues, wxGBPosition(3, 0), wxGBSpan(1, 2), wxALL, 5);
-        m_gridLValues->Show();
+        m_gridLValues->Show(true);
     }
     UpdateResults();
     event.Skip();

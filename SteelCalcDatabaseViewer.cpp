@@ -226,11 +226,11 @@ void SteelCalcDatabaseViewer::OnGridCellChanged(wxGridEvent& event)
             // build SQL query
         for (int col = 0; col < grid->GetNumberCols(); col++)
         {
-            std::string cellValue   = grid->GetCellValue(0, col);
+            wxString cellValue   = grid->GetCellValue(0, col);
             if (cellValue != wxEmptyString)
             {
                 // get the column Name
-                std::string colName = grid->GetColLabelValue(col);
+                wxString colName = grid->GetColLabelValue(col);
                 // append the query string firstly with "AND" if this is not the first appendation
                 if (!query.ends_with(" WHERE ")) { query += " AND "; }
                 query +=  colName + " LIKE '%" + cellValue + "%'";

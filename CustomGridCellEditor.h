@@ -4,7 +4,7 @@
 #include <wx/grid.h>
 #include <wx/numformatter.h>
 #include <iostream>
-#include <CustomEventScheduler.h>
+#include "CustomEventScheduler.h"
 
 class CustomGridCellEditor : public wxGridCellTextEditor
 {

@@ -145,9 +145,9 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
         {
             grid.SetCellValue(row, col, wxString(resultSet.rows[row].columns[col].value));
             grid.SetReadOnly(row, col, cellsReadOnly);
+            // debug
+            if (row == 0) { std::cout << "  " << CLASS_NAME << "::" << __func__ << "():\n       ColLabel = " << resultSet.rows[row].columns[col].colLabel << "\n       ColName = " << resultSet.rows[row].columns[col].colName << std::endl; }
         }
-        // debug
-        if (col == 0) { std::cout << "  " << CLASS_NAME << "::" << __func__ << "():\n       ColLabel = " << resultSet.rows[row].columns[col].colLabel << "\n       ColName = " << resultSet.rows[row].columns[col].colName << std::endl; }
     }
     grid.AutoSizeColumns(adjustWidthToCellValues);
 }
@@ -178,13 +178,20 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
             for (int col = 0; col < dbQuery.getColumnCount(); ++col)
             {
                 // dev-note: remember - colLabel = user-seen column Label, colName = name of field (column) in the database table
-                std::string colLabel = dbQuery.getColumnOriginName(col);
-                if (colLabel.empty()) { collabel = colName; }
-                std::string colName	= dbQuery.getColumnName(col);
+
+#ifdef SQLITE_ENABLE_COLUMN_METADATA
+// !! dev-note: to use SQLite metadata the SQLite library needs to be built with the 
+// SQLITE_ENABLE_COLUMN_METADATA preprocessor macro enabled 
+                std::string colName	= dbQuery.getColumnOriginName(col);
+#else
+				std::string colName = "ColumnOriginName() not available!";
+#endif
+                std::string colLabel = dbQuery.getColumnName(col);
                 std::string value = dbQuery.getColumn(col).getText();
+                if (colLabel.empty()) { colLabel = colName; }
                 l_row.columns.emplace_back(colName, value);
-                // set colLabel => colName association in m_columnLabelMap
-                m_columnLabelMap[colLabel] = colName;
+                // set colLabel => colName association in ResultSet struct's sm_columnLabelMap
+                l_result.sm_columnLabelMap[colLabel] = colName;
             }
             l_result.rows.push_back(std::move(l_row));
         }
@@ -201,8 +208,8 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
 ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<int> &rowIndices, const std::vector<int> colIndices)
 {
     // determine which rows and columns to use
-    rows = rowIndices.empty() ? grid.GetRowSize() : rowIndices;
-    cols = colIndices.empty() ? grid.GetColSize() : colIndices;
+    std::vector<int> rows = rowIndices.empty() ? CreateVectorFromInt(grid.GetNumberRows()) : rowIndices;
+    std::vector<int> cols = colIndices.empty() ? CreateVectorFromInt(grid.GetNumberCols()) : colIndices;
 
 	return ResultSet();
 }
@@ -211,8 +218,8 @@ ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<i
 void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string& tableName, const std::vector<int> &rowIndices, const std::vector<int> &colIndices)
 {
     // determine which rows and columns to use
-    std::vector<int>    rows = rowIndices.empty() ? grid.GetRowSize() : rowIndices;
-    std::vector<int>    cols = colIndices.empty() ? grid.GetColSize() : colIndices;
+    std::vector<int>    rows = rowIndices.empty() ? CreateVectorFromInt(grid.GetNumberRows()) : rowIndices;
+    std::vector<int>    cols = colIndices.empty() ? CreateVectorFromInt(grid.GetNumberCols()) : colIndices;
 
     // create a ResultSet from the grid's data
 
@@ -224,14 +231,29 @@ void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string
         ResultSet                   saveValues;
         for (int col : cols) 
         {
-            std::string colLabel = grid.GetColLabelValue(col);
+            std::string colLabel = grid.GetColLabelValue(col).ToStdString();
             setClauses.push_back(colLabel + "=?");
             values.push_back(grid.GetCellValue(row, col));
         }
-        query += Join(setClauses, ", ");
-        query += " WHERE id=?"; // assuming 'id' is your PK
-        values.push_back(GetCellValue(row, idColIndex));
+        // build query string from values vector
+        for (size_t i = 0; i < setClauses.size(); ++i) {
+            if (i != 0) query += ", ";
+            query += setClauses[i];
+        }
+        query += " WHERE itemName=?"; // assuming 'id' is your PK
+        //values.push_back(GetCellValue(row, idColIndex));
 
         // Prepare and execute statement with values...
     }
+}
+
+// creates a vector with int values in it from 0 to i
+std::vector<int> ResultSetGrid::CreateVectorFromInt(const int &i)
+{
+    std::vector<int>    result;
+    for (int j = 0; j < i; j++)
+    {
+        result.push_back(j);
+    }
+	return result;
 }
