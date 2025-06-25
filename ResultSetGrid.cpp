@@ -1,5 +1,6 @@
+#define SQLITE_ENABLE_COLUMN_METADATA
 #include "ResultSetGrid.h"
-
+#include <SQLiteCpp/Column.h>
 
 std::string ResultSetGrid::ClassName()
 {
@@ -125,7 +126,6 @@ void ResultSetGrid::GridSort(wxGridEvent &event)
     triggerGrid->DeselectCol(colToSort);
 }
 
-
 void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, const bool& cellsReadOnly, const bool& adjustWidthToCellValues)
 {
 	grid.ClearGrid();
@@ -179,17 +179,14 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
             {
                 // dev-note: remember - colLabel = user-seen column Label, colName = name of field (column) in the database table
 
-#ifdef SQLITE_ENABLE_COLUMN_METADATA
-// !! dev-note: to use SQLite metadata the SQLite library needs to be built with the 
-// SQLITE_ENABLE_COLUMN_METADATA preprocessor macro enabled 
-                std::string colName	= dbQuery.getColumnOriginName(col);
-#else
-				std::string colName = "ColumnOriginName() not available!";
-#endif
+                // origin column name (as it is in the database table)
+                std::string colName = dbQuery.getColumn(col).getOriginName();
+                // grid column name (as shown to the end-user)
                 std::string colLabel = dbQuery.getColumnName(col);
+                // column value (aka field value in database table) unique to this row, displayed in grid's cell at (row,col)
                 std::string value = dbQuery.getColumn(col).getText();
                 if (colLabel.empty()) { colLabel = colName; }
-                l_row.columns.emplace_back(colName, value);
+                l_row.columns.emplace_back(colLabel, colName, value);
                 // set colLabel => colName association in ResultSet struct's sm_columnLabelMap
                 l_result.sm_columnLabelMap[colLabel] = colName;
             }
