@@ -219,15 +219,15 @@ ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<i
             // get each cell value and put it into the ResultSet
             // ensure we use grid->resultSet->sm_columnLabelMap to get the origin name for columns in the grid
             // get the user-visible column label
-            std::string colLabel = rsgrid.GetColLabelValue(col).ToStdString();
+            std::string colLabel = rsgrid->GetColLabelValue(col).ToStdString();
             std::string colName;
 
             if (rsgrid)
             {
                 // get the origin column name from the label map, or fallback to label if not found
                 std::string colName = "";
-                auto it = rsgrid.m_resultSet.sm_columnLabelMap.find(colLabel);
-                if (it != rsgrid.m_resultSet.sm_columnLabelMap.end()) {
+                auto it = rsgrid->m_resultSet.sm_columnLabelMap.find(colLabel);
+                if (it != rsgrid->m_resultSet.sm_columnLabelMap.end()) {
                     colName = it->second;
                 } 
                 else 
@@ -243,7 +243,7 @@ ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<i
                 l_result.sm_columnLabelMap[colLabel] = colName;
             }
 
-            std::string value = rsgrid.GetCellValue(row, col).ToStdString();
+            std::string value = rsgrid->GetCellValue(row, col).ToStdString();
             l_row.columns.emplace_back(colLabel, colName, value);
         }
         l_result.rows.push_back(std::move(l_row));
@@ -293,4 +293,24 @@ std::vector<int> ResultSetGrid::CreateVectorFromInt(const int &i)
         result.push_back(j);
     }
 	return result;
+}
+
+// outpout some info about/from the m_resultSet
+void ResultSetGrid::OutputResultSetInfo()
+{
+    std::cout << CLASS_NAME << "::" << __func__ << "(): " << std::endl;
+    std::cout << "  Number of Rows: " << m_resultSet.rows.size() << std::endl;
+	if (m_resultSet.rows.size() > 0)
+	{
+		std::cout << "  Number of Columns: " << m_resultSet.rows[0].columns.size() << std::endl;
+		// output the dat aof the first row in the ResultSet
+		std::cout << "	Sample of data: " << std::endl;
+		for (const Column col : m_resultSet.rows[0].columns)
+		{
+			std::cout << "		Label:	" << col.colLabel 
+					  << "		Name:	" << col.colName 
+					  << "		Value:	" << col.value 
+					  << std::endl;
+		}
+	}
 }
