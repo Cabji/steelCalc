@@ -53,7 +53,7 @@ class ResultSetGrid : public wxGrid
 			void			GridUpdateContent(const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
-	static	ResultSet		RequestGridData(const wxGrid& grid, const std::vector<int>& rows, const std::vector<int> cols);
+			ResultSet		RequestGridData(const wxGrid& grid, const std::vector<int>& rows, const std::vector<int> cols);
 	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
