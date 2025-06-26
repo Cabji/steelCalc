@@ -9,6 +9,8 @@
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Statement.h>
 
+// this is a test commit
+
 struct Column
 {
 	std::string			colLabel;	// user-seen column Label
