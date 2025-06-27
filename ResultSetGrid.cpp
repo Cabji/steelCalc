@@ -295,22 +295,3 @@ std::vector<int> ResultSetGrid::CreateVectorFromInt(const int &i)
 	return result;
 }
 
-// outpout some info about/from the m_resultSet
-void ResultSetGrid::OutputResultSetInfo()
-{
-    std::cout << CLASS_NAME << "::" << __func__ << "(): " << std::endl;
-    std::cout << "  Number of Rows: " << m_resultSet.rows.size() << std::endl;
-	if (m_resultSet.rows.size() > 0)
-	{
-		std::cout << "  Number of Columns: " << m_resultSet.rows[0].columns.size() << std::endl;
-		// output the dat aof the first row in the ResultSet
-		std::cout << "	Sample of data: " << std::endl;
-		for (const Column col : m_resultSet.rows[0].columns)
-		{
-			std::cout << "		Label:	" << col.colLabel 
-					  << "		Name:	" << col.colName 
-					  << "		Value:	" << col.value 
-					  << std::endl;
-		}
-	}
-}

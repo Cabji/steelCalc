@@ -239,4 +239,5 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
     ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);
     event.Skip();
+    m_newResultSet.OutputResultSetInfo();
 }
