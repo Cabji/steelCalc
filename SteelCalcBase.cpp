@@ -5,6 +5,8 @@
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
+#include "ResultSetGrid.h"
+
 #include "SteelCalcBase.h"
 
 ///////////////////////////////////////////////////////////////////////////
@@ -359,7 +361,7 @@ Options::Options( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_lblOptionsCFBarGradeCosts->Wrap( -1 );
 	m_optionsSizer->Add( m_lblOptionsCFBarGradeCosts, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 
-	m_optionsCalculationFactorsBarGradeCosts = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_optionsCalculationFactorsBarGradeCosts = new ResultSetGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
 	// Grid
 	m_optionsCalculationFactorsBarGradeCosts->CreateGrid( 3, 2 );

@@ -201,15 +201,13 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     return l_result;
 }
 
-// use this function to pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want)
-ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<int> &rowIndices, const std::vector<int> colIndices)
+// pull data FROM a ResutSetGrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)
+ResultSet ResultSetGrid::RequestGridData(const std::vector<int> &rowIndices, const std::vector<int> colIndices)
 {
     ResultSet l_result;
     // determine which rows and columns to use
-    std::vector<int> rows = rowIndices.empty() ? CreateVectorFromInt(grid.GetNumberRows()) : rowIndices;
-    std::vector<int> cols = colIndices.empty() ? CreateVectorFromInt(grid.GetNumberCols()) : colIndices;
-
-    const ResultSetGrid* rsgrid = dynamic_cast<const ResultSetGrid*>(&grid);
+    std::vector<int> rows = rowIndices.empty() ? CreateVectorFromInt(this->GetNumberRows()) : rowIndices;
+    std::vector<int> cols = colIndices.empty() ? CreateVectorFromInt(this->GetNumberCols()) : colIndices;
 
     for (int row : rows)
     {
@@ -217,33 +215,23 @@ ResultSet ResultSetGrid::RequestGridData(const wxGrid &grid, const std::vector<i
         for (int col : cols)
         {
             // get each cell value and put it into the ResultSet
-            // ensure we use grid->resultSet->sm_columnLabelMap to get the origin name for columns in the grid
+            // ensure we use this->resultSet->sm_columnLabelMap to get the origin name for columns in the grid
             // get the user-visible column label
-            std::string colLabel = rsgrid->GetColLabelValue(col).ToStdString();
+            std::string colLabel = this->GetColLabelValue(col).ToStdString();
             std::string colName;
 
-            if (rsgrid)
-            {
-                // get the origin column name from the label map, or fallback to label if not found
-                std::string colName = "";
-                auto it = rsgrid->m_resultSet.sm_columnLabelMap.find(colLabel);
-                if (it != rsgrid->m_resultSet.sm_columnLabelMap.end()) {
-                    colName = it->second;
-                } 
-                else 
-                {
-                    colName = colLabel;
-                    l_result.sm_columnLabelMap[colLabel] = colName;
-                }
-            }
-            // grid is not a ResultSetGrid, its a wxGrid - no columnLabelMap is available so we can only use the grid's column labels
-            else
+            // get the origin column name from the label map, or fallback to label if not found
+            auto it = this->m_resultSet.sm_columnLabelMap.find(colLabel);
+            if (it != this->m_resultSet.sm_columnLabelMap.end()) {
+                colName = it->second;
+            } 
+            else 
             {
                 colName = colLabel;
                 l_result.sm_columnLabelMap[colLabel] = colName;
             }
 
-            std::string value = rsgrid->GetCellValue(row, col).ToStdString();
+            std::string value = this->GetCellValue(row, col).ToStdString();
             l_row.columns.emplace_back(colLabel, colName, value);
         }
         l_result.rows.push_back(std::move(l_row));

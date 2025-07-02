@@ -10,6 +10,8 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+class ResultSetGrid;
+
 #include <wx/string.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
@@ -117,7 +119,7 @@ class Options : public wxFrame
 		wxCheckBox* m_optionsLabourAddLapTies;
 		wxStaticText* m_lblOptionsCalculationFactors;
 		wxStaticText* m_lblOptionsCFBarGradeCosts;
-		wxGrid* m_optionsCalculationFactorsBarGradeCosts;
+		ResultSetGrid* m_optionsCalculationFactorsBarGradeCosts;
 
 	public:
 

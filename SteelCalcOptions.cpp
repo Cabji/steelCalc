@@ -9,17 +9,8 @@ SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
 :
 Options( parent )
 {
-    m_mainFrame = dynamic_cast<SteelCalcMain*>(parent);
-
-    // Bind event handlers
-    this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
-    this->Bind(wxEVT_SHOW, &SteelCalcOptions::OnShow, this);
-    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &ResultSetGrid::GridSort);
-    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_KEY_DOWN, &SteelCalcOptions::OnGridKeyDown, this);
-    
-    // m_optionsCalculationFactorBarGradeCosts is the wxGrid object
-    // to populate the grid, we need to have: 
-        // 
+    // dev-note: m_optionsCalculationFactorBarGradeCosts is a ResultSetGrid object from the base class. 
+    //   it is defined as a ResultSetGrid in the wxFormBuilder project.
     // Populate the Bar Grade Costs widget
     if (m_optionsCalculationFactorsBarGradeCosts)
     {
@@ -28,7 +19,6 @@ Options( parent )
         CustomGridCellEditor* 	floatEditor 		= new CustomGridCellEditor();
         CustomGridCellEditor* 	stringEditor 		= new CustomGridCellEditor();
         wxGridCellAttr* 		rightAlignAttr 		= new wxGridCellAttr();
-        wxArrayString 			barClassifications 	= m_mainFrame->GetBarClassifications();
         int						colCount			= m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
         floatEditor->SetValidationType(CustomGridCellEditor::ValidationType::FLOAT);
         stringEditor->SetValidationType(CustomGridCellEditor::ValidationType::STRING);
@@ -53,6 +43,16 @@ Options( parent )
         // update user-seen UI
         m_optionsCalculationFactorsBarGradeCosts->Layout();
     }
+
+    m_mainFrame = dynamic_cast<SteelCalcMain*>(parent);
+
+    // Bind event handlers
+    this->Bind(wxEVT_CLOSE_WINDOW, &SteelCalcOptions::OnClose, this); 
+    this->Bind(wxEVT_SHOW, &SteelCalcOptions::OnShow, this);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_GRID_COL_SORT, &ResultSetGrid::GridSort);
+    m_optionsCalculationFactorsBarGradeCosts->Bind(wxEVT_KEY_DOWN, &SteelCalcOptions::OnGridKeyDown, this);
+    
+    
     // update user-seen UI
     m_optionsCalculationFactorsBarGradeCosts->SetFocus();
     this->Layout();
@@ -216,11 +216,23 @@ void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxStrin
 
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
-    std::vector<std::vector<std::pair<std::string, std::string>>> dbResults;
-    dbResults = m_mainFrame->m_dbViewerFrame->RequestDatabaseData("SELECT * FROM inventory");
-    std::cout << "Number of results from Requested Database Data: " << dbResults.size() << std::endl;
+    // std::vector<std::vector<std::pair<std::string, std::string>>> dbResults;
+    // dbResults = m_mainFrame->m_dbViewerFrame->RequestDatabaseData("SELECT * FROM inventory");
+    // std::cout << "Number of results from Requested Database Data: " << dbResults.size() << std::endl;
     // dev-note: perhaps save the options to disk here at some stage?
+    
+    // get data from Bar Grade Costs grid and try to send to inventory to update
+    // dyn_casteo to get ResultSetGrid ptr (f0rced to do this when we need to use ResultSetGrid specific functions)
+    auto rsgrid = dynamic_cast<ResultSetGrid*>(m_optionsCalculationFactorsBarGradeCosts);
+    if (rsgrid) 
+    {
+        std::vector<int> cols, rows;
+        ResultSet gridValues = rsgrid->RequestGridData(rows, cols);
+        // temp show the values we got in he ResultSet
+        gridValues.OutputResultSetInfo();
+    }
     this->Hide();
+    // save program options to relevnt config file(s)
     if (m_mainFrame)
     {
         m_mainFrame->TriggerUpdateResults();
@@ -239,5 +251,4 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
     ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);
     event.Skip();
-    m_newResultSet.OutputResultSetInfo();
 }

@@ -55,6 +55,7 @@ class ResultSetGrid : public wxGrid
 	public:
 	// default ctr
 	ResultSetGrid() : wxGrid() { };
+
 			std::string		ClassName();
 	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
 			void			GridAdjustStructure(const ResultSet& resultSet);
@@ -71,7 +72,8 @@ class ResultSetGrid : public wxGrid
 			void			GridUpdateContent(const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
-			ResultSet		RequestGridData(const wxGrid& grid, const std::vector<int>& rows, const std::vector<int> cols);
+// pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)			
+			ResultSet		RequestGridData(const std::vector<int>& rows, const std::vector<int> cols);
 	static	void			SaveFromGridToDatabase(const wxGrid& grid, const std::string& tableName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
