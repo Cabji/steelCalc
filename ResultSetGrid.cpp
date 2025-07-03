@@ -12,7 +12,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 	// zero-check
     if (resultSet.rows.empty()) 
     {
-		std::cout << CLASS_NAME << "::" << __func__ << "(): ResultSet was empty, no grid structure adjustment performed." << std::endl;
+		std::cout << CLASS_NAME << "::" << __func__ << "(): ResultSet was empty, no this-> structure adjustment performed." << std::endl;
 		return;
 	}
 
@@ -29,11 +29,11 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 		colLabels.push_back(resultSet.rows[0].columns[col].colLabel);
 	}
 
-	// dev-note: if the result set is empty, we cannot fallback to showing the column names in the grid because that responsibility 
+	// dev-note: if the result set is empty, we cannot fallback to showing the column names in the this-> because that responsibility 
 	// is the calling code's. the calling code would have to detect the resultSet is empty, then do a PRAGMA SQL call to get the table 
 	// schema data and pass THAT in as the resultSet (perhaps?)
 
-    // ensure the grid has the correct number of columns
+    // ensure the this-> has the correct number of columns
     if (grid.GetNumberCols() != resultSetColCount) 
     {
         if (grid.GetNumberCols() < resultSetColCount)
@@ -50,7 +50,7 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
         
     }
 
-    // ensure the grid has the correct number of rows
+    // ensure the this-> has the correct number of rows
     if (grid.GetNumberRows() != resultSetRowCount) 
     {
         if (grid.GetNumberRows() < resultSetRowCount)
@@ -61,9 +61,11 @@ void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet
 	return;
 }
 
-// overload to use [this] as the grid
+// overload to use [this] as the this->
 void ResultSetGrid::GridAdjustStructure(const ResultSet &resultSet)
 {
+    // copy the resultSet to the this->m_resultSet
+    this->m_resultSet = resultSet;
     GridAdjustStructure(*this, resultSet);
 }
 
@@ -96,7 +98,7 @@ void ResultSetGrid::GridSort(wxGridEvent &event)
         return;
     }
 
-    // extract data from grid into vector of pairs
+    // extract data from this-> into vector of pairs
     std::vector<std::vector<wxString>> gridData;
     for (int i = 0; i < rowCount; ++i)
     {
@@ -113,7 +115,7 @@ void ResultSetGrid::GridSort(wxGridEvent &event)
         return a[colToSort].Cmp(b[colToSort]) < 0; // using wxString::Cmp for comparison
     });
 
-    // repopulate the grid with sorted data
+    // repopulate the this-> with sorted data
     for (int i = 0; i < rowCount; ++i)
     {
         for (int j = 0; j < colCount; ++j)
@@ -181,9 +183,9 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
 
                 // origin column name (as it is in the database table)
                 std::string colName = dbQuery.getColumn(col).getOriginName();
-                // grid column name (as shown to the end-user)
+                // this-> column name (as shown to the end-user)
                 std::string colLabel = dbQuery.getColumnName(col);
-                // column value (aka field value in database table) unique to this row, displayed in grid's cell at (row,col)
+                // column value (aka field value in database table) unique to this row, displayed in this->'s cell at (row,col)
                 std::string value = dbQuery.getColumn(col).getText();
                 if (colLabel.empty()) { colLabel = colName; }
                 l_row.columns.emplace_back(colLabel, colName, value);
@@ -201,7 +203,7 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     return l_result;
 }
 
-// pull data FROM a ResutSetGrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)
+// pull data FROM a ResutSetGrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the this->)
 ResultSet ResultSetGrid::RequestGridData(const std::vector<int> &rowIndices, const std::vector<int> colIndices)
 {
     ResultSet l_result;
@@ -215,14 +217,15 @@ ResultSet ResultSetGrid::RequestGridData(const std::vector<int> &rowIndices, con
         for (int col : cols)
         {
             // get each cell value and put it into the ResultSet
-            // ensure we use this->resultSet->sm_columnLabelMap to get the origin name for columns in the grid
+            // ensure we use this->resultSet->sm_columnLabelMap to get the origin name for columns in the this->
             // get the user-visible column label
             std::string colLabel = this->GetColLabelValue(col).ToStdString();
             std::string colName;
 
             // get the origin column name from the label map, or fallback to label if not found
             auto it = this->m_resultSet.sm_columnLabelMap.find(colLabel);
-            if (it != this->m_resultSet.sm_columnLabelMap.end()) {
+            if (it != this->m_resultSet.sm_columnLabelMap.end()) 
+            {
                 colName = it->second;
             } 
             else 
@@ -239,37 +242,81 @@ ResultSet ResultSetGrid::RequestGridData(const std::vector<int> &rowIndices, con
     return l_result;
 }
 
-// use this function to send data FROM a wxgrid to a SQLite database table
-void ResultSetGrid::SaveFromGridToDatabase(const wxGrid &grid, const std::string& tableName, const std::vector<int> &rowIndices, const std::vector<int> &colIndices)
+// use this function to send data FROM a ResultSetGrid to a SQLite database table [this] = ResultSetGrid calling object
+void ResultSetGrid::SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName,  const std::string& primaryKeyName, const std::vector<int> &rowIndices, const std::vector<int> &colIndices)
 {
-    // determine which rows and columns to use
-    std::vector<int>    rows = rowIndices.empty() ? CreateVectorFromInt(grid.GetNumberRows()) : rowIndices;
-    std::vector<int>    cols = colIndices.empty() ? CreateVectorFromInt(grid.GetNumberCols()) : colIndices;
+	try 
+	{
+		SQLite::Database db(dbFilename, SQLite::OPEN_READWRITE);
+		// pointer to this->m_resultSet.sm_columnLabelMap
+		std::unordered_map<std::string, std::string>*	columnMap	= &this->m_resultSet.sm_columnLabelMap;
+		int												pkColIndex	= -1;
 
-    // create a ResultSet from the grid's data
+		// determine which rows and columns to use from [this]
+		std::vector<int>    rows = rowIndices.empty() ? CreateVectorFromInt(this->GetNumberRows()) : rowIndices;
+		std::vector<int>    cols = colIndices.empty() ? CreateVectorFromInt(this->GetNumberCols()) : colIndices;
 
-    for (int row : rows) {
-        // Build SQL: UPDATE table SET col1=?, col2=? WHERE id=?
-        std::string                 query       = "UPDATE " + tableName + " SET ";
-        std::vector<std::string>    setClauses;
-        std::vector<wxString>       values;
-        ResultSet                   saveValues;
-        for (int col : cols) 
-        {
-            std::string colLabel = grid.GetColLabelValue(col).ToStdString();
-            setClauses.push_back(colLabel + "=?");
-            values.push_back(grid.GetCellValue(row, col));
-        }
-        // build query string from values vector
-        for (size_t i = 0; i < setClauses.size(); ++i) {
-            if (i != 0) query += ", ";
-            query += setClauses[i];
-        }
-        query += " WHERE itemName=?"; // assuming 'id' is your PK
-        //values.push_back(GetCellValue(row, idColIndex));
+		// create a ResultSet from the requested locations in the this->
+		for (int row : rows) 
+		{
+			// Build SQL: UPDATE table SET col1=?, col2=? WHERE id=?
+			// the SQL UPDATE query we are building in this function
+			std::string					query       = "UPDATE " + tableName + " SET ";
+			std::vector<std::string>	setClauses;
+			std::vector<wxString>		values;
+			ResultSet					saveValues;
 
-        // Prepare and execute statement with values...
-    }
+			// loop the columns in the current row
+			for (int col : cols) 
+			{
+				// get the column Label (user-seen at top of grid column in the UI)
+				std::string colLabel = this->GetColLabelValue(col).ToStdString();
+				// try to find the position of this colLabel in the columnMap
+				auto it = columnMap->find(colLabel);
+				if (it != columnMap->end())
+				{
+					// get the colName (field name in the database that corressponds to the colLabel)
+					std::string colName = it->second;
+					// use the colName in the SQL UPDATE query
+					setClauses.push_back(colName + "=?");
+					// push the field value for this field name/colName into the values vector
+					values.push_back(this->GetCellValue(row, col));
+					// set the pkColIndex value once only, since it is the same for all rows in the ResultSet
+					if (colName == primaryKeyName) { pkColIndex = col; }
+				}
+			}
+			// push the primary key's value to the end of the values vector
+			values.push_back(GetCellValue(row, pkColIndex));
+
+			// build query string from setClauses vector
+			for (size_t i = 0; i < setClauses.size(); ++i) {
+				if (i != 0) query += ", ";
+				query += setClauses[i];
+			}
+			// use the primary key name in the UPDATE query for row identification
+			query += " WHERE " + primaryKeyName + "=?";
+
+            if (pkColIndex == -1) 
+			{
+                std::cerr << "Primary key column not found in grid columns." << std::endl;
+                continue;
+            }
+
+			// prepare and execute statement with values
+			SQLite::Statement dbQuery(db,query);
+			for (size_t i = 0; i < values.size(); ++i)
+			{
+				dbQuery.bind(static_cast<int>(i + 1), values[i].ToStdString());
+			}
+			std::cout << dbQuery.getExpandedSQL() << std::endl;
+			dbQuery.exec();
+		}	
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Database update failed: " << e.what() << std::endl;
+	}
+
 }
 
 // creates a vector with int values in it from 0 to i

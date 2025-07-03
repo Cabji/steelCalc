@@ -61,7 +61,8 @@
         "map": "cpp",
         "set": "cpp",
         "ratio": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "ranges": "cpp"
     },
     "editor.insertSpaces": false
 }
