@@ -222,15 +222,14 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     // dev-note: perhaps save the options to disk here at some stage?
     
     // get data from Bar Grade Costs grid and try to send to inventory to update
-    // dyn_casteo to get ResultSetGrid ptr (f0rced to do this when we need to use ResultSetGrid specific functions)
-    auto rsgrid = dynamic_cast<ResultSetGrid*>(m_optionsCalculationFactorsBarGradeCosts);
-    if (rsgrid) 
-    {
-        std::vector<int> cols, rows;
-        ResultSet gridValues = rsgrid->RequestGridData(rows, cols);
-        // temp show the values we got in he ResultSet
-        gridValues.OutputResultSetInfo();
-    }
+    std::vector<int> cols, rows;
+    ResultSet gridValues = m_optionsCalculationFactorsBarGradeCosts->RequestGridData(rows, cols);
+    // temp show the values we got in the ResultSet
+    gridValues.OutputResultSetInfo();
+    // call function that creates the SQL UPDATE query(ies) 
+    std::vector<int> empty;
+    m_optionsCalculationFactorsBarGradeCosts->SaveFromGridToDatabase(DEFAULT_DATABASE_FILENAME, "inventory", "itemName", empty, empty);
+
     this->Hide();
     // save program options to relevnt config file(s)
     if (m_mainFrame)
@@ -248,7 +247,7 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
     m_newResultSet = ResultSetGrid::RequestDatabaseData(DEFAULT_DATABASE_FILENAME, m_queryBarRates);
     std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
-    ResultSetGrid::GridAdjustStructure(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet);
+    m_optionsCalculationFactorsBarGradeCosts->GridAdjustStructure(m_newResultSet);
     ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);
     event.Skip();
 }
