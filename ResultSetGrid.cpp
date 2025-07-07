@@ -277,12 +277,12 @@ void ResultSetGrid::SaveFromGridToDatabase(const std::string& dbFilename, const 
 				{
 					// get the colName (field name in the database that corressponds to the colLabel)
 					std::string colName = it->second;
+					// set the pkColIndex value, skip out and don't set the PK column value
+					if (colName == primaryKeyName) { pkColIndex = col; continue; }
 					// use the colName in the SQL UPDATE query
 					setClauses.push_back(colName + "=?");
 					// push the field value for this field name/colName into the values vector
 					values.push_back(this->GetCellValue(row, col));
-					// set the pkColIndex value once only, since it is the same for all rows in the ResultSet
-					if (colName == primaryKeyName) { pkColIndex = col; }
 				}
 			}
 			// push the primary key's value to the end of the values vector

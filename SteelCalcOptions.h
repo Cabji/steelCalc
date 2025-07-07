@@ -36,6 +36,9 @@ class SteelCalcOptions : public Options
 		void 	OnGridKeyDown(wxKeyEvent& event);
 		void	OnClose(wxCloseEvent& event);
 		void	OnShow(wxShowEvent& event);
+		// dev-note: todo
+		//	need to create a way to detect when the user has added _NEW_ entries to a grid, in contrast to when they 
+		//	_UPDATE_ existing entries which is what the OnClose handler is dealing with right now.
 
 		// private members
 		wxVector<std::pair<wxString, wxString>>		m_barGradeAndCostData;
