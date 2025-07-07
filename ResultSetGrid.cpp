@@ -7,6 +7,11 @@ std::string ResultSetGrid::ClassName()
 	return CLASS_NAME;
 }
 
+std::unordered_map<std::string, std::string> ResultSetGrid::GetResultSetGridColumnMap()
+{
+	return this->m_resultSet.sm_columnLabelMap;
+}
+
 void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet)
 {
 	// zero-check

@@ -59,30 +59,31 @@ class ResultSetGrid : public wxGrid
 	ResultSetGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const int i)
         : wxGrid(parent, id, pos, size, i) { }
 
-			std::string		ClassName();
-	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
-			void			GridAdjustStructure(const ResultSet& resultSet);
-			void			GridAdjustStructure();
-	static	void			GridInsertFilterRow(wxGrid& grid);
-	static	void			GridSort(wxGridEvent& event);
-	static	void			GridUpdateContent(wxGrid& grid, 
-											  const ResultSet& resultSet, 
-											  const bool& cellsReadOnly = true, 
-											  const bool& adjustWidthToCellValues = false);
-			void			GridUpdateContent(const ResultSet& resultSet, 
-											  const bool& cellsReadOnly = true, 
-											  const bool& adjustWidthToCellValues = false);
-			void			GridUpdateContent(const bool& cellsReadOnly = true, 
-											  const bool& adjustWidthToCellValues = false);
-	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
+			std::string										ClassName();
+			std::unordered_map<std::string, std::string>	GetResultSetGridColumnMap();
+	static	void											GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
+			void											GridAdjustStructure(const ResultSet& resultSet);
+			void											GridAdjustStructure();
+	static	void											GridInsertFilterRow(wxGrid& grid);
+	static	void											GridSort(wxGridEvent& event);
+	static	void											GridUpdateContent(wxGrid& grid, 
+																			  const ResultSet& resultSet, 
+											  								const bool& cellsReadOnly = true, 
+											  								const bool& adjustWidthToCellValues = false);
+			void											GridUpdateContent(const ResultSet& resultSet, 
+											  								const bool& cellsReadOnly = true, 
+											  								const bool& adjustWidthToCellValues = false);
+			void											GridUpdateContent(const bool& cellsReadOnly = true, 
+																			  const bool& adjustWidthToCellValues = false);
+	static	ResultSet										RequestDatabaseData(const std::string& dbFilename, const std::string& query);
 // pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)			
-			ResultSet		RequestGridData(const std::vector<int>& rows, const std::vector<int> cols);
-			void			SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName, const std::string& primaryKeyName, const std::vector<int>& rows, const std::vector<int>& cols);
+			ResultSet										RequestGridData(const std::vector<int>& rows, const std::vector<int> cols);
+			void											SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName, const std::string& primaryKeyName, const std::vector<int>& rows, const std::vector<int>& cols);
 
 	private:
 	static	std::vector<int>		CreateVectorFromInt(const int& i);
 	void							OutputResultSetInfo();
-	ResultSet				m_resultSet;
+	ResultSet						m_resultSet;
 };
 
 #endif // RESULTSETGRID_H
