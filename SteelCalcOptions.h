@@ -40,9 +40,14 @@ class SteelCalcOptions : public Options
 		//	need to create a way to detect when the user has added _NEW_ entries to a grid, in contrast to when they 
 		//	_UPDATE_ existing entries which is what the OnClose handler is dealing with right now.
 
+		// private constants
+		int											SC_OPTIONS_PK_COLUMN_INDEX	= 0;
+
 		// private members
 		wxVector<std::pair<wxString, wxString>>		m_barGradeAndCostData;
 		SteelCalcMain*								m_mainFrame;
+		wxVector<wxString>							m_originalRowKeys;
+		wxVector<wxVector<wxString>>				m_originalRows;
 		std::string             					m_queryBarRates   = "SELECT itemName AS 'Bar Grade', itemCost AS 'Cost per Mg', supplierName AS 'Supplier' "
 																		"FROM inventory "
 																		"WHERE category LIKE '%Steel - per Mg%'";

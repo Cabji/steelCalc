@@ -94,7 +94,7 @@ void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 {
 	std::cout << "OnGridKeyDown event handler is happening." << std::endl;
     // wxGrid* grid = dynamic_cast<wxGrid*>(event.GetEventObject());
-     wxGrid* grid = m_optionsCalculationFactorsBarGradeCosts;
+    wxGrid* grid = m_optionsCalculationFactorsBarGradeCosts;
     if (!grid)
     {
         std::cout << "!! Grid object was " << grid << std::endl;
@@ -214,26 +214,144 @@ void SteelCalcOptions::SetBarClassificationData(const wxVector<std::pair<wxStrin
     std::cout << "Updated bar classification data in the Options frame." << std::endl;
 }
 
+// when the Options widget is closed (hidden from view) the following will happen: 
+//  current state of grid data is collected
+//  detect deleted rows
+//		build & send DELETE query to database
+//	detect added rows
+//		build & send INSERT query to database
+//	detect altered rows
+//		build & send UPDATE query to database
 void SteelCalcOptions::OnClose(wxCloseEvent &event)
 {
-    // std::vector<std::vector<std::pair<std::string, std::string>>> dbResults;
-    // dbResults = m_mainFrame->m_dbViewerFrame->RequestDatabaseData("SELECT * FROM inventory");
-    // std::cout << "Number of results from Requested Database Data: " << dbResults.size() << std::endl;
-    // dev-note: perhaps save the options to disk here at some stage?
-    
-    // get data from Bar Grade Costs grid and try to send to inventory to update
-    std::vector<int> cols, rows;
-    ResultSet gridValues = m_optionsCalculationFactorsBarGradeCosts->RequestGridData(rows, cols);
-    // temp show the values we got in the ResultSet
-    gridValues.OutputResultSetInfo();
-    // call function that creates the SQL UPDATE query(ies) 
-    std::vector<int> empty;
-    m_optionsCalculationFactorsBarGradeCosts->SaveFromGridToDatabase(DEFAULT_DATABASE_FILENAME, "inventory", "itemName", empty, empty);
+	// dev-note: if you are copying & pasting this code to re-use somewhere else, you will need to update it to know 
+	// which grid to use as we are working on the class member grid in here
+
+    int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberRows();
+    int colCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
+
+    // collect current state of grid data
+    std::vector<wxString> currentRowKeys;
+    std::vector<std::vector<wxString>> currentRows;
+
+    // loop the grid and push data into currentRowKeys & currentRows
+    for (int i = 0; i < rowCount; ++i) 
+    {
+        currentRowKeys.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
+        std::vector<wxString> rowData;
+        for (int j = 0; j < colCount; ++j) 
+        {
+            rowData.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, j));
+        }
+        currentRows.push_back(rowData);
+    }
+
+    // 1. detect deleted rows (in original but not in current)
+    std::vector<wxString> deletedKeys;
+    for (size_t i = 0; i < m_originalRowKeys.size(); ++i) 
+    {
+        const wxString& origKey = m_originalRowKeys[i];
+        // if we DON'T find the index value from the original data in the current data vector, then DELETE the row from the database
+        if (std::find(currentRowKeys.begin(), currentRowKeys.end(), origKey) == currentRowKeys.end()) 
+        {
+            // build a DELETE query that will remove all missing data in a single database query execution
+            // Row deleted: issue DELETE
+            deletedKeys.push_back(origKey);
+        }
+    }
+    // use SQL API here to issue the DELETE query
+	if (!deletedKeys.empty()) 
+	{
+		try {
+			SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
+			SQLite::Statement delStmt(db, "DELETE FROM inventory WHERE itemName=?");
+			for (const auto& key : deletedKeys) {
+				delStmt.bind(1, key.ToStdString());
+				delStmt.exec();
+				delStmt.reset();
+			}
+		} catch (const std::exception& e) {
+			std::cerr << "Error deleting rows: " << e.what() << std::endl;
+		}	
+	}
+
+    // 2. detect new rows (in current but not in original)
+	std::vector<int> newRowIndices;
+    for (size_t i = 0; i < currentRowKeys.size(); ++i) 
+    {
+        const wxString& currKey = currentRowKeys[i];
+        // if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
+        if (std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey) == m_originalRowKeys.end()) 
+        {
+            // build an INSERT query that will add all new data in a single database query execution
+            // Row inserted: issue INSERT
+			newRowIndices.push_back(static_cast<int>(i));
+        }
+    }
+    // use SQL API here to issue the INSERT query
+	if (!newRowIndices.empty()) 
+	{
+		try {
+			SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
+			// get columnLabelMap from [this] to know what the column names are in the database
+			std::unordered_map<std::string, std::string> l_columnMap = m_optionsCalculationFactorsBarGradeCosts->GetResultSetGridColumnMap();
+			// Build the INSERT statement dynamically based on column count
+			std::string insertSQL = "INSERT INTO inventory (";
+			for (int c = 0; c < colCount; ++c) 
+			{
+				// todo: use l_columnMap to get the colunm names as used in the database for the INSERT query
+				insertSQL += "col" + std::to_string(c+1); // Replace with actual column names if available
+				if (c < colCount - 1) insertSQL += ", ";
+			}
+			insertSQL += ") VALUES (";
+			for (int c = 0; c < colCount; ++c) {
+				insertSQL += "?";
+				if (c < colCount - 1) insertSQL += ", ";
+			}
+			insertSQL += ")";
+			SQLite::Statement insStmt(db, insertSQL);
+
+			for (int rowIdx : newRowIndices) {
+				for (int c = 0; c < colCount; ++c) {
+					insStmt.bind(c + 1, currentRows[rowIdx][c].ToStdString());
+				}
+				insStmt.exec();
+				insStmt.reset();
+			}
+		} catch (const std::exception& e) {
+			std::cerr << "Error inserting rows: " << e.what() << std::endl;
+		}
+	}
+
+    // 3. detect modified rows (Primary Keys exists in both vectors, but row data has changed)
+    // modifiedRowIndices holds the indices of the rows that have been altered since the OnShow() call
+    std::vector<int> modifiedRowIndices;
+    for (size_t i = 0; i < currentRowKeys.size(); ++i) 
+    {
+        const wxString& currKey = currentRowKeys[i];
+        // it = pointer to the row in the current data vector with the altered row data
+        auto it = std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey);
+        if (it != m_originalRowKeys.end()) 
+        {
+            size_t origIdx = std::distance(m_originalRowKeys.begin(), it);
+            if (currentRows[i] != m_originalRows[origIdx]) 
+            {
+                // Row changed
+                modifiedRowIndices.push_back(static_cast<int>(i));
+            }
+        }
+    }
+
+    // 4. save only modified rows using your SaveFromGridToDatabase
+    std::vector<int> colIndicesEmpty;
+
+    if (!modifiedRowIndices.empty()) {
+        m_optionsCalculationFactorsBarGradeCosts->SaveFromGridToDatabase(
+            DEFAULT_DATABASE_FILENAME, "inventory", "itemName", modifiedRowIndices, colIndicesEmpty);
+    }
 
     this->Hide();
-    // save program options to relevnt config file(s)
-    if (m_mainFrame)
-    {
+    if (m_mainFrame) {
         m_mainFrame->TriggerUpdateResults();
         m_mainFrame->TriggerSaveConfig();
     }
@@ -249,5 +367,24 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
     std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
     m_optionsCalculationFactorsBarGradeCosts->GridAdjustStructure(m_newResultSet);
     ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);
+    
+    // store the data as loaded by OnShow() for comparison later on in OnClose()
+    m_originalRowKeys.clear();
+    m_originalRows.clear();
+    int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberRows();
+    int colCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
+    for (int i = 0; i < rowCount; ++i) 
+    {
+        // add to m_originalRowKeys (Primary Key values only)
+        m_originalRowKeys.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
+        std::vector<wxString> rowData;
+        for (int j = 0; j < colCount; ++j) 
+        {
+            // add to m_originalRows (all grid data)
+            rowData.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, j));
+        }
+        m_originalRows.push_back(rowData);
+    }
+
     event.Skip();
 }
