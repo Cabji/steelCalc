@@ -7,9 +7,9 @@ std::string ResultSetGrid::ClassName()
 	return CLASS_NAME;
 }
 
-std::unordered_map<std::string, std::string> ResultSetGrid::GetResultSetGridColumnMap()
+ResultSet* ResultSetGrid::GetResultSet()
 {
-	return this->m_resultSet.sm_columnLabelMap;
+	return &this->m_resultSet;
 }
 
 void ResultSetGrid::GridAdjustStructure(wxGrid &grid, const ResultSet &resultSet)
@@ -153,7 +153,7 @@ void ResultSetGrid::GridUpdateContent(wxGrid &grid, const ResultSet &resultSet, 
             grid.SetCellValue(row, col, wxString(resultSet.rows[row].columns[col].value));
             grid.SetReadOnly(row, col, cellsReadOnly);
             // debug
-            if (row == 0) { std::cout << "  " << CLASS_NAME << "::" << __func__ << "():\n       ColLabel = " << resultSet.rows[row].columns[col].colLabel << "\n       ColName = " << resultSet.rows[row].columns[col].colName << std::endl; }
+            // if (row == 0) { std::cout << "  " << CLASS_NAME << "::" << __func__ << "():\n       ColLabel = " << resultSet.rows[row].columns[col].colLabel << "\n       ColName = " << resultSet.rows[row].columns[col].colName << std::endl; }
         }
     }
     grid.AutoSizeColumns(adjustWidthToCellValues);
