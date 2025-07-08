@@ -23,8 +23,8 @@ Options( parent )
         floatEditor->SetValidationType(CustomGridCellEditor::ValidationType::FLOAT);
         stringEditor->SetValidationType(CustomGridCellEditor::ValidationType::STRING);
         rightAlignAttr->SetAlignment(wxALIGN_RIGHT, wxALIGN_CENTER);
-        
-
+        m_optionsCalculationFactorsBarGradeCosts->SetTableName("inventory");
+		m_optionsCalculationFactorsBarGradeCosts->SetTablePrimaryKey("itemName");
 
         // // ensure grid has 2 columns
         if (colCount < 2) { m_optionsCalculationFactorsBarGradeCosts->AppendCols((2 - colCount)); }
@@ -227,8 +227,9 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 	// dev-note: if you are copying & pasting this code to re-use somewhere else, you will need to update it to know 
 	// which grid to use as we are working on the class member grid in here
 
-    int rowCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberRows();
-    int colCount = m_optionsCalculationFactorsBarGradeCosts->GetNumberCols();
+	ResultSetGrid* grid = m_optionsCalculationFactorsBarGradeCosts;
+    int rowCount = grid->GetNumberRows();
+    int colCount = grid->GetNumberCols();
 
     // collect current state of grid data
     std::vector<wxString> currentRowKeys;
@@ -237,11 +238,11 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     // loop the grid and push data into currentRowKeys & currentRows
     for (int i = 0; i < rowCount; ++i) 
     {
-        currentRowKeys.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
+        currentRowKeys.push_back(grid->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
         std::vector<wxString> rowData;
         for (int j = 0; j < colCount; ++j) 
         {
-            rowData.push_back(m_optionsCalculationFactorsBarGradeCosts->GetCellValue(i, j));
+            rowData.push_back(grid->GetCellValue(i, j));
         }
         currentRows.push_back(rowData);
     }
@@ -294,13 +295,16 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 		try {
 			SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
 			// get columnLabelMap from [this] to know what the column names are in the database
-			std::unordered_map<std::string, std::string> l_columnMap = m_optionsCalculationFactorsBarGradeCosts->GetResultSetGridColumnMap();
+			ResultSet* l_resultSet = grid->GetResultSet();
+			
+            // todo: need to also add and include a category value for INSERTed new rows so the Options frame can display these new entries
 			// Build the INSERT statement dynamically based on column count
-			std::string insertSQL = "INSERT INTO inventory (";
+			std::string insertSQL = "INSERT INTO " + grid->GetTableName() + " (";
 			for (int c = 0; c < colCount; ++c) 
 			{
-				// todo: use l_columnMap to get the colunm names as used in the database for the INSERT query
-				insertSQL += "col" + std::to_string(c+1); // Replace with actual column names if available
+				// todo: use l_resultSet to get the column label map for the field name used in the database to build the INSERT query
+				std::string fieldName = l_resultSet->sm_columnLabelMap[grid->GetColLabelValue(c).ToStdString()];
+				insertSQL += fieldName;
 				if (c < colCount - 1) insertSQL += ", ";
 			}
 			insertSQL += ") VALUES (";
@@ -310,11 +314,13 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 			}
 			insertSQL += ")";
 			SQLite::Statement insStmt(db, insertSQL);
-
+			
 			for (int rowIdx : newRowIndices) {
 				for (int c = 0; c < colCount; ++c) {
 					insStmt.bind(c + 1, currentRows[rowIdx][c].ToStdString());
 				}
+				// debug
+				std::cout << "Query is: " << insStmt.getExpandedSQL() << std::endl;
 				insStmt.exec();
 				insStmt.reset();
 			}
@@ -346,7 +352,7 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     std::vector<int> colIndicesEmpty;
 
     if (!modifiedRowIndices.empty()) {
-        m_optionsCalculationFactorsBarGradeCosts->SaveFromGridToDatabase(
+        grid->SaveFromGridToDatabase(
             DEFAULT_DATABASE_FILENAME, "inventory", "itemName", modifiedRowIndices, colIndicesEmpty);
     }
 
