@@ -208,6 +208,11 @@ ResultSet ResultSetGrid::RequestDatabaseData(const std::string& dbFilename, cons
     return l_result;
 }
 
+ResultSet ResultSetGrid::RequestDatabaseData(const std::string &dbFilename)
+{
+    return RequestDatabaseData(dbFilename, this->m_queryPopulate);
+}
+
 // pull data FROM a ResutSetGrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the this->)
 ResultSet ResultSetGrid::RequestGridData(const std::vector<int> &rowIndices, const std::vector<int> colIndices)
 {
@@ -322,6 +327,16 @@ void ResultSetGrid::SaveFromGridToDatabase(const std::string& dbFilename, const 
 		std::cerr << "Database update failed: " << e.what() << std::endl;
 	}
 
+}
+
+int ResultSetGrid::BuildQueryPopulate()
+{
+    if (m_queryPopulate.empty())
+    {
+        std::cerr << CLASS_NAME << "::" << __func__ << "(): m_queryPopulate is empty, nothing to do so returning." << std::endl;;
+    }
+    // return the number of WHERE clause conditions that were put into the populate SQL query
+	return 0;
 }
 
 // creates a vector with int values in it from 0 to i

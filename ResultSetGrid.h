@@ -88,18 +88,28 @@ class ResultSetGrid : public wxGrid
 			void			GridUpdateContent(const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
 	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
+			ResultSet		RequestDatabaseData(const std::string& dbFilename);
 // pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)			
 			ResultSet		RequestGridData(const std::vector<int>& rows, const std::vector<int> cols);
 			void			SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName, const std::string& primaryKeyName, const std::vector<int>& rows, const std::vector<int>& cols);
+			void			SetPopulateQuery(cosnt std::string& query) { m_queryPopulate = query; return; }
 			void			SetTableName(const std::string& table) { m_tableName = table; return; }
 			void			SetTablePrimaryKey(const std::string& pk) { m_tablePrimaryKey = pk; return; }
+			void			SetWhereClauseConditions(const std::unordered_map<std::string, std::string>& theConditions) { m_whereConditions = theConditions; return; }
 
 	private:
+			int						BuildQueryPopulate();
 	static	std::vector<int>		CreateVectorFromInt(const int& i);
-	void							OutputResultSetInfo();
-	ResultSet						m_resultSet;
-	std::string						m_tableName;
-	std::string						m_tablePrimaryKey;
+			void					OutputResultSetInfo();
+			ResultSet				m_resultSet;
+			std::string				m_tableName;
+			std::string				m_tablePrimaryKey;
+	// the SQL query that is used to populate the ResultSetGrid [this]
+	// this query should use the #WHERECLAUSE# token to allow you to have a custom WHERE clause in it which is built from 
+	// m_whereConditions
+	std::string											m_queryPopulate;
+	// the WHERE clause conditions of the Populate query; these are key => value pairs for use in m_queryPopulate WHERE clause
+	std::unordered_map<std::string, std::string>		m_whereConditions;
 };
 
 #endif // RESULTSETGRID_H
