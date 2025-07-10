@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <wx/msgdlg.h>
 
 SteelCalcOptions::SteelCalcOptions( wxWindow* parent)
@@ -302,7 +303,6 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 			std::string insertSQL = "INSERT INTO " + grid->GetTableName() + " (";
 			for (int c = 0; c < colCount; ++c) 
 			{
-				// todo: use l_resultSet to get the column label map for the field name used in the database to build the INSERT query
 				std::string fieldName = l_resultSet->sm_columnLabelMap[grid->GetColLabelValue(c).ToStdString()];
 				insertSQL += fieldName;
 				if (c < colCount - 1) insertSQL += ", ";
@@ -366,10 +366,18 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 
 void SteelCalcOptions::OnShow(wxShowEvent &event)
 {
-    // ensure the Bar Grade Costs grid is updated/populated
+    // populate the Bar Costs grid when the Options frame is shown
     // dev-note: the values for the Bar Costs are being pulled from the inventory table in the database!
-    std::cout << "  Options: SQL Query is " << m_queryBarRates << std::endl;
-    m_newResultSet = ResultSetGrid::RequestDatabaseData(DEFAULT_DATABASE_FILENAME, m_queryBarRates);
+    std::unordered_map<std::string, std::string> l_whereConditions = {{ "category", "Steel - per Mg" }};
+
+    m_optionsCalculationFactorsBarGradeCosts->SetTableName("inventory");
+    m_optionsCalculationFactorsBarGradeCosts->SetTablePrimaryKey("itemName");
+    m_optionsCalculationFactorsBarGradeCosts->SetPopulateQuery("SELECT itemName AS 'Bar Grade', itemCost AS 'Cost per Mg', supplierName AS 'Supplier' "
+                                                               "FROM #TABLENAME# "
+															   "#WHERECLAUSE#");
+    m_optionsCalculationFactorsBarGradeCosts->BuildQueryPopulate();
+    m_newResultSet = m_optionsCalculationFactorsBarGradeCosts->RequestDatabaseData(DEFAULT_DATABASE_FILENAME);
+
     std::cout << "      Result size: " << m_newResultSet.rows.size() << std::endl;
     m_optionsCalculationFactorsBarGradeCosts->GridAdjustStructure(m_newResultSet);
     ResultSetGrid::GridUpdateContent(*m_optionsCalculationFactorsBarGradeCosts, m_newResultSet, false, true);

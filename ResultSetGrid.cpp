@@ -2,6 +2,40 @@
 #include "ResultSetGrid.h"
 #include <SQLiteCpp/Column.h>
 
+int ResultSetGrid::BuildQueryPopulate(const std::string& findTableToken, const std::string& findWhereToken)
+{
+    if (m_queryPopulate.empty())
+    {
+        std::cerr << CLASS_NAME << "::" << __func__ << "(): m_queryPopulate is empty, nothing to do so returning." << std::endl;;
+        return -1;
+    }
+
+    std::string	whereClause = " WHERE ";
+    bool 		firstCondition = true;
+	int 		totalAdded = 0;
+
+    for (const auto& pair : m_whereConditions)
+    {
+        // zero check, skip if either value is empty
+        if (pair.first.empty() && pair.second.empty()) { continue; }
+
+		if (!firstCondition)
+		{
+			whereClause += " AND ";
+            whereClause += pair.first + " LIKE '%" + pair.second + "%' ";
+			firstCondition = false;
+			totalAdded++;
+		}
+    }
+
+	// clear the whereClause if nothing was found in the conditions map
+	if (totalAdded == 0) { whereClause.clear(); }
+	// replace tokens
+	StringReplaceAll(m_queryPopulate, findWhereToken, whereClause);
+	StringReplaceAll(m_queryPopulate, findTableToken, m_tableName);
+	return totalAdded;
+}
+
 std::string ResultSetGrid::ClassName()
 {
 	return CLASS_NAME;
@@ -329,16 +363,6 @@ void ResultSetGrid::SaveFromGridToDatabase(const std::string& dbFilename, const 
 
 }
 
-int ResultSetGrid::BuildQueryPopulate()
-{
-    if (m_queryPopulate.empty())
-    {
-        std::cerr << CLASS_NAME << "::" << __func__ << "(): m_queryPopulate is empty, nothing to do so returning." << std::endl;;
-    }
-    // return the number of WHERE clause conditions that were put into the populate SQL query
-	return 0;
-}
-
 // creates a vector with int values in it from 0 to i
 std::vector<int> ResultSetGrid::CreateVectorFromInt(const int &i)
 {
@@ -349,4 +373,15 @@ std::vector<int> ResultSetGrid::CreateVectorFromInt(const int &i)
     }
 	return result;
 }
+
+// helper function that will find & replace a std::string within another std::string (because the STL doesn't have this!)
+void ResultSetGrid::StringReplaceAll(std::string &str, const std::string &from, const std::string &to)
+	{
+		size_t start_pos = 0;
+		while((start_pos = str.find(from, start_pos)) != std::string::npos)
+		{
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Move past the replacement
+		}
+	}
 

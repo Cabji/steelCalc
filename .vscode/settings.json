@@ -62,7 +62,8 @@
         "set": "cpp",
         "ratio": "cpp",
         "iomanip": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "unordered_set": "cpp"
     },
     "editor.insertSpaces": false
 }
