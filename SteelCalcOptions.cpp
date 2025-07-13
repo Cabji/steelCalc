@@ -236,7 +236,7 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     std::vector<wxString> currentRowKeys;
     std::vector<std::vector<wxString>> currentRows;
 
-    // loop the grid and push data into currentRowKeys & currentRows
+    // obtain the current state of trhe grid data (held in currentRowKeys & currentRows)
     for (int i = 0; i < rowCount; ++i) 
     {
         currentRowKeys.push_back(grid->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
@@ -248,7 +248,7 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
         currentRows.push_back(rowData);
     }
 
-    // 1. detect deleted rows (in original but not in current)
+    // 1. check for deleted rows (in original but not in current)
     std::vector<wxString> deletedKeys;
     for (size_t i = 0; i < m_originalRowKeys.size(); ++i) 
     {
@@ -285,9 +285,8 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
         // if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
         if (std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey) == m_originalRowKeys.end()) 
         {
-            // build an INSERT query that will add all new data in a single database query execution
-            // Row inserted: issue INSERT
-			newRowIndices.push_back(static_cast<int>(i));
+            // push the row's index ito the newRowIndices vector
+            newRowIndices.push_back(static_cast<int>(i));			
         }
     }
     // use SQL API here to issue the INSERT query
@@ -353,7 +352,7 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 
     if (!modifiedRowIndices.empty()) {
         grid->SaveFromGridToDatabase(
-            DEFAULT_DATABASE_FILENAME, "inventory", "itemName", modifiedRowIndices, colIndicesEmpty);
+            DEFAULT_DATABASE_FILENAME, grid->GetTableName(), grid->GetTablePrimaryKey(), modifiedRowIndices, colIndicesEmpty);
     }
 
     this->Hide();
@@ -368,7 +367,7 @@ void SteelCalcOptions::OnShow(wxShowEvent &event)
 {
     // populate the Bar Costs grid when the Options frame is shown
     // dev-note: the values for the Bar Costs are being pulled from the inventory table in the database!
-    std::unordered_map<std::string, std::string> l_whereConditions = {{ "category", "Steel - per Mg" }};
+    m_optionsCalculationFactorsBarGradeCosts->SetWhereClauseConditions({{ "category", "Steel - per Mg" }});
 
     m_optionsCalculationFactorsBarGradeCosts->SetTableName("inventory");
     m_optionsCalculationFactorsBarGradeCosts->SetTablePrimaryKey("itemName");
