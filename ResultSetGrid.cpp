@@ -2,6 +2,7 @@
 #include "ResultSetGrid.h"
 #include <SQLiteCpp/Column.h>
 
+// 
 int ResultSetGrid::BuildQueryPopulate(const std::string& findTableToken, const std::string& findWhereToken)
 {
     if (m_queryPopulate.empty())
@@ -22,18 +23,26 @@ int ResultSetGrid::BuildQueryPopulate(const std::string& findTableToken, const s
 		if (!firstCondition)
 		{
 			whereClause += " AND ";
-            whereClause += pair.first + " LIKE '%" + pair.second + "%' ";
 			firstCondition = false;
-			totalAdded++;
 		}
+        whereClause += pair.first + " LIKE '%" + pair.second + "%' ";
+        totalAdded++;
     }
 
 	// clear the whereClause if nothing was found in the conditions map
 	if (totalAdded == 0) { whereClause.clear(); }
-	// replace tokens
+	// replace tokens - where clause, tableName
 	StringReplaceAll(m_queryPopulate, findWhereToken, whereClause);
 	StringReplaceAll(m_queryPopulate, findTableToken, m_tableName);
+    // debug
+    std::cout << CLASS_NAME << "::" << __func__ << "(): m_queryPopulate = " << m_queryPopulate << std::endl;;
 	return totalAdded;
+}
+
+// builds SQL query for saving grid data to a database table
+int ResultSetGrid::BuildQueryUpdate(const std::string &findTableToken)
+{
+	return 0;
 }
 
 std::string ResultSetGrid::ClassName()
