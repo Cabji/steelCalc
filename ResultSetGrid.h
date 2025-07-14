@@ -69,48 +69,69 @@ class ResultSetGrid : public wxGrid
 	ResultSetGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const int i)
         : wxGrid(parent, id, pos, size, i) { }
 
-			int				BuildQueryPopulate(const std::string& findTableToken = "#TABLENAME#", const std::string& findWhereToken = "#WHERECLAUSE#");
-			std::string		ClassName();
-			ResultSet*		GetResultSet();
-			std::string		GetTableName() { return m_tableName; };
-			std::string		GetTablePrimaryKey() { return m_tablePrimaryKey; };
-	static	void			GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
-			void			GridAdjustStructure(const ResultSet& resultSet);
-			void			GridAdjustStructure();
-	static	void			GridInsertFilterRow(wxGrid& grid);
-	static	void			GridSort(wxGridEvent& event);
-	static	void			GridUpdateContent(wxGrid& grid, 
+			int					BuildQueryPopulate(const std::string& findTableToken = "#TABLENAME#", const std::string& findWhereToken = "#WHERECLAUSE#");
+			std::string			BuildQueryInsert(const std::string& findTableToken = "#TABLENAME#");
+
+			std::string			ClassName();
+			ResultSet*			GetResultSet();
+			std::string			GetTableName() { return m_tableName; };
+			std::string			GetTablePrimaryKey() { return m_tablePrimaryKey; };
+
+	static	void				GridAdjustStructure(wxGrid& grid, const ResultSet& resultSet);
+			void				GridAdjustStructure(const ResultSet& resultSet);
+			void				GridAdjustStructure();
+	static	void				GridInsertFilterRow(wxGrid& grid);
+	static	void				GridSort(wxGridEvent& event);
+	static	void				GridUpdateContent(wxGrid& grid, 
 											  const ResultSet& resultSet, 
 											  const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
-			void			GridUpdateContent(const ResultSet& resultSet, 
+			void				GridUpdateContent(const ResultSet& resultSet, 
 											  const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
-			void			GridUpdateContent(const bool& cellsReadOnly = true, 
+			void				GridUpdateContent(const bool& cellsReadOnly = true, 
 											  const bool& adjustWidthToCellValues = false);
-	static	ResultSet		RequestDatabaseData(const std::string& dbFilename, const std::string& query);
-			ResultSet		RequestDatabaseData(const std::string& dbFilename);
-// pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)			
-			ResultSet		RequestGridData(const std::vector<int>& rows, const std::vector<int> cols);
-			void			SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName, const std::string& primaryKeyName, const std::vector<int>& rows, const std::vector<int>& cols);
-			void			SetPopulateQuery(const std::string& query) { m_queryPopulate = query; return; }
-			void			SetTableName(const std::string& table) { m_tableName = table; return; }
-			void			SetTablePrimaryKey(const std::string& pk) { m_tablePrimaryKey = pk; return; }
-			void			SetWhereClauseConditions(const std::unordered_map<std::string, std::string>& theConditions) { m_whereConditions = theConditions; return; }
+
+	static	ResultSet			RequestDatabaseData(const std::string& dbFilename, const std::string& query);
+			ResultSet			RequestDatabaseData(const std::string& dbFilename);
+			ResultSet			RequestGridData(const std::vector<int>& rows, const std::vector<int> cols); // pull data FROM a wxgrid and put it into a ResultSet (you can specify which rows and columns you want, or pass empty vector<int> object to get all value in the grid)
+			void				SaveFromGridToDatabase(const std::string& dbFilename, const std::string& tableName, const std::string& primaryKeyName, const std::vector<int>& rows, const std::vector<int>& cols);
+
+			void				SetPopulateQuery(const std::string& query) { m_queryPopulate = query; return; }
+			void				SetTableName(const std::string& table) { m_tableName = table; return; }
+			void				SetTablePrimaryKey(const std::string& pk) { m_tablePrimaryKey = pk; return; }
+			void				SetWhereClauseConditions(const std::unordered_map<std::string, std::string>& theConditions) { m_whereConditions = theConditions; return; }
 
 	private:
-	static	std::vector<int>		CreateVectorFromInt(const int& i);
-			// void					OutputResultSetInfo();
-			void					StringReplaceAll(std::string& str, const std::string& from, const std::string& to);
-			ResultSet				m_resultSet;
-			std::string				m_tableName;
-			std::string				m_tablePrimaryKey;
+	static	std::vector<int>	CreateVectorFromInt(const int& i);
+			void				StringReplaceAll(std::string& str, const std::string& from, const std::string& to);
+			bool				UpdateGridDataCurrentState();
+			bool				UpdateGridDataModifiedRows();
+			bool				UpdateGridDataNewRows();
+			bool				UpdateGridDataRemovedRows();
+	
+	// private members
+
+	std::vector<wxString>				m_gridDataOriginalRowKeys;				// the *original* state of the grid's data (Primary Key values from each row)
+	std::vector<std::vector<wxString>>	m_gridDataOriginalRows;					// the *original* state of the grid's data (all row data)
+	std::vector<wxString>				m_gridDataCurrentRowKeys;				// the *current* state of the grid's data (Primary Key values from each row)
+	std::vector<std::vector<wxString>>	m_gridDataCurrentRows;					// the *current* state of the grid's data (all row data)
+	std::vector<int>					m_gridDataModifiedRowIndices;			// holds row index values that have been modified in the grid data since it was created in the UI
+	std::vector<int>					m_gridDataNewRowIndices;				// holds row index values that have been added to the grid data since it was created in the UI
+	std::vector<wxString>				m_gridDataRemovedRowPKs;				// holds PK values that have been removed from the grid data since it was created in the UI
+	std::vector<int>					m_gridDataRemovedRowsIndices;			// holds the indices of any removed rows removed from the grid since it was created in the UI
+
+	ResultSet							m_resultSet;							// the latest ResultSet associated with this grid
+	std::string							m_tableName;							// the tableName associated with this grid
+	std::string							m_tablePrimaryKey;						// the Primary Key's column name associated with the current table
+	int									m_tablePrimaryKeyIndex			= 0;	// the Primary Key's column index
+	
 	// the SQL query that is used to populate the ResultSetGrid [this]
-	// this query should use the a token (default is #WHERECLAUSE#) to allow you to have a custom WHERE clause in it 
-	// which is built from m_whereConditions
-	std::string											m_queryPopulate;
-	// the WHERE clause conditions of the Populate query; these are key => value pairs for use in m_queryPopulate WHERE clause
-	std::unordered_map<std::string, std::string>		m_whereConditions;
+	// this query allows a custom WHERE clause by using a token (default is #WHERECLAUSE#)
+	// the WHERE clause is built using values from m_whereConditions
+	std::string							m_queryPopulate;
+	std::string							m_querySave;							// SQL query that is used to save data from the ResultSetGrid [this]
+	std::unordered_map<std::string, std::string> m_whereConditions;				// WHERE clause conditions; key => value pairs for use in m_queryPopulate WHERE clause
 };
 
 #endif // RESULTSETGRID_H

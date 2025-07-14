@@ -232,120 +232,107 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     int rowCount = grid->GetNumberRows();
     int colCount = grid->GetNumberCols();
 
-    // collect current state of grid data
-    std::vector<wxString> currentRowKeys;
-    std::vector<std::vector<wxString>> currentRows;
+    // // collect current state of grid data
+    // std::vector<wxString> currentRowKeys;
+    // std::vector<std::vector<wxString>> currentRows;
 
-    // obtain the current state of trhe grid data (held in currentRowKeys & currentRows)
-    for (int i = 0; i < rowCount; ++i) 
-    {
-        currentRowKeys.push_back(grid->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
-        std::vector<wxString> rowData;
-        for (int j = 0; j < colCount; ++j) 
-        {
-            rowData.push_back(grid->GetCellValue(i, j));
-        }
-        currentRows.push_back(rowData);
-    }
+    // // obtain the current state of the grid data (held in currentRowKeys & currentRows)
+    // for (int i = 0; i < rowCount; ++i) 
+    // {
+    //     currentRowKeys.push_back(grid->GetCellValue(i, SC_OPTIONS_PK_COLUMN_INDEX));
+    //     std::vector<wxString> rowData;
+    //     for (int j = 0; j < colCount; ++j) 
+    //     {
+    //         rowData.push_back(grid->GetCellValue(i, j));
+    //     }
+    //     currentRows.push_back(rowData);
+    // }
 
-    // 1. check for deleted rows (in original but not in current)
-    std::vector<wxString> deletedKeys;
-    for (size_t i = 0; i < m_originalRowKeys.size(); ++i) 
-    {
-        const wxString& origKey = m_originalRowKeys[i];
-        // if we DON'T find the index value from the original data in the current data vector, then DELETE the row from the database
-        if (std::find(currentRowKeys.begin(), currentRowKeys.end(), origKey) == currentRowKeys.end()) 
-        {
-            // build a DELETE query that will remove all missing data in a single database query execution
-            // Row deleted: issue DELETE
-            deletedKeys.push_back(origKey);
-        }
-    }
-    // use SQL API here to issue the DELETE query
-	if (!deletedKeys.empty()) 
-	{
-		try {
-			SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
-			SQLite::Statement delStmt(db, "DELETE FROM inventory WHERE itemName=?");
-			for (const auto& key : deletedKeys) {
-				delStmt.bind(1, key.ToStdString());
-				delStmt.exec();
-				delStmt.reset();
-			}
-		} catch (const std::exception& e) {
-			std::cerr << "Error deleting rows: " << e.what() << std::endl;
-		}	
-	}
+    // // 1. check for deleted rows (in original but not in current)
+    // std::vector<wxString> deletedKeys;
+    // for (size_t i = 0; i < m_originalRowKeys.size(); ++i) 
+    // {
+    //     const wxString& origKey = m_originalRowKeys[i];
+    //     // if we DON'T find the index value from the original data in the current data vector, then DELETE the row from the database
+    //     if (std::find(currentRowKeys.begin(), currentRowKeys.end(), origKey) == currentRowKeys.end()) 
+    //     {
+    //         // build a DELETE query that will remove all missing data in a single database query execution
+    //         // Row deleted: issue DELETE
+    //         deletedKeys.push_back(origKey);
+    //     }
+    // }
+    // // use SQL API here to issue the DELETE query
+	// if (!deletedKeys.empty()) 
+	// {
+	// 	try {
+	// 		SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
+	// 		SQLite::Statement delStmt(db, "DELETE FROM inventory WHERE itemName=?");
+	// 		for (const auto& key : deletedKeys) {
+	// 			delStmt.bind(1, key.ToStdString());
+	// 			delStmt.exec();
+	// 			delStmt.reset();
+	// 		}
+	// 	} catch (const std::exception& e) {
+	// 		std::cerr << "Error deleting rows: " << e.what() << std::endl;
+	// 	}	
+	// }
 
     // 2. detect new rows (in current but not in original)
-	std::vector<int> newRowIndices;
-    for (size_t i = 0; i < currentRowKeys.size(); ++i) 
-    {
-        const wxString& currKey = currentRowKeys[i];
-        // if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
-        if (std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey) == m_originalRowKeys.end()) 
-        {
-            // push the row's index ito the newRowIndices vector
-            newRowIndices.push_back(static_cast<int>(i));			
-        }
-    }
+	// std::vector<int> newRowIndices;
+    // for (size_t i = 0; i < currentRowKeys.size(); ++i) 
+    // {
+    //     const wxString& currKey = currentRowKeys[i];
+    //     // if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
+    //     if (std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey) == m_originalRowKeys.end()) 
+    //     {
+    //         // push the row's index ito the newRowIndices vector
+    //         newRowIndices.push_back(static_cast<int>(i));			
+    //     }
+    // }
     // use SQL API here to issue the INSERT query
-	if (!newRowIndices.empty()) 
-	{
-		try {
-			SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
-			// get columnLabelMap from [this] to know what the column names are in the database
-			ResultSet* l_resultSet = grid->GetResultSet();
+	// if (!newRowIndices.empty()) 
+	// {
+	// 	try {
+    //         // Database connection object to database
+	// 		SQLite::Database db(DEFAULT_DATABASE_FILENAME, SQLite::OPEN_READWRITE);
+	// 		// SQL INSEERT query
+    //         std::string insertSQL = m_optionsCalculationFactorsBarGradeCosts->BuildQueryInsert(grid->GetTableName());
+    //         // Statement object for database
+	// 		SQLite::Statement insStmt(db, insertSQL);
 			
-            // todo: need to also add and include a category value for INSERTed new rows so the Options frame can display these new entries
-			// Build the INSERT statement dynamically based on column count
-			std::string insertSQL = "INSERT INTO " + grid->GetTableName() + " (";
-			for (int c = 0; c < colCount; ++c) 
-			{
-				std::string fieldName = l_resultSet->sm_columnLabelMap[grid->GetColLabelValue(c).ToStdString()];
-				insertSQL += fieldName;
-				if (c < colCount - 1) insertSQL += ", ";
-			}
-			insertSQL += ") VALUES (";
-			for (int c = 0; c < colCount; ++c) {
-				insertSQL += "?";
-				if (c < colCount - 1) insertSQL += ", ";
-			}
-			insertSQL += ")";
-			SQLite::Statement insStmt(db, insertSQL);
-			
-			for (int rowIdx : newRowIndices) {
-				for (int c = 0; c < colCount; ++c) {
-					insStmt.bind(c + 1, currentRows[rowIdx][c].ToStdString());
-				}
-				// debug
-				std::cout << "Query is: " << insStmt.getExpandedSQL() << std::endl;
-				insStmt.exec();
-				insStmt.reset();
-			}
-		} catch (const std::exception& e) {
-			std::cerr << "Error inserting rows: " << e.what() << std::endl;
-		}
-	}
+	// 		for (int rowIdx : newRowIndices) 
+    //         {
+	// 			for (int c = 0; c < colCount; ++c) {
+	// 				insStmt.bind(c + 1, currentRows[rowIdx][c].ToStdString());
+	// 			}
+	// 			// debug
+	// 			std::cout << "Query is: " << insStmt.getExpandedSQL() << std::endl;
+	// 			insStmt.exec();
+	// 			insStmt.reset();
+	// 		}
+	// 	} catch (const std::exception& e) {
+	// 		std::cerr << "Error inserting rows: " << e.what() << std::endl;
+	// 	}
+	// }
 
     // 3. detect modified rows (Primary Keys exists in both vectors, but row data has changed)
     // modifiedRowIndices holds the indices of the rows that have been altered since the OnShow() call
-    std::vector<int> modifiedRowIndices;
-    for (size_t i = 0; i < currentRowKeys.size(); ++i) 
-    {
-        const wxString& currKey = currentRowKeys[i];
-        // it = pointer to the row in the current data vector with the altered row data
-        auto it = std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey);
-        if (it != m_originalRowKeys.end()) 
-        {
-            size_t origIdx = std::distance(m_originalRowKeys.begin(), it);
-            if (currentRows[i] != m_originalRows[origIdx]) 
-            {
-                // Row changed
-                modifiedRowIndices.push_back(static_cast<int>(i));
-            }
-        }
-    }
+    // std::vector<int> modifiedRowIndices;
+    // for (size_t i = 0; i < currentRowKeys.size(); ++i) 
+    // {
+    //     const wxString& currKey = currentRowKeys[i];
+    //     // it = pointer to the row in the current data vector with the altered row data
+    //     auto it = std::find(m_originalRowKeys.begin(), m_originalRowKeys.end(), currKey);
+    //     if (it != m_originalRowKeys.end()) 
+    //     {
+    //         size_t origIdx = std::distance(m_originalRowKeys.begin(), it);
+    //         if (currentRows[i] != m_originalRows[origIdx]) 
+    //         {
+    //             // Row changed
+    //             modifiedRowIndices.push_back(static_cast<int>(i));
+    //         }
+    //     }
+    // }
 
     // 4. save only modified rows using your SaveFromGridToDatabase
     std::vector<int> colIndicesEmpty;
