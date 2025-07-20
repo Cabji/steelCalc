@@ -145,6 +145,8 @@ void SteelCalcOptions::OnGridKeyDown(wxKeyEvent &event)
 
         // dev-note: wxGrid::GetSelectedRows() returns a vector of int values which are *only* rows that have *all* cells selected.
         auto selectedRows = grid->GetSelectedRows();
+		// Sort the selected rows in descending order to prevent index not found assert errors at runtime
+        std::sort(selectedRows.begin(), selectedRows.end(), std::greater<int>());
 
         std::cout << "    Deleting rows: " << std::endl;
         // delete all the *entirely selected* rows
@@ -232,7 +234,9 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     int rowCount = grid->GetNumberRows();
     int colCount = grid->GetNumberCols();
 
-    // // collect current state of grid data
+    // collect current state of grid data
+    grid->UpdateGridDataCurrentState();
+
     // std::vector<wxString> currentRowKeys;
     // std::vector<std::vector<wxString>> currentRows;
 
@@ -276,6 +280,10 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 	// 		std::cerr << "Error deleting rows: " << e.what() << std::endl;
 	// 	}	
 	// }
+    if (grid->UpdateGridDataRemovedRows())
+    {
+        std::println("{0}::{1}(): Some data was removed from the grid.", CLASS_NAME, __func__ );
+    }
 
     // 2. detect new rows (in current but not in original)
 	// std::vector<int> newRowIndices;
@@ -314,6 +322,11 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
 	// 		std::cerr << "Error inserting rows: " << e.what() << std::endl;
 	// 	}
 	// }
+    int newRows = grid->UpdateGridDataNewRows();
+    if (newRows)
+    {
+        std::println("{0}::{1}(): Some data was added to the grid. ({2} additions found)", CLASS_NAME, __func__, newRows);
+    }
 
     // 3. detect modified rows (Primary Keys exists in both vectors, but row data has changed)
     // modifiedRowIndices holds the indices of the rows that have been altered since the OnShow() call
@@ -333,14 +346,18 @@ void SteelCalcOptions::OnClose(wxCloseEvent &event)
     //         }
     //     }
     // }
+    if (grid->UpdateGridDataModifiedRows())
+    {
+        std::println("{0}::{1}(): Some data was modified in the grid.", CLASS_NAME, __func__ );
+    }
 
     // 4. save only modified rows using your SaveFromGridToDatabase
-    std::vector<int> colIndicesEmpty;
+    // std::vector<int> colIndicesEmpty;
 
-    if (!modifiedRowIndices.empty()) {
-        grid->SaveFromGridToDatabase(
-            DEFAULT_DATABASE_FILENAME, grid->GetTableName(), grid->GetTablePrimaryKey(), modifiedRowIndices, colIndicesEmpty);
-    }
+    // if (!modifiedRowIndices.empty()) {
+    //     grid->SaveFromGridToDatabase(
+    //         DEFAULT_DATABASE_FILENAME, grid->GetTableName(), grid->GetTablePrimaryKey(), modifiedRowIndices, colIndicesEmpty);
+    // }
 
     this->Hide();
     if (m_mainFrame) {

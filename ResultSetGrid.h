@@ -4,6 +4,7 @@
 
 #include <wx/grid.h>
 #include <iostream>
+#include <print>
 #include <unordered_map>
 #include <string>
 #include <SQLiteCpp/Database.h>
@@ -102,13 +103,14 @@ class ResultSetGrid : public wxGrid
 			void				SetTablePrimaryKey(const std::string& pk) { m_tablePrimaryKey = pk; return; }
 			void				SetWhereClauseConditions(const std::unordered_map<std::string, std::string>& theConditions) { m_whereConditions = theConditions; return; }
 
+			bool				UpdateGridDataCurrentState(); // updates the grid's current "data state" ready to use to send to a database
+			bool				UpdateGridDataModifiedRows();	// detects and updates state of any grid data that has been modified by the end user
+			bool				UpdateGridDataNewRows();		// detects and updates state of any grid data that has been added by the end user
+			bool				UpdateGridDataRemovedRows();	// detects and updates state of any grid data that has been removed by the end user
+
 	private:
 	static	std::vector<int>	CreateVectorFromInt(const int& i);
 			void				StringReplaceAll(std::string& str, const std::string& from, const std::string& to);
-			bool				UpdateGridDataCurrentState();
-			bool				UpdateGridDataModifiedRows();
-			bool				UpdateGridDataNewRows();
-			bool				UpdateGridDataRemovedRows();
 	
 	// private members
 

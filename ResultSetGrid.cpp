@@ -412,93 +412,94 @@ void ResultSetGrid::StringReplaceAll(std::string &str, const std::string &from, 
 		}
 	}
 
-	bool ResultSetGrid::UpdateGridDataCurrentState()
-	{
-        // obtain the current state of the grid data
-        // store the state in private members: 
-        //  m_gridDataCurrentRows
-        //  m_gridDataCurrentRowKeys
+bool ResultSetGrid::UpdateGridDataCurrentState()
+{
+    // obtain the current state of the grid data
+    // store the state in private members: 
+    //  m_gridDataCurrentRows
+    //  m_gridDataCurrentRowKeys
 
-        int didSomething = 0;
-        for (int i = 0; i < this->GetNumberRows(); ++i) 
+    int didSomething = 0;
+    for (int i = 0; i < this->GetNumberRows(); ++i) 
+    {
+        // 
+        m_gridDataCurrentRowKeys.push_back(this->GetCellValue(i, m_tablePrimaryKeyIndex));
+        std::vector<wxString> rowData;
+        for (int j = 0; j < this->GetNumberCols(); ++j) 
         {
-            // 
-            m_gridDataCurrentRowKeys.push_back(this->GetCellValue(i, m_tablePrimaryKeyIndex));
-            std::vector<wxString> rowData;
-            for (int j = 0; j < this->GetNumberCols(); ++j) 
+            rowData.push_back(this->GetCellValue(i, j));
+        }
+        m_gridDataCurrentRows.push_back(rowData);
+        didSomething++;
+    }
+
+    return didSomething;
+}
+
+bool ResultSetGrid::UpdateGridDataModifiedRows()
+{
+    // check for rows with modified data (in both grids but something in the row's data has been modified)
+    // builds a vector of int values (m_gridDataModifiedRowIndices) that tells us the row indices that should be updated in the database table to make it match the grid in the UI
+    int didSomething = 0;
+    m_gridDataModifiedRowIndices.clear();
+    
+    for (size_t i = 0; i < m_gridDataCurrentRowKeys.size(); ++i) 
+    {
+        const wxString& currKey = m_gridDataCurrentRowKeys[i];
+        // it = pointer to the row in the current data vector with the altered row data
+        auto it = std::find(m_gridDataOriginalRowKeys.begin(), m_gridDataOriginalRowKeys.end(), currKey);
+        if (it != m_gridDataOriginalRowKeys.end()) 
+        {
+            size_t origIdx = std::distance(m_gridDataOriginalRowKeys.begin(), it);
+            if (m_gridDataCurrentRows[i] != m_gridDataOriginalRows[origIdx]) 
             {
-                rowData.push_back(this->GetCellValue(i, j));
+                // Row changed
+                m_gridDataModifiedRowIndices.push_back(static_cast<int>(i));
+                didSomething++;
             }
-            m_gridDataCurrentRows.push_back(rowData);
+        }
+    }
+    return didSomething;
+}
+
+bool ResultSetGrid::UpdateGridDataNewRows()
+{
+    // check for new added rows (in current grid data but not in original grid data)
+    // builds a vector of int values (m_gridDataNewRowIndices) that tells us the row indices that should be added to the database table to make it match the grid in the UI
+    int didSomething = 0;
+    m_gridDataNewRowIndices.clear();
+
+    for (size_t i = 0; i < m_gridDataCurrentRowKeys.size(); ++i) 
+    {
+        const wxString& currKey = m_gridDataCurrentRowKeys[i];
+        // if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
+        if (std::find(m_gridDataOriginalRowKeys.begin(), m_gridDataOriginalRowKeys.end(), currKey) == m_gridDataOriginalRowKeys.end()) 
+        {
+            // push the new row's index ito the m_griDataNewRowIndices vector
+            m_gridDataNewRowIndices.push_back(static_cast<int>(i));	
+            didSomething++;		
+        }
+    }
+    return didSomething;
+}
+
+bool ResultSetGrid::UpdateGridDataRemovedRows()
+{
+    // check for removed rows (in original grid data but not in current grid data)
+    // builds a vector of wxStrings (m_gridDataRemovedRowPKs) that tells us the PK values of rows to remove from the database table data to that it matches the grid in the UI
+    int didSomething = 0;
+    m_gridDataRemovedRowPKs.clear();
+
+    for (size_t i = 0; i < m_gridDataOriginalRowKeys.size(); ++i) 
+    {
+        const wxString& origKey = m_gridDataOriginalRowKeys[i];
+        // if we DON'T find the Primary Key value from the original data in the current data vector, then add the PK value to the m_gridDataRemovedRowPKs vector to mark the row for deletion from the database
+        if (std::find(m_gridDataCurrentRowKeys.begin(), m_gridDataCurrentRowKeys.end(), origKey) == m_gridDataCurrentRowKeys.end()) 
+        {
+            // push the removed row's PK value into m_gridDataRemovedRowPKs vector
+            m_gridDataRemovedRowPKs.push_back(origKey);
             didSomething++;
         }
-
-		return didSomething;
-	}
-
-	bool ResultSetGrid::UpdateGridDataModifiedRows()
-	{
-		// check for rows with modified data (in both grids but something in the row's data has been modified)
-		// builds a vector of int values (m_gridDataModifiedRowIndices) that tells us the row indices that should be updated in the database table to make it match the grid in the UI
-		int didSomething = 0;
-		m_gridDataModifiedRowIndices.clear();
-		
-		for (size_t i = 0; i < m_gridDataCurrentRowKeys.size(); ++i) 
-		{
-			const wxString& currKey = m_gridDataCurrentRowKeys[i];
-			// it = pointer to the row in the current data vector with the altered row data
-			auto it = std::find(m_gridDataOriginalRowKeys.begin(), m_gridDataOriginalRowKeys.end(), currKey);
-			if (it != m_gridDataOriginalRowKeys.end()) 
-			{
-				size_t origIdx = std::distance(m_gridDataOriginalRowKeys.begin(), it);
-				if (m_gridDataCurrentRows[i] != m_gridDataOriginalRows[origIdx]) 
-				{
-					// Row changed
-					m_gridDataModifiedRowIndices.push_back(static_cast<int>(i));
-					didSomething++;
-				}
-			}
-		}
-		return didSomething;
-	}
-
-	bool ResultSetGrid::UpdateGridDataNewRows()
-	{
-		// check for new added rows (in current grid data but not in original grid data)
-		// builds a vector of int values (m_gridDataNewRowIndices) that tells us the row indices that should be added to the database table to make it match the grid in the UI
-		int didSomething = 0;
-		m_gridDataNewRowIndices.clear();
-
-		for (size_t i = 0; i < m_gridDataCurrentRowKeys.size(); ++i) 
-		{
-			const wxString& currKey = m_gridDataCurrentRowKeys[i];
-			// if we DO FIND the index value from data in the current vector and it is not found in the original vector data, INSERT the row data to the database
-			if (std::find(m_gridDataOriginalRowKeys.begin(), m_gridDataOriginalRowKeys.end(), currKey) == m_gridDataOriginalRowKeys.end()) 
-			{
-				// push the new row's index ito the m_griDataNewRowIndices vector
-				m_gridDataNewRowIndices.push_back(static_cast<int>(i));			
-			}
-		}
-		return didSomething;
-	}
-
-	bool ResultSetGrid::UpdateGridDataRemovedRows()
-	{
-        // check for removed rows (in original grid data but not in current grid data)
-		// builds a vector of wxStrings (m_gridDataRemovedRowPKs) that tells us the PK values of rows to remove from the database table data to that it matches the grid in the UI
-		int didSomething = 0;
-		m_gridDataRemovedRowPKs.clear();
-
-        for (size_t i = 0; i < m_gridDataOriginalRowKeys.size(); ++i) 
-        {
-            const wxString& origKey = m_gridDataOriginalRowKeys[i];
-            // if we DON'T find the Primary Key value from the original data in the current data vector, then add the PK value to the m_gridDataRemovedRowPKs vector to mark the row for deletion from the database
-            if (std::find(m_gridDataCurrentRowKeys.begin(), m_gridDataCurrentRowKeys.end(), origKey) == m_gridDataCurrentRowKeys.end()) 
-            {
-                // push the removed row's PK value into m_gridDataRemovedRowPKs vector
-                m_gridDataRemovedRowPKs.push_back(origKey);
-				didSomething++;
-            }
-        }
-		return didSomething;
-	}
+    }
+    return didSomething;
+}
