@@ -21,9 +21,11 @@ cmake_minimum_required(VERSION 3.20)
       )
       # names of libraries your project needs to LINK to here (if ld.exe complains it can't find things, chances are you need to add a library name here from your lib/ folder)
       # SQLiteCpp depends on sqlite3!
+      # C++23 std::println under Windows needs stdc++exp here
       set(projectLibraries
             SQLiteCpp
             sqlite3
+            stdc++exp
       )
       set(localCPPDevRoot "C:/dev/cpp")
 ### end project config
@@ -44,7 +46,7 @@ cmake_minimum_required(VERSION 3.20)
 
 ######### you shouldn't have to configure anything else below here
 project(${projectName} VERSION 0.2.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(wxWidgets_LIB_DIR ${wxWidgets_ROOT_DIR}/lib/${localMachine_WX_LIB_NAME})
 set(wxWidgets_INCLUDE_DIRS
