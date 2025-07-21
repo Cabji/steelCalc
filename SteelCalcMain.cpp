@@ -26,7 +26,7 @@ SteelCalcMain::SteelCalcMain(wxWindow *parent, wxWindowID id, const wxString &ti
 
 void SteelCalcMain::Init()
 {
-    std::cout << "We are in SteelCalcMain ctr (OnInit)" << std::endl;
+    std::println("We are in SteelCalcMain ctr (OnInit)");
 
     // class data acquisition
     m_dbViewerFrame = new SteelCalcDatabaseViewer(this, DEFAULT_DATABASE_FILENAME, "inventory");
@@ -42,7 +42,7 @@ void SteelCalcMain::Init()
     {
         lValuesEditor->SetValidationType(CustomGridCellEditor::ValidationType::FLOAT);
     }
-    else {std::cerr << "lValues grid editor object was found to be nullptr" << std::endl;}
+    else {std::println(std::cerr, "lValues grid editor object was found to be nullptr");}
     
     // load settings from config file 
     SettingsLoadAllFromDisk();
@@ -72,7 +72,7 @@ void SteelCalcMain::Init()
     m_barProcessSizer->Detach(m_gridCircularLValues);
 
     wxString output(this->GetClassInfo()->GetClassName());
-    std::cout << "Class Name of this: " << output << std::endl;
+    std::println("Class Name of [this]: {0}", output.ToStdString();
 
     // Fit the frame to its contents
     this->Fit();
@@ -82,7 +82,7 @@ void SteelCalcMain::Init()
 double SteelCalcMain::GetBarArea(const wxString &barSpec)
 {
     double radius = GetBarRadius(barSpec);
-    std::cout << "Bar radius: " << radius << std::endl;
+    std::println("Bar radius: {0}", radius);
     return M_PI * radius * radius;
 }
 
@@ -114,7 +114,7 @@ double SteelCalcMain::GetBarRadius(const wxString &barSpec)
     {
         numericValue = re.GetMatch(m_processingCurrentBarSize);
     }
-    std::cout << "Numeric value: " << numericValue << std::endl;
+    std::println("Numeric value: {0}", numericValue.ToStdString());
     return wxAtof(numericValue) / 2 / 1000;
 }
 
@@ -132,7 +132,7 @@ void SteelCalcMain::OnBarSpecChoiceChanged(wxCommandEvent &event)
 {
     // Get the selected bar specification
     wxString selectedBarSpec = m_specsGandD->GetStringSelection();
-    std::cout << "Selected bar spec: " << selectedBarSpec << std::endl;
+    std::println("Selected bar spec: {0}", selectedBarSpec.ToStdString());
 
     event.Skip();
     // Update the results
@@ -166,7 +166,7 @@ void SteelCalcMain::OnBtnClearAllInputEntries(wxCommandEvent& event)
 
 void SteelCalcMain::OnCircularInputToggled(wxCommandEvent &event)
 {
-    std::cout << "Circular input checkbox toggled!" << std::endl;
+    std::println("Circular input checkbox toggled!");
     // Perform actions based on the checkbox state
     if (event.IsChecked())
     {
@@ -227,12 +227,12 @@ void SteelCalcMain::OnMenuFileOptions(wxCommandEvent &event)
 {
     if (!m_optionsFrame)
     {
-        std::cout << "Options frame does not exist!" << std::endl;
+        std::println("Options frame does not exist!");
         m_optionsFrame = new SteelCalcOptions(this);
     }
     else
     {
-        std::cout << "Options frame exists!" << std::endl;
+        std::println("Options frame exists!");
         m_optionsFrame->Show(true);
     }
     event.Skip();
@@ -242,11 +242,11 @@ void SteelCalcMain::OnMenuFileDatabaseViewer(wxCommandEvent &event)
 {
     if (!m_dbViewerFrame)
     {
-        std::cerr << "Database Viewer frame does not exist!" << std::endl;
+        std::println(std::cerr, "Database Viewer frame does not exist!");
     }
     else
     {
-        std::cout << "Showing Database Viewer..." << std::endl;
+        std::println("Showing Database Viewer...");
         m_dbViewerFrame->Show(true);
     }
     event.Skip();
@@ -263,7 +263,7 @@ void SteelCalcMain::OnMenuFileExit(wxCommandEvent &event)
 void SteelCalcMain::OnTextCtrlValueChanged(wxFocusEvent &event)
 {
     wxTextCtrl *textCtrl = dynamic_cast<wxTextCtrl *>(event.GetEventObject());
-    std::cout << "Text Ctrl value changed!" << std::endl;
+    std::println("Text Ctrl value changed!");
     wxString value = textCtrl->GetValue();
     ValidateValue(value);
     textCtrl->SetValue(value);
@@ -276,7 +276,7 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
     // check for conf file existence
     if (!wxFileName::FileExists(GetGlobalDefaultConfigFilename()))
     {
-        std::cout << "Config file does not exist. Using default settings." << std::endl;
+        std::println("Config file does not exist. Using default settings.");
         return;
     }
 
@@ -312,14 +312,14 @@ void SteelCalcMain::SettingsLoadAllFromDisk()
             }
             while(configObj.GetNextEntry(barGrade, index));
         }
-        std::cout << "Processed " << counter << " bar grades from config file." << std::endl;
+        std::println("Processed {0} bar grades from config file.", counter);
 
         // dev-note: commented out by cabji 20250610 - populating the Option frame grid's this way has been deprecated. 
         // you should instead use the SteelCalcDatabaseViewer class methods for getting values from the inventory table and 
         // use the SteelCalcDatabaseViewer::Grid*() methods to update the grid in the UI
         //m_optionsFrame->SetBarClassificationData(barData);
     }
-    std::cout << "Settings loaded from config file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
+    std::println("Settings loaded from config file '{0}'", GetGlobalDefaultConfigFilename().ToStdString());
 }
 
 void SteelCalcMain::SettingsSaveAllToDisk()
@@ -334,11 +334,11 @@ void SteelCalcMain::SettingsSaveAllToDisk()
     configObj.Flush();
     if (configObj.Flush())
     {
-        std::cout << "Settings saved to config file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
+		std::println("Settings saved to config file '{0}'", GetGlobalDefaultConfigFilename().ToStdString());
     }
     else
     {
-        std::cerr << "!!! Settings failed to save to file '" << GetGlobalDefaultConfigFilename() << "'" << std::endl;
+        std::println(std::cerr, "!!! Settings failed to save to file '{0}'", GetGlobalDefaultConfigFilename().ToStdString());
     }
 }
 
@@ -356,7 +356,7 @@ void SteelCalcMain::SettingsSaveBarGradeCostsToDisk(wxFileConfig &configObj)
 void SteelCalcMain::UpdateResults()
 {
     // Update all the results on the steel calculator main frame
-    std::cout << "Updating results..." << std::endl;
+    std::println("{0}::{1}(): Updating results...", CLASS_NAME, __func__);
 
     int totalCellsWithValue = 0;
     double itemTotalLength = 0.0;
@@ -373,7 +373,7 @@ void SteelCalcMain::UpdateResults()
     // fetch text control values as appropriate to UI (circular or standard UI input)
     if (m_gridCircularLValues->IsShown())
     {
-        std::cout << "Circular input grid is shown!" << std::endl;
+        std::println("	> Circular input grid shown.");
         // get values from input grid cells
         m_gridCircularLValues->GetCellValue(0, 0).ToDouble(&itemDiameter);
         m_gridCircularLValues->GetCellValue(0, 1).ToDouble(&itemLapLength);
@@ -399,7 +399,7 @@ void SteelCalcMain::UpdateResults()
             else
             {
                 // Handle the case where the cell value is not a valid number
-                std::cerr << "Invalid number in cell (0, " << col << "): " << cellValue.ToStdString() << std::endl;
+                std::println(std::cerr, "!! Invalid number in cell (0, {0}): {1}", col, cellValue.ToStdString());
             }
         }
     }
@@ -421,8 +421,8 @@ void SteelCalcMain::UpdateResults()
     }
     if (m_gridCircularLValues->IsShown())
     {
-        std::cout << "Item diameter: " << itemDiameter << ", Item lap length: " << itemLapLength << std::endl;
-        std::cout << "Total bar length: " << itemLapLength + M_PI * itemDiameter << std::endl;
+		std::println("Item diameter: {0}, Item lap length: {1}", itemDiameter, itemLapLength);
+        std::println("Total bar length: {0}", itemLapLength + M_PI * itemDiameter);
         m_lblCalculatedTotalBarLength->SetLabel(wxString::Format("Total bar length: %.2f", itemLapLength + M_PI * itemDiameter));
     }
 
@@ -535,6 +535,6 @@ bool SteelCalcMain::ValidateValue(wxString &value)
     {
         value = sanitizedInput; // Assign the sanitized value back to the reference
     }
-    std::cout << "Sanitized value: " << sanitizedInput.ToStdString() << ", isValid: " << isValid << std::endl;
+	std::println("Sanitized value: {0}, isValid: {1}", sanitizedInput.ToStdString(), isValid);
     return isValid;
 }
